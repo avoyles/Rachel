@@ -1,0 +1,172 @@
+# Note that 40 crystals are re-used in this partitioning of Gammasphere into
+# clusters.  They are marked "REUSED".
+
+# Also, the forward ring has been moved to the end, assuming that the best data
+# are in clusters of 7 crystals, whereas the forward ring of clusters has only
+# six crystals in each cluster.  (It is a good practice to define the first Ge
+# detector in Gosia as the one with the best data.  This improves the
+# convergence of the fit.)
+
+# Optional data file types ("txt" in this case) and data file names "1.txt",
+# "2.txt", etc. tell Rachel where to find data for "auto-loading."  If more
+# than one experiment uses this array, additional copies of this file must be
+# made, and the txt data file names must be changed so that they are unique in
+# each copy for each Gosia experiment.  For example, the data files could be
+# called expt_1_cluster_1.txt, expt_1_cluster_2.txt, etc. in one copy of this
+# file and expt_2_cluster_1.txt... in a second copy.
+
+cluster  7    txt   6.txt                                                                  
+         gs        58.28     72.0  # crystal #  25  REUSED
+         gs        69.82    53.51  # crystal #  31
+         gs        69.82    90.49  # crystal #  33
+         gs        79.19     72.0  # crystal #  39
+         gs         90.0     54.0  # crystal #  51  REUSED
+         gs         90.0     90.0  # crystal #  53  REUSED
+         gs        99.29     72.0  # crystal #  59
+cluster  7    txt   7.txt                                                                  
+         gs        58.28    144.0  # crystal #  27  REUSED
+         gs        69.82   125.51  # crystal #  35
+         gs        69.82   162.49  # crystal #  37
+         gs        79.19    144.0  # crystal #  41
+         gs         90.0    126.0  # crystal #  55  REUSED
+         gs         90.0    162.0  # crystal #  57  REUSED
+         gs        99.29    144.0  # crystal #  61
+cluster  7    txt   8.txt                                                                  
+         gs        58.28    216.0  # crystal #  28  REUSED
+         gs        69.82   197.51  # crystal #  34
+         gs        69.82   234.49  # crystal #  36
+         gs        79.19    216.0  # crystal #  44
+         gs         90.0    198.0  # crystal #  54  REUSED
+         gs         90.0    234.0  # crystal #  56  REUSED
+         gs        99.29    216.0  # crystal #  64
+cluster  7    txt   9.txt                                                                  
+         gs        58.28    288.0  # crystal #  30  REUSED
+         gs        69.82   269.51  # crystal #  38
+         gs        69.82   306.49  # crystal #  40
+         gs        79.19    288.0  # crystal #  46
+         gs         90.0    270.0  # crystal #  58  REUSED
+         gs         90.0    306.0  # crystal #  60  REUSED
+         gs        99.29    288.0  # crystal #  66
+cluster  7     txt  10.txt                                                             
+         gs        58.28    360.0  # crystal #  32  REUSED
+         gs        69.82    18.49  # crystal #  29
+         gs        69.82   341.51  # crystal #  42
+         gs        79.19    360.0  # crystal #  48
+         gs         90.0     18.0  # crystal #  49  REUSED
+         gs         90.0    342.0  # crystal #  62  REUSED
+         gs        99.29    360.0  # crystal #  68
+cluster  7     txt  11.txt                                                             
+         gs        80.71     36.0  # crystal #  43
+         gs         90.0     18.0  # crystal #  49  REUSED
+         gs         90.0     54.0  # crystal #  51  REUSED
+         gs       100.81     36.0  # crystal #  63
+         gs       110.18    17.51  # crystal #  69
+         gs       110.18    54.49  # crystal #  71
+         gs       121.72     36.0  # crystal #  79  REUSED
+cluster  7     txt  12.txt                                                             
+         gs        80.71    108.0  # crystal #  45
+         gs         90.0     90.0  # crystal #  53  REUSED
+         gs         90.0    126.0  # crystal #  55  REUSED
+         gs       100.81    108.0  # crystal #  65
+         gs       110.18    89.51  # crystal #  73
+         gs       110.18   126.49  # crystal #  75
+         gs       121.72    108.0  # crystal #  81  REUSED
+cluster  7     txt  13.txt                                                             
+         gs        80.71    180.0  # crystal #  47
+         gs         90.0    162.0  # crystal #  57  REUSED
+         gs         90.0    198.0  # crystal #  54  REUSED
+         gs       100.81    180.0  # crystal #  67
+         gs       110.18   161.51  # crystal #  77
+         gs       110.18   198.49  # crystal #  74
+         gs       121.72    180.0  # crystal #  83  REUSED
+cluster  7     txt  14.txt                                                             
+         gs        80.71    252.0  # crystal #  50
+         gs         90.0    234.0  # crystal #  56  REUSED
+         gs         90.0    270.0  # crystal #  58  REUSED
+         gs       100.81    252.0  # crystal #  70
+         gs       110.18   233.51  # crystal #  76
+         gs       110.18   270.49  # crystal #  78
+         gs       121.72    252.0  # crystal #  84  REUSED
+cluster  7     txt  15.txt                                                             
+         gs        80.71    324.0  # crystal #  52
+         gs         90.0    306.0  # crystal #  60  REUSED
+         gs         90.0    342.0  # crystal #  62  REUSED
+         gs       100.81    324.0  # crystal #  72
+         gs       110.18   305.51  # crystal #  80
+         gs       110.18   342.49  # crystal #  82
+         gs       121.72    324.0  # crystal #  86  REUSED
+cluster  7     txt  16.txt                                                             
+         gs       121.72     36.0  # crystal #  79  REUSED
+         gs       129.93    13.16  # crystal #  85
+         gs       129.93    58.84  # crystal #  87
+         gs       142.62     36.0  # crystal #  95
+         gs       148.28     72.0  # crystal # 101  REUSED
+         gs       148.28    360.0  # crystal # 106  REUSED
+         gs       162.73     36.0  # crystal # 105
+cluster  7     txt  17.txt                                                             
+         gs       121.72    108.0  # crystal #  81  REUSED
+         gs       129.93    85.16  # crystal #  89
+         gs       129.93   130.84  # crystal #  91
+         gs       142.62    108.0  # crystal #  97
+         gs       148.28     72.0  # crystal # 101  REUSED
+         gs       148.28    144.0  # crystal # 103  REUSED
+         gs       162.73    108.0  # crystal # 107
+cluster  7     txt  18.txt                                                             
+         gs       121.72    252.0  # crystal #  84  REUSED
+         gs       129.93   229.16  # crystal #  90
+         gs       129.93   274.84  # crystal #  92
+         gs       142.62    252.0  # crystal #  98
+         gs       148.28    216.0  # crystal # 102  REUSED
+         gs       148.28    288.0  # crystal # 104  REUSED
+         gs       162.73    252.0  # crystal # 108
+cluster  7     txt  19.txt                                                             
+         gs       121.72    180.0  # crystal #  83  REUSED
+         gs       129.93   157.16  # crystal #  93
+         gs       129.93   202.84  # crystal #  88
+         gs       142.62    180.0  # crystal #  99
+         gs       148.28    144.0  # crystal # 103  REUSED
+         gs       148.28    216.0  # crystal # 102  REUSED
+         gs       162.73    180.0  # crystal # 109
+cluster  7     txt  20.txt                                                             
+         gs       121.72    324.0  # crystal #  86  REUSED
+         gs       129.93   301.16  # crystal #  94
+         gs       129.93   346.84  # crystal #  96
+         gs       142.62    324.0  # crystal # 100
+         gs       148.28    288.0  # crystal # 104  REUSED
+         gs       148.28    360.0  # crystal # 106  REUSED
+         gs       162.73    324.0  # crystal # 110
+cluster  6   txt 1.txt
+         gs        31.72     36.0  # crystal #   5  REUSED
+         gs        31.72    108.0  # crystal #   7  REUSED
+         gs        37.38     72.0  # crystal #  11
+         gs        50.07    49.16  # crystal #  17
+         gs        50.07    94.84  # crystal #  19
+         gs        58.28     72.0  # crystal #  25  REUSED
+cluster  6   txt    2.txt                                                                  
+         gs        31.72    180.0  # crystal #   9  REUSED
+         gs        31.72    252.0  # crystal #   8  REUSED
+         gs        37.38    216.0  # crystal #  12
+         gs        50.07   193.16  # crystal #  18
+         gs        50.07   238.84  # crystal #  20
+         gs        58.28    216.0  # crystal #  28  REUSED
+cluster  6   txt    3.txt                                                                  
+         gs        31.72    108.0  # crystal #   7  REUSED
+         gs        31.72    180.0  # crystal #   9  REUSED
+         gs        37.38    144.0  # crystal #  13
+         gs        50.07   121.16  # crystal #  21
+         gs        50.07   166.84  # crystal #  23
+         gs        58.28    144.0  # crystal #  27  REUSED
+cluster  6   txt    4.txt                                                                  
+         gs        31.72    252.0  # crystal #   8  REUSED
+         gs        31.72    324.0  # crystal #  10  REUSED
+         gs        37.38    288.0  # crystal #  14
+         gs        50.07   265.16  # crystal #  22
+         gs        50.07   310.84  # crystal #  24
+         gs        58.28    288.0  # crystal #  30  REUSED
+cluster  6   txt    5.txt                                                                  
+         gs        31.72     36.0  # crystal #   5  REUSED
+         gs        31.72    324.0  # crystal #  10  REUSED
+         gs        37.38    360.0  # crystal #  16
+         gs        50.07    22.84  # crystal #  15
+         gs        50.07   337.16  # crystal #  26
+         gs        58.28    360.0  # crystal #  32  REUSED

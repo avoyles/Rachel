@@ -1,0 +1,37 @@
+# This detector file represents the full Tigress array of 16 clovers detectors,
+# as an individual detector with its own data partition.  Unused clovers should
+# be commented-out before importing this array.
+#
+# This definition would be useful for calculating angular distributions, as
+# well as real data where statistics permit.
+#
+# The crystal type "tigcrystal" is a cylinder approximation of a clover, i.e.
+# representation of the clover as a single crystal.  When a more detailed
+# definition of the array is available, a more accurate cluster-type definition
+# of the array will be added to this library.
+#
+# Before loading this detector file, make sure that either 1. the crystal type
+# "tigcrystal" is defined in the session as a Tigress clover, or 2. the name
+# "tigcrystal" in this file is changed to matigcrystalh the name of the desired
+# crystal type, if you have redefined the crystal type (e.g. to change the
+# efficiency curve for a choice of absorbers, particle detectors, etigcrystal.)
+#
+
+
+crystal         tigcrystal         45   22.5
+crystal         tigcrystal         45  112.5
+crystal         tigcrystal         45  202.5
+crystal         tigcrystal         45  292.5
+crystal         tigcrystal         90   22.5
+crystal         tigcrystal         90   67.5
+crystal         tigcrystal         90  112.5
+crystal         tigcrystal         90  157.5
+crystal         tigcrystal         90  202.5
+crystal         tigcrystal         90  247.5
+crystal         tigcrystal         90  292.5
+crystal         tigcrystal         90  337.5
+crystal         tigcrystal        135   22.5
+crystal         tigcrystal        135  112.5
+crystal         tigcrystal        135  202.5
+crystal         tigcrystal        135  292.5
+

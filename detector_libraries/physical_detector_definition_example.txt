@@ -1,0 +1,14 @@
+somecrystal
+description Some crystal 20 cm from the target
+distance 20
+outer_radius 4
+inner_radius .4
+length 9
+
+someother
+description Some crystal of a different size and distance from target
+distance 30
+outer_radius 3
+inner_radius .3
+length 10
+

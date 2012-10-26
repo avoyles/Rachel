@@ -1,0 +1,43 @@
+# This detector array file defines 24 individual Miniball crystals for the
+# Coulex@Miniball setup at REX-ISOLDE, all of the same physical type and
+# distance from target.  The array configuration was provided by M. Albers at
+# Cologne.
+# 
+# This file defines 24 detectors, each of which would have its own data
+# partition.  Unused detectors should be removed or commented-out before
+# loading this file.
+#
+# This definition would be useful for calculating angular distributions, as
+# well as real data where statistics permit.
+#
+# Before loading this detector file, make sure that either 1. the crystal type
+# "miniball" is defined in the session, or 2. the name "miniball" in this file
+# is changed to match the name of the Miniball crystal type, if you have
+# redefined the Miniball crystal physical type (e.g. to change the efficiency
+# curve for a choice of absorbers, particle detectors, etc.)
+
+crystal miniball   43.5     21.8
+crystal miniball   51.6     60.2
+crystal miniball   71.0     35.0
+crystal miniball   36.7     143.8
+crystal miniball   65.9     146.7
+crystal miniball   57.9     114.6
+crystal miniball   39.0     207.6
+crystal miniball   50.4     246.6
+crystal miniball   67.0     217.9
+crystal miniball   64.7     310.2
+crystal miniball   36.7     321.6
+crystal miniball   61.9     342.8
+crystal miniball   122.6    155.8
+crystal miniball   144.4    127.2
+crystal miniball   115.2    123.2
+crystal miniball   112.3    29.2
+crystal miniball   129.5    57.3
+crystal miniball   140.4    17.8
+crystal miniball   120.9    299.8
+crystal miniball   108.3    329.1
+crystal miniball   137.5    331.4
+crystal miniball   108.3    250.6
+crystal miniball   136.9    258.6
+crystal miniball   124.3    223.1
+

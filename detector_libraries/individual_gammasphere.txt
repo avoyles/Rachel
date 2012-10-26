@@ -1,0 +1,143 @@
+# This detector file represents the full Gammasphere array with 110 detectors,
+# each as a unique data partition with its own yield data.  Usually about 100 detectors are used, depending on
+# availibility.  The appropriate detectors should be removed or commented-out
+# before loading this file.
+#
+# This definition would be useful for calculating angular distributions, as
+# well as real data where statistics permit.
+#
+# Before loading this detector file, make sure that either 1. the crystal type
+# "gs" is defined in the session as a Gammasphere crystal, or 2. the name "gs"
+# in this file is changed to match the name of the Gammasphere crystal type, if
+# you have redefined the Gammasphere crystal type (e.g. to change the
+# efficiency curve for a choice of absorbers, particle detectors, etc.)
+#
+
+        # Ring  1
+crystal         gs          17.27465                        72.00    # module  1     B34     
+crystal         gs          17.27465                        144.00   # module  3     B22      
+crystal         gs          17.27465                        216.00   # module  2     B10      
+crystal         gs          17.27465                        288.00   # module  4     B58      
+crystal         gs          17.27465                        360.00   # module  6     B46
+        # Ring  2
+crystal         gs          31.71747                        36.00    # module  5     C18     
+crystal         gs          31.71747                        108.00   # module  7     C12      
+crystal         gs          31.71747                        180.00   # module  9     C6       
+crystal         gs          31.71747                        252.00   # module  8     C30      
+crystal         gs          31.71747                        324.00   # module  10    C24
+        # Ring  3
+crystal         gs          37.37737                       72.00     # module 11     D12     
+crystal         gs          37.37737                       144.00    # module 13     D8       
+crystal         gs          37.37737                       216.00    # module 12     D4       
+crystal         gs          37.37737                       288.00    # module 14     D20      
+crystal         gs          37.37737                       360.00    # module 16     D16
+        # Ring  4
+crystal         gs          50.06504                       22.84     # module  15    B48     
+crystal         gs          50.06504                       49.16     # module  17    B35     
+crystal         gs          50.06504                       94.84     # module  19    B36     
+crystal         gs          50.06504                       121.16    # module  21    B23     
+crystal         gs          50.06504                       166.84    # module  23    B24
+crystal         gs          50.06504                       193.16    # module  18    B11     
+crystal         gs          50.06504                       238.84    # module  20    B12     
+crystal         gs          50.06504                       265.16    # module  22    B59     
+crystal         gs          50.06504                       310.84    # module  24    B60     
+crystal         gs          50.06504                       337.16    # module  26    B47
+        # Ring  5
+crystal         gs          58.28253                       72.00     # module 25     C17     
+crystal         gs          58.28253                       144.00    # module 27     C11      
+crystal         gs          58.28253                       216.00    # module 28     C5       
+crystal         gs          58.28253                       288.00    # module 30     C29      
+crystal         gs          58.28253                       360.00    # module 32     C23
+        # Ring  6
+crystal         gs          69.82033                       18.49     # module  29    B43     
+crystal         gs          69.82033                       53.51     # module  31    B32     
+crystal         gs          69.82033                       90.49     # module  33    B31     
+crystal         gs          69.82033                       125.51    # module  35    B20     
+crystal         gs          69.82033                       162.49    # module  37    B19
+crystal         gs          69.82033                       197.51    # module  34    B8     
+crystal         gs          69.82033                       234.49    # module  36    B7     
+crystal         gs          69.82033                       269.51    # module  38    B56     
+crystal         gs          69.82033                       306.49    # module  40    B55     
+crystal         gs          69.82033                       341.51    # module  42    B44
+        # Ring  7
+crystal         gs          79.18768                       72.00     # module 39     D11     
+crystal         gs          79.18768                       144.00    # module 41     D7       
+crystal         gs          79.18768                       216.00    # module 44     D3       
+crystal         gs          79.18768                       288.00    # module 46     D19      
+crystal         gs          79.18768                       360.00    # module 48     D15
+        # Ring  8
+crystal         gs          80.70960                       36.00     # module 43     B29     
+crystal         gs          80.70960                       108.00    # module 45     B17      
+crystal         gs          80.70960                       180.00    # module 47     B5       
+crystal         gs          80.70960                       252.00    # module 50     B53      
+crystal         gs          80.70960                       324.00    # module 52     B41
+        # Ring  9
+crystal         gs          90.00000                       18.00     # module  49    C15     
+crystal         gs          90.00000                       54.00     # module  51    C16     
+crystal         gs          90.00000                       90.00     # module  53    C9     
+crystal         gs          90.00000                       126.00    # module  55    C10     
+crystal         gs          90.00000                       162.00    # module  57    C3
+crystal         gs          90.00000                       198.00    # module  54    C4     
+crystal         gs          90.00000                       234.00    # module  56    C27     
+crystal         gs          90.00000                       270.00    # module  58    C28     
+crystal         gs          90.00000                       306.00    # module  60    C21     
+crystal         gs          90.00000                       342.00    # module  62    C22
+        # Ring 10
+crystal         gs          99.29040                       72.00     # module 59     B33     
+crystal         gs          99.29040                       144.00    # module 61     B21      
+crystal         gs          99.29040                       216.00    # module 64     B9       
+crystal         gs          99.29040                       288.00    # module 66     B57      
+crystal         gs          99.29040                       360.00    # module 68     B45
+        # Ring 11
+crystal         gs         100.81232                      36.00      # module3       D10     
+crystal         gs         100.81232                      108.00     # module5       D6       
+crystal         gs         100.81232                      180.00     # module7       D2       
+crystal         gs         100.81232                      252.00     # module0       D18      
+crystal         gs         100.81232                      324.00     # module2       D14
+        # Ring 12
+crystal         gs         110.17967                      17.51      # module69      B30     
+crystal         gs         110.17967                      54.49      # module71      B28     
+crystal         gs         110.17967                      89.51      # module73      B18     
+crystal         gs         110.17967                      126.49     # module75      B16     
+crystal         gs         110.17967                      161.51     # module77      B6
+crystal         gs         110.17967                      198.49     # module74      B4     
+crystal         gs         110.17967                      233.51     # module76      B54     
+crystal         gs         110.17967                      270.49     # module78      B52     
+crystal         gs         110.17967                      305.51     # module80      B42     
+crystal         gs         110.17967                      342.49     # module82      B40
+        # Ring 13
+crystal         gs         121.71747                      36.00      # module9       C14     
+crystal         gs         121.71747                      108.00     # module1       C8       
+crystal         gs         121.71747                      180.00     # module3       C2       
+crystal         gs         121.71747                      252.00     # module4       C26      
+crystal         gs         121.71747                      324.00     # module6       C20
+        # Ring 14
+crystal         gs         129.93496                      13.16      # module85      B27     
+crystal         gs         129.93496                      58.84      # module87      B26     
+crystal         gs         129.93496                      85.16      # module89      B15     
+crystal         gs         129.93496                      130.84     # module91      B14     
+crystal         gs         129.93496                      157.16     # module93      B3
+crystal         gs         129.93496                      202.84     # module88      B2     
+crystal         gs         129.93496                      229.16     # module90      B51     
+crystal         gs         129.93496                      274.84     # module92      B50     
+crystal         gs         129.93496                      301.16     # module94      B39     
+crystal         gs         129.93496                      346.84     # module96      B38
+        # Ring 15
+crystal         gs         142.62263                      36.00      # module5       D9     
+crystal         gs         142.62263                      108.00     # module7       D5       
+crystal         gs         142.62263                      180.00     # module9       D1       
+crystal         gs         142.62263                      252.00     # module8       D17      
+crystal         gs         142.62263                      324.00     # module00      D13
+        # Ring 16
+crystal         gs         148.28253                     72.00       # module1       C7     
+crystal         gs         148.28253                     144.00      # module3       C1       
+crystal         gs         148.28253                     216.00      # module2       C25      
+crystal         gs         148.28253                     288.00      # module4       C19      
+crystal         gs         148.28253                     360.00      # module6       C13
+        # Ring 17
+crystal         gs         162.72535                     36.00       # module5       B25     
+crystal         gs         162.72535                     108.00      # module7       B13      
+crystal         gs         162.72535                     180.00      # module9       B1       
+crystal         gs         162.72535                     252.00      # module8       B49      
+crystal         gs         162.72535                     324.00      # module0       B37
+

@@ -1,0 +1,42 @@
+# This detector file represents the full Tigress array of 16 clovers detectors
+# summed into one data set.  Unused clovers should be commented-out before
+# importing this array.  (Change the number of crystals, 16, to the actual
+# number used.)
+#
+# The crystal type "tigcrystal" is a cylinder approximation of a clover, i.e.
+# representation of the clover as a single crystal.  When a more detailed
+# definition of the array is available, a more accurate cluster-type definition
+# of the array will be added to this library.
+#
+# Before loading this detector file, make sure that either 1. the crystal type
+# "tigcrystal" is defined in the session as a Tigress clover, or 2. the name "tigcrystal" in
+# this file is changed to matigcrystalh the name of the desired crystal type, if you
+# have redefined the crystal type (e.g. to change the efficiency curve for a
+# choice of absorbers, particle detectors, etigcrystal.)
+#
+# Optional data file types ("txt" in this case) and data file names
+# ("expt_1.txt") tell Rachel where to find data for "auto-loading."  If more
+# than one experiment uses this array, additional copies of this file must be
+# made, and the txt data file names must be changed so that they are unique in
+# each copy for each Gosia experiment.  For example, the data file could be
+# called expt_1_cluster.txt in one copy of this file and expt_2_cluster.txt in
+# a second copy.
+
+
+cluster  16  txt   expt_1.txt
+        tigcrystal         45   22.5
+        tigcrystal         45  112.5
+        tigcrystal         45  202.5
+        tigcrystal         45  292.5
+        tigcrystal         90   22.5
+        tigcrystal         90   67.5
+        tigcrystal         90  112.5
+        tigcrystal         90  157.5
+        tigcrystal         90  202.5
+        tigcrystal         90  247.5
+        tigcrystal         90  292.5
+        tigcrystal         90  337.5
+        tigcrystal        135   22.5
+        tigcrystal        135  112.5
+        tigcrystal        135  202.5
+        tigcrystal        135  292.5

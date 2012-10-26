@@ -1,0 +1,41 @@
+# This detector array file defines the sum of 24 Miniball crystals for the
+# Coulex@Miniball setup at REX-ISOLDE, all of the same physical type and
+# distance from target.  The array configuration was provided by M. Albers at
+# Cologne.
+# 
+# This file defines 24 detectors to be summed.  Unused detectors should be
+# removed or commented-out before loading this file.  (Be sure to change the
+# number "24" to the number of active detectors.)
+#
+# Before loading this detector file, make sure that either 1. the crystal type
+# "miniball" is defined in the session, or 2. the name "miniball" in this file
+# is changed to match the name of the Miniball crystal type, if you have
+# redefined the Miniball crystal physical type (e.g. to change the efficiency
+# curve for a choice of absorbers, particle detectors, etc.)
+
+cluster 24  txt  expt_1.txt
+miniball   43.5     21.8
+miniball   51.6     60.2
+miniball   71.0     35.0
+miniball   36.7     143.8
+miniball   65.9     146.7
+miniball   57.9     114.6
+miniball   39.0     207.6
+miniball   50.4     246.6
+miniball   67.0     217.9
+miniball   64.7     310.2
+miniball   36.7     321.6
+miniball   61.9     342.8
+miniball   122.6    155.8
+miniball   144.4    127.2
+miniball   115.2    123.2
+miniball   112.3    29.2
+miniball   129.5    57.3
+miniball   140.4    17.8
+miniball   120.9    299.8
+miniball   108.3    329.1
+miniball   137.5    331.4
+miniball   108.3    250.6
+miniball   136.9    258.6
+miniball   124.3    223.1
+
