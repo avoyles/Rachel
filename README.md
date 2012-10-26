@@ -8,5 +8,5 @@ Authors:
   D. Cline
 
 Borrowed Code:
-  ...
+  (Need to add authors here.)
 
