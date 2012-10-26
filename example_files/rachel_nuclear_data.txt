@@ -1,0 +1,11 @@
+# This is a test file.  Data are meaningless!
+lifetime gsb  2.0  400. 80.                          # in picoseconds
+# Note the spaces between non-alphanumeric symbols.
+<  gsb 2.0 || E2 || gsb 0.0 > = 2.17 0.02            # Sign is interpreted as positive [eb]
+mixing gam 2.0 gsb 2.0     0.35 0.05                 # any user comment
+< gamod 4.0  || E2 || gsb 3.0 > = -0.45 0.12         # Sign is interpreted as negative
+< gsb 2.0 || E2 || gamod 3.0 >  =  0.23 0.08         # BACKWARD--WILL BE TIME-REVERSED!
+# Note that time-reversal is done automatically for a consistent phase convention.
+branching gam 8.0 gamod 7.0 gsb 6.0 0.042 0.005      # gamma decay branches only--not including conversion
+#branching band3 3.0 band1 1.0 band1 2.0 0.04 0.01   # This line is commented out
+lifetime gam 2.0   5.  2.                            # cite Jane Doe, PRC 5, 289 (1994)

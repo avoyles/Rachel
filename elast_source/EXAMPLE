@@ -1,0 +1,3 @@
+#program name, angle 30, flags for energy etc.., medium, thickness in mg/cm^2, projectile, and projectile energy
+
+./elast -a 30 oleavc "1(28Si)" 1 1H 22
