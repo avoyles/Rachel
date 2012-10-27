@@ -10575,12 +10575,13 @@ class gosia_shell:
             # ground state set here.
             the_gosia_shell.set_gosia_kinematics_state(silent=True,gosia_level_number=1)
             if not silent:
-                print "The maximum possible excitation energy (Q-value) for all experiments is ",the_maximum_Q_value, "keV."
-                print "  The energy of the final state chosen for kinematics calculations"
-                print "  is too high."
-                print "  The scattering kinematics state has been reset to the ground state."
-                print "  You can change this using the \"Gosia controls\" button.  "
-                print "  Be sure to choose a state with an excitation energy less than ",the_maximum_Q_value, "."
+                print "  The maximum possible excitation energy (Q-value) for all experiments is ",the_maximum_Q_value, "keV."
+                print "    This is defined by the beam energy and the energy loss in the target."
+                print "    The energy of the final state chosen for kinematics calculations"
+                print "    is too high."
+                print "    The scattering kinematics state has been reset to the ground state."
+                print "    You can change this using the \"Gosia controls\" button.  "
+                print "    Be sure to choose a state with an excitation energy <=",the_maximum_Q_value, "."
 
         if not self.gosia_kinematics_state == None:
             kinematics_state_line = "NCM," + str(self.gosia_kinematics_state) + "."
@@ -19727,7 +19728,7 @@ class experiment:
 
         # Issue a warning to use SRIM for stopped beams.  We do not iterate to solve for the range here!
         if exit_energy < (0.5 * initial_beam_energy):  # MeV
-            print "\nNOTE: The stopping power calculation shows that the energy loss is large, or the beam is stopped.  You should call the Rochester SRIM server to get more accurate stopping power and exit-energy data.  The server will also set the target thickness to the effective range, if the beam is truly stopped.  The accuracy of the range will not affect fitting or simulated counts, but will affect the quoted absolute cross sections.\nTHE RANGE ACTUAL HAS NOT BEEN CALCULATED BY ELAST."
+            print "\nNOTE: The stopping power calculation shows that the energy loss is large, or the beam is stopped.  \nTHE ACTUAL RANGE HAS NOT BEEN CALCULATED BY ELAST.  \nYou should call the Rochester SRIM server to get more accurate stopping power and exit-energy data.  The server will also set the target thickness to the effective range, if the beam is truly stopped.  The accuracy of the range will not affect fitting or simulated counts, but will affect the quoted absolute cross sections."
             raw_input("Read the warning above, and press enter. ")
 
         # The check of maximum Q-value and setting of NCM is now done in
@@ -20027,7 +20028,7 @@ class experiment:
             raw_input("\nRead the warning above, and press enter. ")
 
             self.parameter_dict["target_thickness"] = copy.deepcopy(all_stopping_power_data["calculated_range"])
-            new_exit_energy = 0.0 # This will be raised slightly below, so that it is high enough to excite all levels.
+            new_exit_energy = 0.001  # Arbitrary non-zero number.  Gosia crashes when integrating to zero, even with NCM=1.
 
         # Set the new exit energy for this experiment.
         elif exit_energy_is_known:
@@ -20038,16 +20039,7 @@ class experiment:
             new_exit_energy = copy.deepcopy(all_stopping_power_data["calculated_exit_energy"])
             found_stopped_beam = False
 
-        # July 2012: Gosia cannot handle integration to 0 beam energy, because
-        # no states can be excited.  Calculate the beam energy required to
-        # excite the highest-energy state, and use that, if the exit energy is
-        # too low, or the beam is truly stopped.
-        highest_excitation_energy_keV = investigated_nucleus.maximum_level_energy()
-        minimum_beam_energy_MeV       = minimum_beam_energy(beam_mass,target_mass,highest_excitation_energy_keV)
-
-        if new_exit_energy <= minimum_beam_energy_MeV:
-            new_exit_energy = minimum_beam_energy_MeV * 1.01  # 1% higher 
-
+        # The gosia shell will set the NCM flag properly for stopped beams, so we don't change it from 0 here.
         self.parameter_dict["E_exit"] = new_exit_energy 
 
         # Now save the new stopping power data to this experiment.
