@@ -10,7 +10,7 @@ cd elast_source
 if [ "$1" == clean ]; then
 rm elast
 else
-$CC $CCFLAGS -o elast elast.c
+$CC -o elast elast.c $CCFLAGS 
 fi
 cd ..
 
