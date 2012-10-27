@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.6
+#!/usr/bin/env python
 
 VERSION = "1.2.1"
 RECOVERY_MODE = False
