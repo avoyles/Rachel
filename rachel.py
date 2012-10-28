@@ -568,7 +568,7 @@ def check_for_gosia_error(gosia_output_lines):
 
     """
 
-    errors_list = [["ERROR-INSUFFICIENT SPACE FOR E-THETA INTEGR ATION","The level scheme you are calculating for may have too many levels and/or matrix elements, or you may have too many theta meshpoints, or interpolation subdivisions.  Can you eliminate some weakly populated bands, or some unimportant matrix elements?  Deleting one or more experiments may help as well.  If you do not want to change the calculation, select option \"i\" from the button \"Gosia controls\" and reduce the number of E-theta interpolation subdivisions for all experiments.  Usually, 20 energy subdivisions and 20 theta subdivisions is sufficient.  When you get a successful calculation with no errors, you can use the test \"ti\" under the button \"Tools\" to check that the reduced number of subdivisions has not caused an inaccuracy."],["ERROR-M.E. DOES NOT BELONG TO THE UPPER TRIANGLE","Rachel did not write the matrix in the proper order for gosia.  Please report this error to A. Hayes (hayes@pas.rochester.edu).  You can probably fix this by deleting all matrix elements and adding them again.  This is usually caused by importing a bad stored matrix file."],["ERROR-WRONG SEQUENCE OF MULTIPOLARITIES","This is probably caused by a bug in Rachel.  Please report this error to A. Hayes (hayes@pas.rochester.edu)."],["ERROR-REPEATED APPEARANCE OF THE STATE","This is probably a bug in Rachel.  Please report this error to A. Hayes (hayes@pas.rochester.edu)."],["ERROR - NUMBER OF ELEMENTS IN ZETA ARRAY EXCEEDS","This may be caused by a very large level scheme.  Can you delete some weakly populated bands?"],["ERROR-ISMAX EXCEEDS MAGMAX","You have requested too many magnetic substates for this calculation.  Reduce the number of substates under the Gosia controls button.  The sum of all magnetic substates for all levels must not exceed 1200."],["ERROR- MAXIMUM SCATTERING ANGLE IS","You have exceeded the maximum beam scattering angle (calculated inelastically) for this experiment.  There are two ways that you might fix this problem: (1) Define the experiment(s) so that the target particle is detected in the case of inverse kinematics, or (2) Set the state for calculation of the scattering kinematics to the ground state using the Gosia Controls button, option k."],["ERROR- MAXIMUM EXCITATION ENERGY IS","The excitation energy for this state exceeds the maximum for this Coulex experiment."],["ERROR-NO MATRIX ELEMENT BETWEEN STATES","You should add the matrix element(s) coupling these states."],["ERROR IN ROTATION","Please report this bug to A. Hayes (hayes@pas.rochester.edu)."],["TAPE READ ERROR","This could be caused by running the gosia operations in the improper order.  Consult the Rachel manual or use the Help button."],["TOO FAR FROM THE MINIMUM TO CARRY OUT THE ERROR ESTIMATION!","You should continue fitting to find a better minimum before running the error calculation."],["ERROR - No data found for this Z","Gosia cannot calculate internal conversion coefficients for this nucleus.  You will have to write the gosia input to a file and enter conversion data manually after removing the OP,BRIC section."]]
+    errors_list = [["ERROR-INSUFFICIENT SPACE FOR E-THETA INTEGR ATION","The level scheme you are calculating for may have too many levels and/or matrix elements, or you may have too many theta meshpoints, or interpolation subdivisions.  Can you eliminate some weakly populated bands, or some unimportant matrix elements?  Deleting one or more experiments may help as well.  If you do not want to change the calculation, select option \"i\" from the button \"Gosia controls\" and reduce the number of E-theta interpolation subdivisions for all experiments.  Usually, 20 energy subdivisions and 20 theta subdivisions is sufficient.  When you get a successful calculation with no errors, you can use the test \"ti\" under the button \"Tools\" to check that the reduced number of subdivisions has not caused an inaccuracy."],["ERROR-M.E. DOES NOT BELONG TO THE UPPER TRIANGLE","Rachel did not write the matrix in the proper order for gosia.  Please report this error to A. Hayes (hayes@pas.rochester.edu).  You can probably fix this by deleting all matrix elements and adding them again.  This is usually caused by importing a bad stored matrix file."],["ERROR-WRONG SEQUENCE OF MULTIPOLARITIES","This is probably caused by a bug in Rachel.  Please report this error to A. Hayes (hayes@pas.rochester.edu)."],["ERROR-REPEATED APPEARANCE OF THE STATE","This is probably a bug in Rachel.  Please report this error to A. Hayes (hayes@pas.rochester.edu)."],["ERROR - NUMBER OF ELEMENTS IN ZETA ARRAY EXCEEDS","This may be caused by a very large level scheme.  Can you delete some weakly populated bands?"],["ERROR-ISMAX EXCEEDS MAGMAX","You have requested too many magnetic substates for this calculation.  Reduce the number of substates under the Gosia controls button.  The sum of all magnetic substates for all levels must not exceed 1200."],["ERROR- MAXIMUM SCATTERING ANGLE IS","You have exceeded the maximum beam scattering angle (calculated inelastically) for this experiment.  There are several ways that you might fix this problem: (1) Define the experiment(s) so that the target particle is detected in the case of inverse kinematics, or (2) For a thick target, recalculate the stopping power and range using the Rochester SRIM server (button \"Stopping power\"), or (3) Set the state for calculation of the scattering kinematics to the ground state using the Gosia Controls button, option k."],["ERROR- MAXIMUM EXCITATION ENERGY IS","The excitation energy for this state exceeds the maximum for this Coulex experiment."],["ERROR-NO MATRIX ELEMENT BETWEEN STATES","You should add the matrix element(s) coupling these states."],["ERROR IN ROTATION","Please report this bug to A. Hayes (hayes@pas.rochester.edu)."],["TAPE READ ERROR","This could be caused by running the gosia operations in the improper order.  Consult the Rachel manual or use the Help button."],["TOO FAR FROM THE MINIMUM TO CARRY OUT THE ERROR ESTIMATION!","You should continue fitting to find a better minimum before running the error calculation."],["ERROR - No data found for this Z","Gosia cannot calculate internal conversion coefficients for this nucleus.  You will have to write the gosia input to a file and enter conversion data manually after removing the OP,BRIC section."]]
 
 
     overflow_detected = False
@@ -594,7 +594,7 @@ def check_for_gosia_error(gosia_output_lines):
              "NAN" in one_line) and not overflow_detected:
             print "There was an overflow on this line:"
             print one_line
-            block_print_with_line_breaks("Processing WILL NOT continue properly after this error.  Possible causes:\n  You may not have rewritten the gosia.yld yield data file after making some change to the level scheme, matrix or laboratory setup.  You can rewrite the gosia.yld file by clicking \"Write Gosia yld file,\" unless you are certain that this is not the cause.  This will overwrite it with all applicable yields stored in Rachel.\n  You may not have made the gosia.gdt Ge detector definition file after defining all detector types.  Recreating this file is harmless, and it can be done by selecting \"Make Ge det file\" and \"Run gosia input\" from the pull-down tabs at the bottom and cliking Go.\nYou may have set the normalization transition incorrectly.  This can be set with option \"t\" in the Gosia controls button menu.\nPlease read the full explanation above.\nFurther warnings of this type will be supressed.")
+            block_print_with_line_breaks("Processing WILL NOT continue properly after this error.  Possible causes:\n  You may not have rewritten the gosia.yld yield data file after making some change to the level scheme, matrix or laboratory setup.  You can rewrite the gosia.yld file by clicking \"Write Gosia yld file,\" unless you are certain that this is not the cause.  This will overwrite it with all applicable yields stored in Rachel.\n  You may not have made the gosia.gdt Ge detector definition file after defining all detector types.  Recreating this file is harmless, and it can be done by selecting \"Make Ge det file\" and \"Run gosia input\" from the pull-down tabs at the bottom and clicking Go.\nYou may have set the normalization transition incorrectly.  This can be set with option \"t\" in the Gosia controls button menu.\nPlease read the full explanation above.\nFurther warnings of this type will be supressed.")
             overflow_detected = True
 
     if overflow_detected:
@@ -1491,6 +1491,7 @@ class stopping_power_help:
         self.pointer.new_SRIM_data = None
     def set_error_text(self,a_dict):
         self.pointer.new_SRIM_data = a_dict
+        print "a_dict: ",a_dict
 
     def is_stopped(self,page_lines):
         """Returns True if the beam is stopped; otherwise False.
@@ -10058,27 +10059,33 @@ class gosia_shell:
 
         return 0
 
-    def set_gosia_kinematics_state(self):
+    def set_gosia_kinematics_state(self,silent=False,gosia_level_number=2):
         """Interactive. Sets the kinematics gosia state number in the gosia_shell object.
 
         """
 
-        band_number = prompt_number("Band NUMBER of new kinematics state: ","i")
-        if band_number == "quit":
-            return 0
-        spin        = prompt_number("Spin: ","r")
-        if spin == "quit":
-            return 0
-
-        primary_band_name = investigated_nucleus.get_primary_band_name_from_band_number(band_number)
-        level_key = (primary_band_name,spin)
-        gosia_level_number = investigated_nucleus.get_level_information(level_key,"internal_level_number") + 1
-        if not gosia_level_number == None:
+        if silent:
             self.gosia_kinematics_state = gosia_level_number
             return 0
+
         else:
-            print "State not found.  Cancelled."
-            return -1
+            
+            band_number = prompt_number("Band NUMBER of new kinematics state: ","i")
+            if band_number == "quit":
+                return 0
+            spin        = prompt_number("Spin: ","r")
+            if spin == "quit":
+                return 0
+
+            primary_band_name = investigated_nucleus.get_primary_band_name_from_band_number(band_number)
+            level_key = (primary_band_name,spin)
+            gosia_level_number = investigated_nucleus.get_level_information(level_key,"internal_level_number") + 1
+            if not gosia_level_number == None:
+                self.gosia_kinematics_state = gosia_level_number
+                return 0
+            else:
+                print "State not found.  Cancelled."
+                return -1
 
     def return_kinematics_state_data(self):
         """Returns a list of [band_name,spin,level_energy] of the kinematics state
@@ -10491,7 +10498,7 @@ class gosia_shell:
 
         return full_input_lines
 
-    def generate_cont_lines(self,extra_options = None,extra_controls = None):
+    def generate_cont_lines(self,extra_options = None,extra_controls = None,silent=False):
         """Generates the CONTrol block lines.
 
         Adds print options in extra_options, if any are requested.
@@ -10500,6 +10507,8 @@ class gosia_shell:
         Extra controls (other than printing) can be sent in a list similarly in
         extra_controls.
 
+        The maximum allowed Q-value (least upper bound) is calculated here to
+        change NCM to the ground state if necessary.
 
         """
 
@@ -10545,7 +10554,37 @@ class gosia_shell:
                     cont_lines.append(parameter_line)
             cont_lines.append("0,0.")
 
-        # Add the excited state for kinematics calculation, if it is set.
+        # Add the excited state for kinematics calculation, if it is set, or if
+        # it must be the ground state for one or more experiments, because the
+        # exit energy is too low for the Q-value of an excited state.
+        # 
+        # For a stopped (or nearly stopped) beam, the Q-value needs to be zero.
+        # This is equivalent to setting the NCM flag to 1.
+        # In general, need to set the Q-value low enough that it can be excited at the exit energy.
+        current_Q_value = the_gosia_shell.return_kinematics_state_data()[2]  # In KEV!
+        # Step through all experiments to get the minimum Q-value of all from each exit energy.
+        maximum_Q_values = []
+        for one_experiment in the_experiment_manager.allexperiments:
+            # Get the maximum Q-value for this experiment.
+            this_maximum_Q_value = one_experiment.get_maximum_possible_Q_value()
+            maximum_Q_values.append(this_maximum_Q_value)
+        the_maximum_Q_value = min(maximum_Q_values)  # The LOWEST maximum!
+            
+        # Arbitrary 100 keV maximum difference until full inelastic max Q-value calculation is ready.
+        if (the_maximum_Q_value - current_Q_value) < 100.0:    # keV
+            # We don't try to set any level number other than the ground state.
+            # The user must make an intelligent choice if she doesn't want the
+            # ground state set here.
+            the_gosia_shell.set_gosia_kinematics_state(silent=True,gosia_level_number=1)
+            if not silent:
+                print "  The maximum possible excitation energy (Q-value) for all experiments is ",the_maximum_Q_value, "keV."
+                print "    This is defined by the beam energy and the energy loss in the target."
+                print "    The energy of the final state chosen for kinematics calculations"
+                print "    is too high."
+                print "    The scattering kinematics state has been reset to the ground state."
+                print "    You can change this using the \"Gosia controls\" button.  "
+                print "    Be sure to choose a state with an excitation energy <=",the_maximum_Q_value, "."
+
         if not self.gosia_kinematics_state == None:
             kinematics_state_line = "NCM," + str(self.gosia_kinematics_state) + "."
             cont_lines.append(kinematics_state_line)
@@ -18810,6 +18849,20 @@ class experiment:
             self.parameter_dict["phi_2"] = 360
             self.experimentiscomplete = True
 
+    def get_maximum_possible_Q_value(self):
+        """Returns the physical limit to the Q-value for this experiment
+
+        based on the exit energy from the target (beam energy - stopping loss)
+
+        The maximum Q value is returned in keV
+
+        """
+
+        this_exit_energy_MeV = self.parameter_dict["E_exit"]
+        projectile_mass = self.A_projectile()
+        target_mass = float(self.A_target())
+        maximum_possible_Q_value = maximum_excitation_energy(projectile_mass,target_mass,this_exit_energy_MeV)
+        return maximum_possible_Q_value 
 
     def get_new_SRIM_data(self):
         return self.new_SRIM_data
@@ -19677,15 +19730,11 @@ class experiment:
 
         # Issue a warning to use SRIM for stopped beams.  We do not iterate to solve for the range here!
         if exit_energy < (0.5 * initial_beam_energy):  # MeV
-            print "\nNOTE: The stopping power calculation shows that the energy loss is large, or the beam is stopped.  You should call the Rochester SRIM server to get more accurate stopping power and exit-energy data.  The server will also set the target thickness to the effective range, if the beam is truly stopped.  The accuracy of the range will not affect fitting or simulated counts, but will affect the quoted absolute cross sections.\nTHE RANGE ACTUAL HAS NOT BEEN CALCULATED BY ELAST."
+            print "\nNOTE: The stopping power calculation shows that the energy loss is large, or the beam is stopped.  \nTHE ACTUAL RANGE HAS NOT BEEN CALCULATED BY ELAST.  \nYou should call the Rochester SRIM server to get more accurate stopping power and exit-energy data.  The server will also set the target thickness to the effective range, if the beam is truly stopped.  The accuracy of the range will not affect fitting or simulated counts, but will affect the quoted absolute cross sections."
             raw_input("Read the warning above, and press enter. ")
 
-        # If the beam energy is too low to excite the highest excited state,
-        # raise it to the required minimum energy.
-        highest_excitation_energy_keV = investigated_nucleus.maximum_level_energy()
-        minimum_beam_energy_MeV       = minimum_beam_energy(projectile_mass,target_mass,highest_excitation_energy_keV)
-        if exit_energy <= minimum_beam_energy_MeV:
-            exit_energy = minimum_beam_energy_MeV * 1.01  # 1% higher
+        # The check of maximum Q-value and setting of NCM is now done in
+        # the_gosia_shell.generate_cont_lines() every time Gosia is called.
         
         self.parameter_dict["E_exit"] = exit_energy  # Save the exit energy from the target
 
@@ -19981,7 +20030,11 @@ class experiment:
             raw_input("\nRead the warning above, and press enter. ")
 
             self.parameter_dict["target_thickness"] = copy.deepcopy(all_stopping_power_data["calculated_range"])
-            new_exit_energy = 0.0 # This will be raised slightly below, so that it is high enough to excite all levels.
+            energy_of_highest_state = investigated_nucleus.maximum_level_energy()
+            lowest_allowed_beam_energy = minimum_beam_energy(beam_mass,target_mass,energy_of_highest_state)
+            new_exit_energy = lowest_allowed_beam_energy * 1.01 # slightly higher to avoid rounding problems.
+            # The choice of whether to change the range to correspond to this energy is not clear.
+            # For now, we will leave it at the original range, which should be very close.
 
         # Set the new exit energy for this experiment.
         elif exit_energy_is_known:
@@ -19992,16 +20045,7 @@ class experiment:
             new_exit_energy = copy.deepcopy(all_stopping_power_data["calculated_exit_energy"])
             found_stopped_beam = False
 
-        # July 2012: Gosia cannot handle integration to 0 beam energy, because
-        # no states can be excited.  Calculate the beam energy required to
-        # excite the highest-energy state, and use that, if the exit energy is
-        # too low, or the beam is truly stopped.
-        highest_excitation_energy_keV = investigated_nucleus.maximum_level_energy()
-        minimum_beam_energy_MeV       = minimum_beam_energy(beam_mass,target_mass,highest_excitation_energy_keV)
-
-        if new_exit_energy <= minimum_beam_energy_MeV:
-            new_exit_energy = minimum_beam_energy_MeV * 1.01  # 1% higher 
-
+        # The gosia shell will set the NCM flag properly for stopped beams, so we don't change it from 0 here.
         self.parameter_dict["E_exit"] = new_exit_energy 
 
         # Now save the new stopping power data to this experiment.
@@ -25290,7 +25334,7 @@ class main_gui:
 #######################################################################
 
 def minimum_beam_energy(beam_mass,target_mass,excitation_energy):
-    """Calculates the maximum excitation energy that can be reached
+    """Calculates the minimum beam energy that can populate a state, given the energy of the state.
 
     by inverting the formula for maximum excitation energy used in Gosia:
         ared = 1.0 + a1/a2 
@@ -25302,6 +25346,7 @@ def minimum_beam_energy(beam_mass,target_mass,excitation_energy):
     EP = ared * emax 
 
     Pass the excitation energy in keV.
+    Returns a beam energy in MeV.
 
     """
 
@@ -25323,6 +25368,8 @@ def maximum_excitation_energy(beam_mass,target_mass,beam_energy):
 
     where a1, a2 and EP(lexp) are the beam mass, target mass and the beam
     energy for experiment number lexp, respectively.
+    Pass the beam energy in MeV.
+    Returns the excitation energy in keV.
 
     """
 
