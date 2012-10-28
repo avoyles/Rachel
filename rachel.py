@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.6
+#!/usr/bin/env python
 
 VERSION = "1.2.1"
 RECOVERY_MODE = False
@@ -13968,6 +13968,11 @@ class experimentmanager:
                     # I_kin is ignored in OP,INTI, so set it arbitrarily to 0.
                     parameter_dict["I_kin"] = 0
 
+                    # This value of I_kin must be set to correspond to the fwd
+                    # or bkwd c.o.m. scattering solution for the mean target
+                    # recoil angle if this is inverse kinematics.  This is done after calls to
+                    # def mean_scattering_angle(), e.g. in generate_expt().
+
                 block_print_with_line_breaks("Is this experiment (data partition) for particle scattering in an azimuthally symmetric sector (or a full annulus) ?  (Answer \"n\" if this is a rectilinear particle detector or data partition--the only other option at present.) ",60)
                 annular = yes_no_prompt("Sector (or annulus) [Y/n]? ",True)
                 if annular:
@@ -14086,7 +14091,7 @@ class experimentmanager:
                 self.reset_optimum_angular_meshpoints(False,internal_experiment_number)  # the number of meshpoints, not their values
                 number_of_theta_meshpoints = self.allexperiments[internal_experiment_number].get_parameter("number_of_theta_meshpoints")
                 theta_lab_min,theta_lab_max,theta_meshpoints,NFI_list = self.make_NFI_list(phi_theta_points,number_of_theta_meshpoints)
-                # Set accurate min, max theta values
+                # Set accurate min, max theta values.  These represent the detected particle.
                 theta_lab_mean = (theta_lab_min + theta_lab_max) / 2.
                 self.allexperiments[internal_experiment_number].set_parameter("theta_lab_min",theta_lab_min)
                 self.allexperiments[internal_experiment_number].set_parameter("theta_lab_max",theta_lab_max)
@@ -14796,8 +14801,6 @@ class experimentmanager:
         expt_lines.append(line)
 
         for experiment_number in range(number_of_experiments):
-            Z_1 = self.allexperiments[experiment_number].get_parameter("Z_1")
-            A_1 = self.allexperiments[experiment_number].get_parameter("A_1")
             Z_n = self.allexperiments[experiment_number].get_parameter("Z_n")
             A_n = self.allexperiments[experiment_number].get_parameter("A_n")
             E_mean = self.allexperiments[experiment_number].get_parameter("E_mean")
@@ -14806,18 +14809,62 @@ class experimentmanager:
             I_ax = self.allexperiments[experiment_number].get_parameter("I_ax")
             phi_1 = self.allexperiments[experiment_number].get_parameter("phi_1")
             phi_2 = self.allexperiments[experiment_number].get_parameter("phi_2")
-            I_kin = self.allexperiments[experiment_number].get_parameter("I_kin")
+            # I_kin is now handled below.
             LN = self.allexperiments[experiment_number].get_parameter("LN")
             excited_target = self.allexperiments[experiment_number].get_parameter("excited_target")
             detected_particle = self.allexperiments[experiment_number].get_parameter("detected_particle")
+            is_inverse = self.allexperiments[experiment_number].is_inverse_kinematics()
 
             # Get the mean projectile scattering angle.  Apply the correct sign
             # flag to the mean polar angle: + for projectile detection; - for
             # target recoil detection
             theta_lab_mean = self.allexperiments[experiment_number].mean_scattering_angle()
             if detected_particle == "t":
-                # Note the negative flag applied here:
+                if is_inverse:
+                    # If this is an inverse kinematics experiment, we
+                    # need to pick the I_kin value corresponding to the mean target
+                    # recoil angle.
+                    Q_value = the_gosia_shell.return_kinematics_state_data()[2] / 1000. # Convert to MeV
+                    # Get the critical angle between the two solutions.
+                    if excited_target:
+                        # Particle n is the target particle, because this is target detection.
+                        A_proj = A_n
+                        A_targ = A_1
+                    else:
+                        A_proj = A_1
+                        A_targ = A_n
+
+                    theta_lab_crit = inelastic_maximum_scattering_angle(A_proj,A_targ,E_mean,Q_value)
+
+                    # From this, get the corresponding target angle.  Close to
+                    # the critical angle, we can choose arbitrarily one solution
+                    # or the other (False, in this case).
+                    theta_recoil_crit = inelastic_lab_scattering_angle_to_lab_recoil_angle(A_proj,A_targ,theta_lab_crit,False,E_mean,Q_value)
+
+                    # Get the mean TARGET angle.
+                    theta_targ_max = self.allexperiments[experiment_number].get_parameter("theta_lab_max")
+                    theta_targ_min = self.allexperiments[experiment_number].get_parameter("theta_lab_min")
+                    theta_targ_mean = (theta_targ_max + theta_targ_min) / 2.
+                    # If the mean target angle is greater than the critical
+                    # TARGET recoil angle, then it is the forward c.o.m.
+                    # PROJECTILE solution.
+                    if theta_targ_mean >= theta_recoil_crit:
+                        # Forward solution.
+                        I_kin = 1
+                    else:
+                        # Backward solution.
+                        I_kin = 0
+
+                else:
+                    # Simple case of normal kinematics.  I_kin is ignored.
+                    I_kin = 0
+
+                # Note the negative flag applied here as a flag to gosia for target detection.
                 theta_lab_mean = -theta_lab_mean
+
+            else:
+                # Just look up the one the user chose in defining the experiment.
+                I_kin = self.allexperiments[experiment_number].get_parameter("I_kin")
                 
             # Decide on appropriate +/- sign flag for the Zn entry.  If the beam
             # is excited, then it gets a negative-sign flag; otherwise positive.
@@ -20118,11 +20165,13 @@ class experiment:
         return self.parameter_dict[parameter_name]
 
 
-    def mean_scattering_angle(self):
+    def mean_scattering_angle(self,return_com_solution=False):
         """Returns the mean scattering angle.
 
         This returns the mean scattering (projectile) angle in the lab frame
         correctly, whether the projectile or target was detected.
+
+        If return_com_solution is True, then return also "forward" or "backward".
 
         """
         excited_target = self.get_parameter("excited_target")
@@ -20137,7 +20186,9 @@ class experiment:
             A_proj = A_1
             A_targ = A_n
 
-        # For target detection and inelastic kinematics, we should carefully consider both solutions to get a sensible mean projectile angle for EXPT.
+        # For target detection and inverse kinematics, we should carefully
+        # consider both solutions to get a sensible mean projectile angle for
+        # EXPT.
         inverse = self.is_inverse_kinematics()
 
         # Get the beam energy and Q-value
@@ -20147,8 +20198,7 @@ class experiment:
 
         detected_particle = self.get_parameter("detected_particle")
         if detected_particle == "t":
-            theta_lab_max_recoil = self.get_parameter("theta_lab_max")
-            theta_lab_min_recoil = self.get_parameter("theta_lab_min")
+            theta_lab_mean_recoil = self.get_parameter("theta_lab_mean")
 
             # In this case, the forward c.o.m. solution for the TARGET angle is
             # for the low-exit-energy solution that exists for normal or
@@ -20156,45 +20206,8 @@ class experiment:
             # False indicates the backward com solution for the given TARGET
             # angle.
 
-            theta_lab_projectile_1 = inelastic_lab_recoil_angle_to_lab_scattering_angle(A_proj,A_targ,theta_lab_max_recoil,False,E_mean,Q_value)
-            theta_lab_projectile_2 = inelastic_lab_recoil_angle_to_lab_scattering_angle(A_proj,A_targ,theta_lab_min_recoil,False,E_mean,Q_value)
+            theta_lab_projectile_mean = inelastic_lab_recoil_angle_to_lab_scattering_angle(A_proj,A_targ,theta_lab_mean_recoil,False,E_mean,Q_value)
 
-            # If this is an inverse-kinematics case with target detection, then
-            # we should see if the range spans the two solutions in the usual
-            # projectile angle sense.
-
-            if inverse:
-                # Get the maximum projectile scattering angle.
-                theta_scat_crit = inelastic_maximum_scattering_angle(A_proj,A_targ,E_mean,Q_value)
-
-                # Translate this to the corresponding lab-frame target angle.
-                # The forward/backward com solution is irrelevant at the
-                # critical angle.
-
-                # Subract epsilon from this critical angle, or rounding errors
-                # cause domain exceptions in the kinematics functions.
-                theta_scat_crit = theta_scat_crit * 0.99999
-
-                theta_targ_crit = inelastic_lab_scattering_angle_to_lab_recoil_angle(A_proj,A_targ,theta_scat_crit,False,E_mean,Q_value)
-
-                # If the target lab angle range spans the critical angle, then
-                # we should use the mean of the minimum projectile angle and
-                # the maximum physical scattering angle for inverse kinematics
-                # as the mean angle in EXPT.
-
-                if theta_lab_max_recoil > theta_targ_crit and theta_lab_min_recoil < theta_targ_crit:
-                    minimum_projectile_lab_angle_for_mean = min(theta_lab_projectile_1,theta_lab_projectile_2)
-                    theta_lab_projectile_mean = (theta_scat_crit + minimum_projectile_lab_angle_for_mean) / 2.
-
-                # Otherwise, just use the mean of the scattering range, since
-                # only one solution is detected.
-
-                else:
-                    theta_lab_projectile_mean = (theta_lab_projectile_1 + theta_lab_projectile_2) / 2.
-
-            else:
-                # This is simple for normal kinematics, where there is only one solution to consider.
-                theta_lab_projectile_mean = (theta_lab_projectile_1 + theta_lab_projectile_2) / 2.
         else:
             # This is the simpler case, where the user entered projectile
             # scattering angles: just get the mean scattering angle.
