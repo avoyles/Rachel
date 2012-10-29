@@ -1222,17 +1222,21 @@ def better_gnu_plot_launch(plot_data_file_name,calculated_legend,x_label,y_label
 
 
 
-def welcome():
+def welcome(hide=False):
     """Display splash screen for the user.
 
     Displays primary credits in a jpg format.
 
-    This is not implemented properly to allow simultaneous loading at present.  
-
     """
 
+    global splash
+
+    if hide:
+        splash.hide()
+        return
+        
     # Create a window called splash.
-    splash = gtk.Window() 
+    splash = gtk.Window(gtk.WINDOW_TOPLEVEL) 
     splash.set_decorated(False)
     splash.set_position(gtk.WIN_POS_CENTER)
 
@@ -1244,23 +1248,14 @@ def welcome():
     logo = gtk.Image()
     the_logo_file = GLOBAL_SETUP_DICT["RACHEL_DIRECTORY"] + "/necessary_files/rachel-logo.jpg"
     logo.set_from_file(the_logo_file)
-    logo.show()
     hbox.add(logo)
+    logo.show()
 
 
     # Display the window
     splash.show()
     # ensure it is rendered immediately
 
-    # Ensure that freezing and unfreezing of control panel happens promptly for
-    # long subprocesses.
-    while gtk.events_pending():
-        gtk.main_iteration()
-
-
-    # Hide the window after 5 seconds.  May want to destroy it instead.  What happens to hidden windows?
-#    gobject.timeout_add(5000, splash.hide)
-    splash.hide()
 
 class DrawingAreaExample:
     """Copied from http://www.pygtk.org/pygtk2tutorial/examples/drawingarea.py
@@ -24629,6 +24624,7 @@ class main_gui:
         # ~>self.user_stack[0].selected
         # True
         # ~>
+
         self.user_stack = []
 
         # The undo stack does not currently function properly in when
@@ -25317,6 +25313,14 @@ class main_gui:
 
         # Show the window.
         window.show()
+
+        #if not nosplash:
+        if True:
+            welcome()   # run the splash screen.  
+            while gtk.events_pending():
+                gtk.main_iteration()
+            time.sleep(5)
+            welcome(hide=True)
 
         # Check to see if the GUI is in recovery mode.  If so, set active buttons as appropriate.
         if RECOVERY_MODE:
@@ -27862,10 +27866,6 @@ if __name__ == "__main__":
         #print "Click \"Update LS window\" before resuming."
     else:
         setup_globals("new")
-
-    if not nosplash:
-        welcome()   # run the splash screen.  
-        time.sleep(6)
 
     if debugging_mode:
         # Set the global flag for debugging mode.
