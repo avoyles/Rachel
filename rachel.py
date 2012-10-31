@@ -300,16 +300,16 @@ LEVELSCHEMEFIGURE = 1
 LSFIGSIZE = (10,8)          # default size in inches for the level scheme figure
 
 # Graphics parameters for new gtk graphics.
-#DEFAULT_WINDOW_Y_SIZE = 300
-#DEFAULT_WINDOW_X_SIZE = 400
-#X_FRACTIONAL_PADDING = 0.00  # The gtk window size will be set this fraction larger to accomodate objects that spill off screen and cause errors.
-#Y_FRACTIONAL_PADDING = 0.00
-#LEVELWIDTH = 25   # pixels
-#LEVELCOLOR = 'k'  # color of levels
-#RMEARROWCOLOR = 'r' # color of individual reduced matrix element arrows
-#MASTERMECOLOR = 'g' # color of master matrix elements
-#FIXEDMECOLOR = 'k' # color of master matrix elements
-#INTRINSICARROWCOLOR = 'b' # color of intrinsic m.e. arrows (band-->band)
+DEFAULT_WINDOW_Y_SIZE = 300
+DEFAULT_WINDOW_X_SIZE = 400
+X_FRACTIONAL_PADDING = 0.00  # The gtk window size will be set this fraction larger to accomodate objects that spill off screen and cause errors.
+Y_FRACTIONAL_PADDING = 0.00
+LEVELWIDTH = 25   # pixels
+LEVELCOLOR = 'k'  # color of levels
+RMEARROWCOLOR = 'r' # color of individual reduced matrix element arrows
+MASTERMECOLOR = 'g' # color of master matrix elements
+FIXEDMECOLOR = 'k' # color of master matrix elements
+INTRINSICARROWCOLOR = 'b' # color of intrinsic m.e. arrows (band-->band)
 
 # Math constants
 M1CONSTANT = math.sqrt(3./(4.*math.pi))  # factor in M1 matrix elements
