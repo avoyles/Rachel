@@ -754,13 +754,6 @@ def get_system_time_stamp():
 
     """
 
-#    command_line = "date > rachel_temp_date_stamp_file"
-#    subprocess.call(command_line,shell=True)
-#    with open('rachel_temp_date_stamp_file','r') as date_file:
-#        time_stamp = date_file.readline()
-#    command_line = 'rm rachel_temp_date_stamp_file'
-#    subprocess.call(command_line,shell=True)
-
     time_stamp = time.ctime()
 
     return time_stamp
@@ -796,10 +789,6 @@ def quick_plot_n_sets(dict_of_lists):
             temporary_lines_to_write.append(this_text_line)
         lines_to_write.extend(temporary_lines_to_write)
         lines_to_write.append("\n\n")  # two blank lines to separate sets
-        # Add a dummy entry for the experimental data:
-        #lines_to_write.append("1.0 ? ? \n")
-        #lines_to_write.append("\n\n")  # two blank lines to separate sets
-
 
     with open(plot_data_file_name,"w") as plot_data_file: 
         plot_data_file.writelines(lines_to_write)
@@ -1004,8 +993,8 @@ def gnuplot_draw(plot_data_file_name,calculated_legend,x_label,y_label,title_str
     plot_command = "plot "
     for n in range(len(calculated_legend)):
         # If this is not the first iteration, then a comma is needed after the last command in the plot list
-#        if not n == 0 and should_plot_experimental_data:
-#            plot_command = plot_command + ", "
+        # if not n == 0 and should_plot_experimental_data:
+        # plot_command = plot_command + ", "
         this_legend_title    = calculated_legend[n]
         this_set_index = n
         if withpoints:
@@ -1067,7 +1056,7 @@ def better_gnu_plot_launch(plot_data_file_name,calculated_legend,x_label,y_label
     print "Errors may occur for more than 10 sets!"
     # Define line and point styles for the plot
     # Set zero to 10**(-20).  August 7, 2010.
-    #gnu_commands = ["set zero 1e-20\n","set xrange[0:]\n","set style line 1 lt 1 pt 2 lw 1 \n",\
+    # gnu_commands = ["set zero 1e-20\n","set xrange[0:]\n","set style line 1 lt 1 pt 2 lw 1 \n",\
     # Not setting xrange now, because skipping sets is working properly (no dummy points plotted).
     if withpoints:
         gnu_commands = ["set zero 1e-20\n","set style line 1 lt 1 pt 2 lw 1 \n",\
@@ -1160,7 +1149,7 @@ def better_gnu_plot_launch(plot_data_file_name,calculated_legend,x_label,y_label
               + ":" + str(2*n + 1) + " usi 1:2:3 title \"" + this_legend_title \
               + "\" with yerrorbars linestyle " + str(11 + n)
             if not n == (len(calculated_legend) - 1):
-                # more to follow.  Put on a comma and line continuation "\"
+                # More to follow.  Put on a comma and line continuation. "\"
                 plot_command = plot_command + " \\\n"
 
     plot_command = plot_command + "\n" + "   \n"
@@ -1176,7 +1165,6 @@ def better_gnu_plot_launch(plot_data_file_name,calculated_legend,x_label,y_label
     gnu_commands.append(plot_command)
 
     with open("gnuplot_commands.rachel","w") as gnuplot_command_file:
-        #gnuplot_command_file.write("plot \"testing.txt\" with yerrorbars\n")
         gnuplot_command_file.writelines(gnu_commands)
     command_line = "gnuplot gnuplot_commands.rachel -"
     gnuplot_subprocess = subprocess.call(command_line,shell=True) # Must run this way, or the gnuplot window disappears (with os.popen)
@@ -1205,17 +1193,15 @@ def welcome(hide=False):
     hbox.show()
     splash.add(hbox)
 
-    # Load image
+    # Load image.
     logo = gtk.Image()
     the_logo_file = GLOBAL_SETUP_DICT["RACHEL_DIRECTORY"] + "/necessary_files/rachel-logo.jpg"
     logo.set_from_file(the_logo_file)
     hbox.add(logo)
     logo.show()
 
-
-    # Display the window
+    # Display the window.
     splash.show()
-    # ensure it is rendered immediately
 
 
 class stopping_power_help:
@@ -1542,8 +1528,6 @@ class notes:
 
     def print_log(self,log_name):
         try:
-            #for one_line in self.all_logs[log_name]:
-                # block_print_with_line_breaks(one_line,line_length=60,silent=False,paragraphs=False)
             log_copy = copy.deepcopy(self.all_logs[log_name])
             log_copy.append("End of log \"" + log_name + "\"")
             arguments_dict = {"text_lines":log_copy,"title":"Log: " + log_name}
@@ -1570,8 +1554,6 @@ class notes:
         self.all_logs[log_name].append(entry)
 
         return None
-
-
 
 
 class popup_tips:
@@ -1622,7 +1604,6 @@ class popup_tips:
             # does not default to have a handle to grab and move it, and it
             # cannot be reset to the top after clicking another window (won't
             # take focus).
-            #self.window = gtk.Window(gtk.WINDOW_POPUP)
 
             self.window.set_default_size(600,500)
             self.window.set_resizable(True)  
@@ -2794,6 +2775,7 @@ class nucleus:
             # Examples of syntactically correct error codes are below.
             #total_errors += 1
             #return_text.extend(textwrap.wrap("ipsum lorem blah blah blah",TEXTVIEW_COLUMNS))
+
         elif restored_version <= "1.2.0":
             # Upgrades for any version 1.1.5 or older.
             try:
@@ -3150,7 +3132,6 @@ class nucleus:
         # members of the bands that need pseudonyms.  This will create more
         # than necessary, but it should not cause problems.
         if not pseudonym_dict == {}:
-            #block_print_with_line_breaks("\nThis matrix file is from a pre-release version and contains a beta-version pseudonym dictionary for band names.  The level scheme is being updated with pseudonyms for levels.  This should not cause any problems, but check that you get the same results with this version of the Rachel.  If there are problems, you will have to start from the beginning by reading your original level scheme file(s) and building the matrix by hand.",60)
             # Add a pseudonym for every level in the bands that had pseudonyms in this matrix file.
             for level_key in self.levels.keys():
                 band_name, spin = level_key
@@ -5670,7 +5651,6 @@ class nucleus:
 
             spinparity = levelspin+levelparity # concatenate the spin-parity for the text label
             self.plotalevel(levelenergy,levelband,spinparity,level_color) # use band number as position 
-#        pylab.draw()
         pylab.ion()
         
     def drawanarrow(self,x1,y1,x2,y2,arrowlabel="",requestedcolor=LEVELCOLOR):
@@ -5757,8 +5737,8 @@ class nucleus:
 
         """
 
-        # Draw the level scheme in the window
-        # plotalllevels needs a list of energies and a list of levels
+        # Draw the level scheme in the window.
+        # plotalllevels needs a list of energies and a list of levels.
         completelist = [] # list of level data for plotalllevels()
 
         # Step through the bands in the order in which they are to be
@@ -5860,8 +5840,9 @@ class nucleus:
                 else:                      # M1
                     y = 0.90 * highlim
                 self.addtxtlabel(x1-LEVELWIDTH/2.,y,textlabel)  # start at left edge of band
-            else:     # Interband.  Draw arrow below the digram and put label on it.
-                      # initial band, final band, y position, no text label
+            else:     
+                # Interband.  Draw arrow below the digram and put label on it:
+                # initial band, final band, y position, no text label
                 self.drawinterbandarrow(x1,x2,currentyposition,'')
                 self.addtxtlabel((x1+x2)/2.,currentyposition,textlabel)
                 currentyposition = currentyposition + majorarrowspacing
@@ -5879,7 +5860,6 @@ class nucleus:
         adequate updating.
         """
         self.drawanarrow(initialband,yposition,finalband,yposition,text,INTRINSICARROWCOLOR)
-#       pylab.draw()
 
 
     def drawonetransition(self,initial_band_name,final_band_name,initial_spin,final_spin,color='k',label="",interactive=True):
@@ -5889,12 +5869,6 @@ class nucleus:
 
         """
 
-        # Faster without the ion controls.
-        # Testing for compatibility with all calls to this method.
-#        if not interactive:
-#            pylab.ioff()
-#        else:
-#            pylab.ion()
         # Turn off interactive updating for higher drawing speed
         initial_level_key = (initial_band_name,initial_spin)
         final_level_key   = (final_band_name,final_spin)
@@ -5903,16 +5877,6 @@ class nucleus:
         initial_band_number = self.get_band_number_for_display(initial_band_name)
         final_band_number   = self.get_band_number_for_display(final_band_name)
         self.drawanarrow(initial_band_number,initial_energy,final_band_number,final_energy,label,color) 
-
-        # Faster without the draw and ion.
-        # Testing for compatibility with all calls to this method.
-#        pylab.draw()
-#        pylab.ion()
-
-#        if interactive:
-#            # Return to non-interactive state.
-#            pylab.ioff()
-
 
         return 0
 
@@ -6240,8 +6204,6 @@ class nucleus:
         preceded with a "#".
 
         """
-
-        # Rewriting August 2011.
 
         # Get the existing band names, so that the names of duplicate bands can
         # be modified.
@@ -6874,17 +6836,6 @@ class nucleus:
         else:
             even_and_odd_parity_states = False
 
-
-#        replace_or_add = raw_input("Do you want to [r]eplace or [s]kip matrix elements that are already defined [r/S]? ")
-#
-#        try:
-#            if replace_or_add[0].lower() == "r":
-#                replace = True
-#            else:
-#                replace = False
-#        except:
-#            replace = False
-
         quadrupole_moment = prompt_number("Enter an intrinsic quadrupole moment (sqrt(5/(16pi))eQo) for all in-band transitions [eb]: ","f")
         if quadrupole_moment == "quit":
             return 0
@@ -6967,9 +6918,6 @@ class nucleus:
                         print "Adding E3 matrix elements from band " + str(initial_band_number) + " to band " + str(final_band_number)
                         self.add_alaga("e3",initial_band_number,final_band_number,None,None,e3_parameter_dict)
                         
-        # Make sure that the matrix elements all belong to the upper triangle.
-        #self.put_matrix_elements_in_gosia_direction()
-
         return 0
 
 
@@ -7104,8 +7052,6 @@ class nucleus:
         # July 2011: Instead of checking the K value of the band, we will check
         # the K value of each level, so that different K values can be assigned
         # to each state.
-        # Get K of the selected band.
-        #K = self.bandk[bandnumber]
 
         # Get the spin limits between which the user wants to add matrix elements
         low_spin_limit = parameter_dict["low_spin_limit"]
