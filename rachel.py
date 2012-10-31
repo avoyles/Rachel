@@ -299,18 +299,6 @@ SPINLABELFONTSIZE = 8
 LEVELSCHEMEFIGURE = 1
 LSFIGSIZE = (10,8)          # default size in inches for the level scheme figure
 
-# Graphics parameters for new gtk graphics.
-#DEFAULT_WINDOW_Y_SIZE = 300
-#DEFAULT_WINDOW_X_SIZE = 400
-#X_FRACTIONAL_PADDING = 0.00  # The gtk window size will be set this fraction larger to accomodate objects that spill off screen and cause errors.
-#Y_FRACTIONAL_PADDING = 0.00
-#LEVELWIDTH = 25   # pixels
-#LEVELCOLOR = 'k'  # color of levels
-#RMEARROWCOLOR = 'r' # color of individual reduced matrix element arrows
-#MASTERMECOLOR = 'g' # color of master matrix elements
-#FIXEDMECOLOR = 'k' # color of master matrix elements
-#INTRINSICARROWCOLOR = 'b' # color of intrinsic m.e. arrows (band-->band)
-
 # Math constants
 M1CONSTANT = math.sqrt(3./(4.*math.pi))  # factor in M1 matrix elements
 RUTHERFORD_CONSTANT = 1.29596  # Constant for the differential cross section formulas in mb,MeV.
@@ -443,56 +431,6 @@ def top_level_testing():
     investigated_nucleus.draw_interband_details(1,5,"E2")
 
 
-
-
-#    command_line = "ls -lh | grep amp"
-#    subprocess.call(command_line,shell=True)
-
-#    # Produce an error--test
-#    print lsdkfj
-#        
-#    investigated_nucleus.notes.print_log("procedure_log")
-#    if yes_no_prompt("Edit user log? ",False) == True:
-#        investigated_nucleus.notes.edit_log("user_notes")
-#    return "tlt done."
-#
-#    try:
-#        investigated_nucleus.notes
-#        print "Notes object already exists."
-#    except:
-#        investigated_nucleus.notes = notes()
-#        print "Notes object added to nucleus object."
-#        
-#
-#    the_experiment_manager.examine_data_interactive()
-    
-#    ep = {"a0":-1077.3, "a1":724.582, "a2":-172.58, "a3":17.7101, "a4":-0.668257}
-#    while True:
-#        try:
-#            ekeV = float(raw_input("ekeV: "))
-#            #print the_detector_manager.alldetectors[0].miniball_efficiency(ekeV,ep)
-#            print the_detector_manager.alldetectors[0].absolute_efficiency(ekeV)
-#        except:
-#            print "error or finished."
-#            break
-#
-#    the_detector_manager.change_efficiency_parameters()
-#
-#    investigated_nucleus.display_coupling_information()
-#    investigated_nucleus.initial_band_name_for_normalization = "hello"
-#    investigated_nucleus.initial_spin_for_normalization = 2.0
-#    investigated_nucleus.final_band_name_for_normalization = "hello"
-#    investigated_nucleus.final_spin_for_normalization = 0.0
-
-#    the_experiment_manager.get_overall_normalization_for_experimental_yields(0)
-#    the_experiment_manager.properly_weighted_chi_squared_report()
-
-#    the_experiment_manager.allexperiments[0].get_stopping_power_data_from_rochester_server()
-#    return_list = the_gosia_shell.generate("Deorientation coeff.","View gosia input")
-#    for line in return_list:
-#        print line
-#    the_experiment_manager.parse_deorientation_coefficients()
-
 def largest_float_on_this_machine():
     """Returns approximately the largest machine-size number on this machine.
 
@@ -578,8 +516,21 @@ def check_for_gosia_error(gosia_output_lines):
 
     """
 
-    errors_list = [["ERROR-INSUFFICIENT SPACE FOR E-THETA INTEGR ATION","The level scheme you are calculating for may have too many levels and/or matrix elements, or you may have too many theta meshpoints, or interpolation subdivisions.  Can you eliminate some weakly populated bands, or some unimportant matrix elements?  Deleting one or more experiments may help as well.  If you do not want to change the calculation, select option \"i\" from the button \"Gosia controls\" and reduce the number of E-theta interpolation subdivisions for all experiments.  Usually, 20 energy subdivisions and 20 theta subdivisions is sufficient.  When you get a successful calculation with no errors, you can use the test \"ti\" under the button \"Tools\" to check that the reduced number of subdivisions has not caused an inaccuracy."],["ERROR-M.E. DOES NOT BELONG TO THE UPPER TRIANGLE","Rachel did not write the matrix in the proper order for gosia.  Please report this error to A. Hayes (hayes@pas.rochester.edu).  You can probably fix this by deleting all matrix elements and adding them again.  This is usually caused by importing a bad stored matrix file."],["ERROR-WRONG SEQUENCE OF MULTIPOLARITIES","This is probably caused by a bug in Rachel.  Please report this error to A. Hayes (hayes@pas.rochester.edu)."],["ERROR-REPEATED APPEARANCE OF THE STATE","This is probably a bug in Rachel.  Please report this error to A. Hayes (hayes@pas.rochester.edu)."],["ERROR - NUMBER OF ELEMENTS IN ZETA ARRAY EXCEEDS","This may be caused by a very large level scheme.  Can you delete some weakly populated bands?"],["ERROR-ISMAX EXCEEDS MAGMAX","You have requested too many magnetic substates for this calculation.  Reduce the number of substates under the Gosia controls button.  The sum of all magnetic substates for all levels must not exceed 1200."],["ERROR- MAXIMUM SCATTERING ANGLE IS","You have exceeded the maximum beam scattering angle (calculated inelastically) for this experiment.  There are several ways that you might fix this problem: (1) Define the experiment(s) so that the target particle is detected in the case of inverse kinematics, or (2) For a thick target, recalculate the stopping power and range using the Rochester SRIM server (button \"Stopping power\"), or (3) Set the state for calculation of the scattering kinematics to the ground state using the Gosia Controls button, option k."],["ERROR- MAXIMUM EXCITATION ENERGY IS","The excitation energy for this state exceeds the maximum for this Coulex experiment."],["ERROR-NO MATRIX ELEMENT BETWEEN STATES","You should add the matrix element(s) coupling these states."],["ERROR IN ROTATION","Please report this bug to A. Hayes (hayes@pas.rochester.edu)."],["TAPE READ ERROR","This could be caused by running the gosia operations in the improper order.  Consult the Rachel manual or use the Help button."],["TOO FAR FROM THE MINIMUM TO CARRY OUT THE ERROR ESTIMATION!","You should continue fitting to find a better minimum before running the error calculation."],["ERROR - No data found for this Z","Gosia cannot calculate internal conversion coefficients for this nucleus.  You will have to write the gosia input to a file and enter conversion data manually after removing the OP,BRIC section."]]
-
+    errors_list = [\
+                    ["ERROR-INSUFFICIENT SPACE FOR E-THETA INTEGR ATION","The level scheme you are calculating for may have too many levels and/or matrix elements, or you may have too many theta meshpoints, or interpolation subdivisions.  Can you eliminate some weakly populated bands, or some unimportant matrix elements?  Deleting one or more experiments may help as well.  If you do not want to change the calculation, select option \"i\" from the button \"Gosia controls\" and reduce the number of E-theta interpolation subdivisions for all experiments.  Usually, 20 energy subdivisions and 20 theta subdivisions is sufficient.  When you get a successful calculation with no errors, you can use the test \"ti\" under the button \"Tools\" to check that the reduced number of subdivisions has not caused an inaccuracy."],\
+                    ["ERROR-M.E. DOES NOT BELONG TO THE UPPER TRIANGLE","Rachel did not write the matrix in the proper order for gosia.  Please report this error to A. Hayes (hayes@pas.rochester.edu).  You can probably fix this by deleting all matrix elements and adding them again.  This is usually caused by importing a bad stored matrix file."],\
+                    ["ERROR-WRONG SEQUENCE OF MULTIPOLARITIES","This is probably caused by a bug in Rachel.  Please report this error to A. Hayes (hayes@pas.rochester.edu)."],\
+                    ["ERROR-REPEATED APPEARANCE OF THE STATE","This is probably a bug in Rachel.  Please report this error to A. Hayes (hayes@pas.rochester.edu)."],\
+                    ["ERROR - NUMBER OF ELEMENTS IN ZETA ARRAY EXCEEDS","This may be caused by a very large level scheme.  Can you delete some weakly populated bands?"],\
+                    ["ERROR-ISMAX EXCEEDS MAGMAX","You have requested too many magnetic substates for this calculation.  Reduce the number of substates under the Gosia controls button.  The sum of all magnetic substates for all levels must not exceed 1200."],\
+                    ["ERROR- MAXIMUM SCATTERING ANGLE IS","You have exceeded the maximum beam scattering angle (calculated inelastically) for this experiment.  There are several ways that you might fix this problem: (1) Define the experiment(s) so that the target particle is detected in the case of inverse kinematics, or (2) For a thick target, recalculate the stopping power and range using the Rochester SRIM server (button \"Stopping power\"), or (3) Set the state for calculation of the scattering kinematics to the ground state using the Gosia Controls button, option k."],\
+                    ["ERROR- MAXIMUM EXCITATION ENERGY IS","The excitation energy for this state exceeds the maximum for this Coulex experiment."],\
+                    ["ERROR-NO MATRIX ELEMENT BETWEEN STATES","You should add the matrix element(s) coupling these states."],\
+                    ["ERROR IN ROTATION","Please report this bug to A. Hayes (hayes@pas.rochester.edu)."],\
+                    ["TAPE READ ERROR","This could be caused by running the gosia operations in the improper order.  Consult the Rachel manual or use the Help button."],\
+                    ["TOO FAR FROM THE MINIMUM TO CARRY OUT THE ERROR ESTIMATION!","You should continue fitting to find a better minimum before running the error calculation."],\
+                    ["ERROR - No data found for this Z","Gosia cannot calculate internal conversion coefficients for this nucleus.  You will have to write the gosia input to a file and enter conversion data manually after removing the OP,BRIC section."]\
+                  ]
 
     overflow_detected = False
     for i in range(len(gosia_output_lines)-1):
@@ -1267,164 +1218,6 @@ def welcome(hide=False):
     # ensure it is rendered immediately
 
 
-class DrawingAreaExample:
-    """Copied from http://www.pygtk.org/pygtk2tutorial/examples/drawingarea.py
-
-    """
-
-    def __init__(self):
-        window = gtk.Window(gtk.WINDOW_TOPLEVEL)
-        window.set_title("Drawing Area Example")
-        window.connect("destroy", lambda w: gtk.main_quit())
-        self.area = gtk.DrawingArea()
-        self.area.set_size_request(400, 300)
-        self.pangolayout = self.area.create_pango_layout("")
-        self.sw = gtk.ScrolledWindow()
-        self.sw.add_with_viewport(self.area)
-        self.table = gtk.Table(2,2)
-        self.hruler = gtk.HRuler()
-        self.vruler = gtk.VRuler()
-        self.hruler.set_range(0, 400, 0, 400)
-        self.vruler.set_range(0, 300, 0, 300)
-        self.table.attach(self.hruler, 1, 2, 0, 1, yoptions=0)
-        self.table.attach(self.vruler, 0, 1, 1, 2, xoptions=0)
-        self.table.attach(self.sw, 1, 2, 1, 2)
-        window.add(self.table)
-        self.area.set_events(gtk.gdk.POINTER_MOTION_MASK |
-                             gtk.gdk.POINTER_MOTION_HINT_MASK )
-        self.area.connect("expose-event", self.area_expose_cb)
-        def motion_notify(ruler, event):
-            return ruler.emit("motion_notify_event", event)
-        self.area.connect_object("motion_notify_event", motion_notify,
-                                 self.hruler)
-        self.area.connect_object("motion_notify_event", motion_notify,
-                                 self.vruler)
-        self.hadj = self.sw.get_hadjustment()
-        self.vadj = self.sw.get_vadjustment()
-        def val_cb(adj, ruler, horiz):
-            if horiz:
-                span = self.sw.get_allocation()[3]
-            else:
-                span = self.sw.get_allocation()[2]
-            l,u,p,m = ruler.get_range()
-            v = adj.value
-            ruler.set_range(v, v+span, p, m)
-            while gtk.events_pending():
-                gtk.main_iteration()
-        self.hadj.connect('value-changed', val_cb, self.hruler, True)
-        self.vadj.connect('value-changed', val_cb, self.vruler, False)
-        def size_allocate_cb(wid, allocation):
-            x, y, w, h = allocation
-            l,u,p,m = self.hruler.get_range()
-            m = max(m, w)
-            self.hruler.set_range(l, l+w, p, m)
-            l,u,p,m = self.vruler.get_range()
-            m = max(m, h)
-            self.vruler.set_range(l, l+h, p, m)
-        self.sw.connect('size-allocate', size_allocate_cb)
-        self.area.show()
-        self.hruler.show()
-        self.vruler.show()
-        self.sw.show()
-        self.table.show()
-        window.show()
-
-    def area_expose_cb(self, area, event):
-        self.style = self.area.get_style()
-        self.gc = self.style.fg_gc[gtk.STATE_NORMAL]
-        self.draw_point(10,10)
-        self.draw_points(110, 10)
-        self.draw_line(210, 10)
-        self.draw_lines(310, 10)
-        self.draw_segments(10, 100)
-        self.draw_rectangles(110, 100)
-        self.draw_arcs(210, 100)
-        self.draw_polygon(10, 200)
-        self.draw_rgb_image(110, 200)
-        return True
-
-    def draw_point(self, x, y):
-        self.area.window.draw_point(self.gc, x+30, y+30)
-        self.pangolayout.set_text("Point")
-        self.area.window.draw_layout(self.gc, x+5, y+50, self.pangolayout)
-        return
-
-    def draw_points(self, x, y):
-        points = [(x+10,y+10), (x+10,y), (x+40,y+30),
-                  (x+30,y+10), (x+50,y+10)]
-        self.area.window.draw_points(self.gc, points)
-        self.pangolayout.set_text("Points")
-        self.area.window.draw_layout(self.gc, x+5, y+50, self.pangolayout)
-        return
-
-    def draw_line(self, x, y):
-        self.area.window.draw_line(self.gc, x+10, y+10, x+20, y+30)
-        self.pangolayout.set_text("Line")
-        self.area.window.draw_layout(self.gc, x+5, y+50, self.pangolayout)
-        return
-
-    def draw_lines(self, x, y):
-        points = [(x+10,y+10), (x+10,y), (x+40,y+30),
-                  (x+30,y+10), (x+50,y+10)]
-        self.area.window.draw_lines(self.gc, points)
-        self.pangolayout.set_text("Lines")
-        self.area.window.draw_layout(self.gc, x+5, y+50, self.pangolayout)
-        return
-
-    def draw_segments(self, x, y):
-        segments = ((x+20,y+10, x+20,y+70), (x+60,y+10, x+60,y+70),
-            (x+10,y+30 , x+70,y+30), (x+10, y+50 , x+70, y+50))
-        self.area.window.draw_segments(self.gc, segments)
-        self.pangolayout.set_text("Segments")
-        self.area.window.draw_layout(self.gc, x+5, y+80, self.pangolayout)
-        return
-
-    def draw_rectangles(self, x, y):
-        self.area.window.draw_rectangle(self.gc, False, x, y, 80, 70)
-        self.area.window.draw_rectangle(self.gc, True, x+10, y+10, 20, 20)
-        self.area.window.draw_rectangle(self.gc, True, x+50, y+10, 20, 20)
-        self.area.window.draw_rectangle(self.gc, True, x+20, y+50, 40, 10)
-        self.pangolayout.set_text("Rectangles")
-        self.area.window.draw_layout(self.gc, x+5, y+80, self.pangolayout)
-        return
-
-    def draw_arcs(self, x, y):
-        self.area.window.draw_arc(self.gc, False, x+10, y, 70, 70,
-                                  0, 360*64)
-        self.area.window.draw_arc(self.gc, True, x+30, y+20, 10, 10,
-                                  0, 360*64)
-        self.area.window.draw_arc(self.gc, True, x+50, y+20, 10, 10,
-                                  0, 360*64)
-        self.area.window.draw_arc(self.gc, True, x+30, y+10, 30, 50,
-                                  210*64, 120*64)
-        self.pangolayout.set_text("Arcs")
-        self.area.window.draw_layout(self.gc, x+5, y+80, self.pangolayout)
-        return
-
-
-    def draw_polygon(self, x, y):
-        points = [(x+10,y+60), (x+10,y+20), (x+40,y+70),
-                  (x+30,y+30), (x+50,y+40)]
-        self.area.window.draw_polygon(self.gc, True, points)
-        self.pangolayout.set_text("Polygon")
-        self.area.window.draw_layout(self.gc, x+5, y+80, self.pangolayout)
-        return
-
-    def draw_rgb_image(self, x, y):
-        b = 80*3*80*['\0']
-        for i in range(80):
-            for j in range(80):
-                b[3*80*i+3*j] = chr(255-3*i)
-                b[3*80*i+3*j+1] = chr(255-3*abs(i-j))
-                b[3*80*i+3*j+2] = chr(255-3*j)
-        buff = string.join(b, '')
-        self.area.window.draw_rgb_image(self.gc, x, y, 80, 80,
-                                 gtk.gdk.RGB_DITHER_NONE, buff, 80*3)
-        self.pangolayout.set_text("RGB Image")
-        self.area.window.draw_layout(self.gc, x+5, y+80, self.pangolayout)
-        return
-
-
 class stopping_power_help:
 
     def __init__(self,help_search_strings,pointer):
@@ -1640,247 +1433,6 @@ class stopping_power_help:
             self.set_error_text({"error_strings":error_strings, "calculated_exit_energy":calculated_exit_energy, "calculated_range":calculated_range, "calculated_target_thickness":calculated_target_thickness, "energies":energies,"stopping_powers":stopping_powers})
             return
  
-
-class graphics_window:
-    """A class with drawing methods e.g. for level diagrams
-
-    The basic layout of this class is taken from
-    http://www.pygtk.org/pygtk2tutorial/examples/drawingarea.py
-
-    init format: graphics_window(arguments_dict)
-
-    where arguments_dict may contain the following optional keys:
-    
-        "title"          graphics window title
-        "x_size"         horizontal size in pixels (defaults set in capitalized constants at top of file)
-        "y_size"         vertical size in pixels
-        "y_axis_min"     y-axis minimum value
-        "x_axis_min"     x-axis minimum value
-        "y_axis_max"     y-axis maximum value
-        "x_axis_max"     x-axis maximum value
-
-    Expect that each of the main objects (nucleus, experiment,
-    detector_manager, etc.) will have a derived class based on this.  (These
-    classes will not be pickled.)
-
-    """
-
-    def close_window(self, widget):
-        #gtk.main_quit()
-        self.window.hide()
-        return gtk.FALSE  # Returns a gtk FALSE signal so that the hidden window will be destroyed.
-
-
-    def __init__(self,arguments_dictionary={}):
-        # Optional arguments:
-        if "title" in arguments_dictionary:
-            self.title      = arguments_dictionary["title"]
-        else:
-            self.title = ""
-
-        if "x_size" in arguments_dictionary:
-            self.x_size = arguments_dictionary["x_size"]
-        else:   
-            self.x_size = DEFAULT_WINDOW_X_SIZE
-        
-        if "y_size" in arguments_dictionary:
-            self.y_size = arguments_dictionary["y_size"]
-        else:   
-            self.y_size = DEFAULT_WINDOW_Y_SIZE
-
-        if "y_axis_min" in arguments_dictionary:
-            self.y_axis_min = arguments_dictionary["y_axis_min"]
-        else:
-            self.y_axis_min = 0
-
-        if "x_axis_min" in arguments_dictionary:
-            self.x_axis_min = arguments_dictionary["x_axis_min"]
-        else:
-            self.x_axis_min = 0
-
-        if "y_axis_max" in arguments_dictionary:
-            self.y_axis_max = arguments_dictionary["y_axis_max"]
-        else:
-            self.y_axis_max = self.y_size
-
-        if "x_axis_max" in arguments_dictionary:
-            self.x_axis_max = arguments_dictionary["x_axis_max"]
-        else:
-            self.x_axis_max = self.x_size
-
-        self.window = gtk.Window(gtk.WINDOW_TOPLEVEL)
-        self.window.set_title(self.title)
-        self.window.connect("destroy", self.close_window)  # If the user hits the X button on the window, only delete this object.
-        # Trying to pad the window, because drawing out of bounds produces errors.
-        new_width  = int(round(self.x_size*(1. + X_FRACTIONAL_PADDING)))
-        new_height = int(round(self.y_size*(1. + Y_FRACTIONAL_PADDING)))
-        self.window.resize(new_width, new_height)
-        self.window.set_resizable(True)   
-        self.area = gtk.DrawingArea()
-        self.area.set_size_request(self.x_size, self.y_size)
-        self.pangolayout = self.area.create_pango_layout("")
-        self.sw = gtk.ScrolledWindow()
-        self.sw.add_with_viewport(self.area)
-        self.table = gtk.Table(2,2)
-        self.hruler = gtk.HRuler()
-        self.vruler = gtk.VRuler()
-        self.hruler.set_range(0, self.x_size, self.x_axis_max, self.x_axis_min)
-        self.vruler.set_range(0, self.y_size, self.y_axis_max, self.y_axis_min)
-        self.table.attach(self.hruler, 1, 2, 0, 1, yoptions=0)
-        self.table.attach(self.vruler, 0, 1, 1, 2, xoptions=0)
-        self.table.attach(self.sw, 1, 2, 1, 2)
-        self.window.add(self.table)
-        self.area.set_events(gtk.gdk.POINTER_MOTION_MASK |
-                             gtk.gdk.POINTER_MOTION_HINT_MASK )
-        self.area.connect("expose-event", self.area_expose_cb)
-        def motion_notify(ruler, event):
-            return ruler.emit("motion_notify_event", event)
-        self.area.connect_object("motion_notify_event", motion_notify,
-                                 self.hruler)
-        self.area.connect_object("motion_notify_event", motion_notify,
-                                 self.vruler)
-        self.hadj = self.sw.get_hadjustment()
-        self.vadj = self.sw.get_vadjustment()
-        def val_cb(adj, ruler, horiz):
-            if horiz:
-                span = self.sw.get_allocation()[3]
-            else:
-                span = self.sw.get_allocation()[2]
-            l,u,p,m = ruler.get_range()
-            v = adj.value
-            ruler.set_range(v, v+span, p, m)
-            while gtk.events_pending():
-                gtk.main_iteration()
-        self.hadj.connect('value-changed', val_cb, self.hruler, True)
-        self.vadj.connect('value-changed', val_cb, self.vruler, False)
-        def size_allocate_cb(wid, allocation):
-            x, y, w, h = allocation
-            l,u,p,m = self.hruler.get_range()
-            m = max(m, w)
-            self.hruler.set_range(l, l+w, p, m)
-            l,u,p,m = self.vruler.get_range()
-            m = max(m, h)
-            self.vruler.set_range(l, l+h, p, m)
-        self.sw.connect('size-allocate', size_allocate_cb)
-        self.area.show()
-        self.hruler.show()
-        self.vruler.show()
-        self.sw.show()
-        self.table.show()
-        self.window.show()
-
-    def area_expose_cb(self, area, event):
-        # Read the style information from the graphics area.
-        self.style = self.area.get_style()
-        # Set the graphics context.
-        self.gc = self.style.fg_gc[gtk.STATE_NORMAL]
-        return True
-
-    def rescale_after_user_resizes(self):
-        """Rescales the drawing area after the user drags the window larger or smaller.
-
-        """
-        self.x_size, self.y_size = self.window.get_size()
-        print self.x_size, self.y_size
-        self.window.resize(self.x_size, self.y_size)
-        return 0
-
-    def clear_window(self):
-        """This is not working.  
-        
-        I need to change the color to white to clear the window.  (Each drawing
-        method should select the appropriate color code for drawing.)
-
-        """
-
-        self.x_size, self.y_size = self.window.get_size()
-        self.area.window.draw_rectangle(self.gc, True, 0, 0, self.x_size, self.y_size)
-        return 0
-
-    def draw_point(self, x, y):
-        self.area.window.draw_point(self.gc, x+30, y+30)
-        self.pangolayout.set_text("Point")
-        self.area.window.draw_layout(self.gc, x+5, y+50, self.pangolayout)
-        return
-
-    def draw_line(self, arguments={}):
-        """Draws a line.
-
-        Arguments in the dictionary are:
-          Required:
-            "x_1"  in the user's chosen scale
-            "y_1"
-            "x_2"
-            "y_2"
-          Optional:
-            "label" a string label
-            If "label" is given, then position can be given as
-            "label_position" : "left", "right", "middle" or
-                               [x, y] in the user's scale.
-
-        """
-
-        # Get out the required parameters:
-        try:
-            x_1 = arguments["x_1"]
-            y_1 = arguments["y_1"]
-            x_2 = arguments["x_2"]
-            y_2 = arguments["y_2"]
-        except:
-            # Coordinates for the line were not passed.
-            return -1
-
-        print x_1, y_1, x_2, y_2
-        # Get the coordinates in pixels for gtk.
-        x_1_pixels, y_1_pixels = self.get_x_y_from_user_scale_position(x_1, y_1)
-        x_2_pixels, y_2_pixels = self.get_x_y_from_user_scale_position(x_2, y_2)
-        print x_1_pixels, y_1_pixels, x_2_pixels, y_2_pixels
-        # Draw the line.
-        self.area.window.draw_line(self.gc, x_1_pixels, y_1_pixels, x_2_pixels, y_2_pixels)
-        # If a text label was specified, then put it in the position requested.
-        # label_x and label_y are in pixels.
-        if "label" in arguments:
-            label = arguments["label"]
-            print label
-            try:
-                label_position = arguments["label_position"]
-                if label_position == "left":
-                    label_x = x_1_pixels
-                    label_y = y_1_pixels
-                elif label_position == "right":
-                    label_x = x_2_pixels
-                    label_y = y_2_pixels
-                elif label_position == "center":
-                    label_x = (x_2_pixels - x_1_pixels) / 2
-                    label_y = (y_2_pixels - y_1_pixels) / 2
-                else:
-                    # The only other option is a list of two coordinates for the label in the user's frame.
-                    label_x_user_scale, label_y_user_scale = arguments["label_position"]
-                    label_x, label_y = self.get_x_y_from_user_scale_position(x_1, y_1)
-                self.pangolayout.set_text(label)
-                self.area.window.draw_layout(self.gc, label_x, label_y, self.pangolayout)
-            except:
-                # The label position was not specified or not entered into the arguments dictionary properly.
-                # The line was still drawn, but the label will not be added.
-                return -1
-
-        return 0
-
-    def get_x_y_from_user_scale_position(self, x, y):
-        """Returns the x and y coordinates in pixels from the user's scale x,y coordinates.
-
-        """
-
-        # Round the position to the nearest integer pixel number
-        x_position_in_pixels = int(round(self.x_size * (x - self.x_axis_min) / (self.x_axis_max - self.x_axis_min)))
-
-        # Right now the y pixel 0 is at the TOP, so we need to reverse the
-        # coordinate to count from the bottom.  Can this be set as an option in
-        # the plot area?
-        y_position_in_pixels = int(round(self.y_size * (1. - (y - self.y_axis_min) / (self.y_axis_max - self.y_axis_min))))
-
-        return [x_position_in_pixels,y_position_in_pixels]
-
 
 class notes:
     """A class to save user notes in each session file.
@@ -2145,8 +1697,6 @@ class popup_tips:
             # making it difficult to track down the problem.
 
             return None
-
-
 
 
 class dialog_popup:
@@ -3265,34 +2815,6 @@ class nucleus:
 
 
         return total_errors,return_text
-
-
-    def test_graphics(self,redraw=False):
-        """Tests the new graphics class.
-
-        If redraw is the default False, then the window will be created first;
-        if redraw is True, then the existing window is used.
-
-        """
-
-
-        #a_graphics_window = DrawingAreaExample()
-
-        print "This will return an error if the anything is drawn in the window right after creation of the window.  Is this a timing issue?  Call this method again with True as the argument to draw the lines."
-
-        if not redraw:
-            graphics_window_arguments = {"title":"Rachel Level Scheme","x_axis_min":0.,"x_axis_max":10.,"y_axis_min":0.,"y_axis_max":5000.}
-            self.a_graphics_window = graphics_window(graphics_window_arguments)
-
-        else:
-            print "not clearing window... need to finish that method by selecting color for background"
-            #self.a_graphics_window.clear_window()
-            #raw_input("done. press enter ")
-            self.a_graphics_window.rescale_after_user_resizes()
-            line_arguments = {"x_1":0.5,"x_2":1.5,"y_1":1000.0,"y_2":1000.0,"label":"2+","label_position":"right"}
-            self.a_graphics_window.draw_line(line_arguments)
-
-        return 0
 
 
     def activate(self):
@@ -5817,49 +5339,6 @@ class nucleus:
             print "Invalid option.  Cancelled."
             return_code = None
 
-    def getmatrixelement(self,matrixelementidentity):
-        """Returns a list of [m.e. value,r1,r2,comment,me index number].
-
-        This is not equivalent to the internal storage format of matrix
-        elements and related quantities.
-
-        See the gosia manual for r1,r2.  The comment code is used by the GUI
-        and is not for free-format comment storage by the user.  It stores
-        information such as fixed, free or master matrix element flags as text
-        strings.  See the global constants at the top of the file.
-
-        """
-        print "getmatrixelement is DEPRECATED."
-        return None
-
-        multipole_code,initial_band,initial_spin,final_band,final_spin = matrixelementidentity
-        for i in range(len(self.matrix_data)):
-            matrixelement = self.matrix_data[i]
-            this_multipole_code = matrixelement[0]
-            this_initial_level = matrixelement[1]
-            this_final_level = matrixelement[2]
-            # Make sure the user didn't enter the states in the wrong order
-            if this_final_level < this_initial_level:
-                this_initial_level,this_final_level = this_final_level,this_initial_level # reverse them to the proper upward order
-            this_initial_band = self.get_level_information(this_initial_level,"band")
-            this_final_band = self.get_level_information(this_final_level,"band")
-            this_initial_spin = self.get_level_information(this_initial_level,"spin")
-            this_final_spin = self.get_level_information(this_final_level,"spin")
-            if initial_band == this_initial_band and initial_spin == this_initial_spin and final_band == this_final_band\
-              and final_spin == this_final_spin and multipole_code == this_multipole_code:
-                # This is the one we want
-                this_matrix_element_value = matrixelement[3]
-                r1 = matrixelement[4]
-                r2 = matrixelement[5]
-                comment = matrixelement[6]
-                if not "float" in type(this_matrix_element_value).__name__  and not "int" in type(this_matrix_element_value).__name__:
-                    return "getmatrixelement error -- not found"
-                else:
-                    return [this_matrix_element_value,r1,r2,comment,i]
-                # Returns a list of [m.e. value,r1,r2,comment,me index number]
-
-        # If not found in self.matrix_data, return an error.
-        return "getmatrixelement error -- not found"
 
     def get_level_information(self,level_key,what):
         """Returns information about a level in memory.
@@ -5919,65 +5398,12 @@ class nucleus:
             return -1
 
 
-#    def get_level_number(self,band,spin):
-#        """Returns the internal level number of the band,spin state.
-#
-#        DEPRECATED
-#
-#        Returns None if the level was not found.
-#        band    integer band number (internal band number)
-#        spin    float (half-integer or integer) spin of level number to find
-#        """
-#        found = False       # haven't found the level yet
-#        i = 0               # start the search with level number 0
-#        while not found:
-#            this_band = self.get_level_information(i,'band')
-#            this_spin = self.get_level_information(i,'spin')
-#            if band == this_band and equivalent_half_integer(this_spin,spin):
-#                found = True
-#            else:
-#                i = i + 1
-#                if i > self.number_of_levels():
-#                    # If "i" got past the last index without finding the level, then
-#                    # return None (level not found).
-#                    return None
-#
-#        # If the level was found, then flow goes to here.  Return the level number.
-#        return i
-
-#    def setlevelinfo(self,levelnumber,what,newvalue):
-#        """Sets level information.  
-#
-#        DEPRECATED
-#
-#        Note that this will not add a level.  
-#
-#        "what" must specify 'band','spin', or 'energy'.
-#
-#        Returned value will be -1 for an error.
-#        """
-#
-#        if what == 'band':
-#            self.levels[levelnumber][0]=newvalue
-#        elif what == 'spin':
-#            self.levels[levelnumber][1]=newvalue
-#        elif what == 'energy':
-#            self.levels[levelnumber][2]=newvalue
-#        else:
-#            # error.  return -1 for now.  
-#            return -1
-
     def makewindow(self,option=""):
         """Creates a level scheme window for the nucleus object.
-
-        This may be changed from matplotlib and pylab calls to more fundamental
-        pygtk commands.  There are difficulties in keeping a matplotlib window
-        active in the background.
 
         """
 
 
-        #self.p1 = plt.figure(LEVELSCHEMEFIGURE,figsize=LSFIGSIZE)  # TESTING 3/8/11
         plt.figure(LEVELSCHEMEFIGURE,figsize=LSFIGSIZE)
 
         pylab.ion()       # Make sure updating is on.  I may have to flip on/off for speed in some methods.
@@ -7121,32 +6547,6 @@ class nucleus:
         print "Done."
         return 0
 
-    def fullsort(self):
-        """Sorts all level, band and matrix data as much as possible.
-
-        This method may be deprecated soon for the release version.
-
-        DEPRECATED
-        
-        """
-
-        self.packbands()
-        self.sortlevels()
-        self.sortmatrixdata()
-
-    def return_sorted_level_keys(self):
-        """Returns a list of level object keys sorted by band name, then spin.
-
-        DEPRECATED
-
-        These are forced to be passed as a deep copy, so that working with the
-        keys will not corrupt the level objects.
-
-        """
-
-        all_level_keys = copy.deepcopy(self.levels.keys())
-        all_level_keys.sort()
-        return all_level_keys
 
     def guess_all_k_values(self):
         """Guess K values for all states that don't have K values yet.
@@ -7414,12 +6814,6 @@ class nucleus:
     def add_matrix_element(self,multipole_string = None, initial_band_name = None, \
         final_band_name = None, initial_spin = None, final_spin = None, value = None):
         """Add one fixed matrix element to the matrix.
-
-        JULY 2011: THIS IS BEING REWRITTEN.  THE INITIAL AND FINAL LEVELS
-        SHOULD BE INDEXED BY BAND AND SPIN, WHERE "BAND" IS ONE OF POSSIBLY
-        MORE THAN ONE PSEUDONYM.  R1 AND R2 WILL BE REPLACED BY THE INITIAL AND
-        FINAL BAND NAMES AND SPINS FOR THE MASTER OF A DEPENDENT MATRIX
-        ELEMENT.
 
         Master or dependent information cannot be set here.  That information
         can be set in another method under construction.
@@ -8944,103 +8338,6 @@ class nucleus:
 
         return ordered_level_keys_list
 
-    def packbands(self):
-        """DEPRECATED
-        """
-
-        # Since now we only have one list of lists for level data,
-        # this is done very simply.
-        # Pack the band numbers, because it makes drawing and other
-        # operations easier.
-        #    a. Make the list/dict for packing
-        #    b. Pack band numbers by updating band info in levels[] and matrixdata[]
-        #    c. sort levels  by band,spin
-        #    d. renumber level indices in matrixdata
-
-        #  Get a list of all band numbers used.
-        temporary = []
-        for onelevellist in self.levels:
-            temporary.append(onelevellist[0])
-        uniquebandnumbers = sorted(set(temporary))
-
-        # This will also change minimum band number to 1 if it is 0. 
-        packedbandnumbers = range(1,len(uniquebandnumbers)+1)    # list of new band numbers with no 
-                                                                 # skipped numbers
-        #  Map to pack the band numbers with no numbers skipped:
-        #  The map is a dictionary of {(original#1:final#1),(original#2:final#2)...}
-        #  Both lists are sorted, so going from left to right in each list will not
-        #  create any ambiguity.  
-#       print "uniquebandnumbers",uniquebandnumbers
-#       print "packedbandnumbers",packedbandnumbers
-
-        bandpackingdict = dict((uniquebandnumbers[i],packedbandnumbers[i]) for \
-            i in range(len(uniquebandnumbers)))
-#       print "bandpackingdict",bandpackingdict
-
-        #  Change all band numbers going from lowest current band number
-        #  to highest current band number.  
-        for i in range(self.number_of_levels()):
-            self.setlevelinfo(i,'band',bandpackingdict[self.get_level_information(i,'band')])
-
-        #  Make a dict matrixdict that will change initial,final levels of matrix elements
-        #  to the new ones after sorting levels by band and spin
-        #
-        #  Note that levels are sorted here!
-        #
-        templist = self.levels  # copy of unsorted levels
-        self.sortlevels()  # now levels are sorted by band number,spin.  
-        matrixdict = {}    # empty dict to use for updating matrixdata.
-        # The matrixdict{} is made by comparing templist[] to levels[]
-        for i in range(len(templist)):
-            matrixdict[i] = self.levels.index(templist[i])
-            # This has form {oldlevelnumber:newlevelnumber,...}
-
-        #  Now use matrixdict{} to update all records in matrixdata
-        for i in range(self.number_of_matrix_elements()):
-            for j in 1,2:  # step through initial and final level indices
-                oldlevel = self.matrix_data[i][j]
-                newlevel = matrixdict[oldlevel]
-                self.matrix_data[i][j] = newlevel
-        #  Now all matrix element entries have the new level indices
-
-        #  Use the bandpackingdict to update the bands' K values and parities.
-        #  Remember that band numbers are now packed into a shorter list.
-        #  Nov. 11 2010: Handle the pseudonyms of bands as well.
-        newbandk = {}  # an empty dictionary
-        newbandparity = {}  # an empty dictionary
-        newbandname = {}  # an empty dictionary
-        newbandpseudonym = {} # an empty dictionary
-        for i in bandpackingdict.keys():  # step through the original (unpacked) band numbers
-            newbandk[bandpackingdict[i]] = self.bandk[i]  # store a dict of new (packed) band number to K value
-            newbandparity[bandpackingdict[i]] = self.bandparity[i] # same for parity
-            newbandname[bandpackingdict[i]] = self.bandname[i] # same for name 
-            # Bands may not have pseudonyms, so test for existence of the band in the pseudonym dict.
-            if bandpackingdict[i] in self.bandpseudonym.keys():
-                newbandpseudonym[bandpackingdict[i]] = self.bandpseudonym[i] # same for psuedonym 
-        self.bandk = newbandk  # replace the old dict
-        self.bandparity = newbandparity  # replace the old dict
-        self.bandname = newbandname  # replace the old dict
-        self.bandpseudonym = newbandpseudonym # replace the old dict
-            
-
-    def sortlevels(self):
-        """DEPRECATED
-        """
-        # With the new level format, should be able to sort by
-        # band, then spin, using one single sort operation.
-        self.levels.sort()
-
-    def sortmatrixdata(self):
-        """Sort for internal use.  
-
-        DEPRECATED
-
-        There is a module (in progress) to give gosia-type listing with
-        appropriate flagging for gosia
-        """
-        # With the new format, should be able to sort by 
-        # multipolarity,li,lf using one sort operation
-        self.matrix_data.sort()
 
     def get_all_dependent_matrix_keys(self,master_matrix_key):
         """Returns a list of all matrix keys of dependents on this master.
@@ -18132,12 +17429,6 @@ class logical_detector:
     def return_solid_angle(self):
         return the_detector_manager.get_detector_solid_angle(self.detector_type)
 
-    def return_solidity(self):
-        """ DEPRECATED
-        """
-
-        return the_detector_manager.get_detector_solidity(self.detector_type)
-
     def identify_crystal_or_cluster(self):
         """Returns "crystal", so that calling functions know what this detector is.
 
@@ -19427,38 +18718,6 @@ class experiment:
         return [types,thetas,phis]
 
 
-
-#    def get_all_detector_numbers_and_angles(self,for_gosia=False):
-#        """Returns a list of three lists: type,theta_values,phi_values
-#
-#        DEPRECATED.  THIS IS NOT UPDATED FOR CLUSTER UPGRADE.
-#
-#        if for_gosia == True, then the gosia detector number is given.
-#        if false, then the internal type number is given.
-#
-#        The return type had been a tuple of lists; now it is a list of lists:
-#        [[type1, type2,...], [theta1, theta2,...], [phi1, phi2,...]]
-#
-#        """
-#
-#        types  = []
-#        thetas = []
-#        phis   = []
-#
-#        detector_list = self.Ge_detectors
-#        for one_detector in detector_list:
-#            this_internal_type_number = one_detector.return_type_number()
-#            this_theta                = one_detector.return_mean_theta()
-#            this_phi                  = one_detector.return_mean_phi()
-#            if for_gosia:
-#                types.append(this_internal_type_number + 1)
-#            else:
-#                types.append(this_internal_type_number)
-#            thetas.append(this_theta)
-#            phis.append(this_phi)
-#
-#        return [types,thetas,phis]
-
     def print_detector_catalog(self,internal_experiment_number=None):
         """Prints a catalog of Ge detectors for this experiment.
 
@@ -20336,8 +19595,9 @@ class experiment:
     def get_calculated_yields(self,internal_detector_number):
         """Returns calculated (integrated) yields read by experimentmanager from the gosia output.
 
-        DEPRECATED--does not properly treat band pseudonyms
-        Some functions still use this correctly, but it should be removed.
+        Does not properly treat band pseudonyms, but it can be used safely with this in mind.
+        
+        SOME FUNCTIONS STILL USE THIS CORRECTLY, BUT IT SHOULD EVENTUALLY BE REMOVED.
 
         """
         the_detector = self.Ge_detectors[internal_detector_number]
@@ -20347,8 +19607,9 @@ class experiment:
     def get_experimental_yields(self,internal_detector_number):
         """Returns experimental yields in memory.
 
-        DEPRECATED--does not properly treat band pseudonyms
-        Some functions still use this correctly, but it should be removed.
+        Does not properly treat band pseudonyms, but it can be used safely with this in mind.
+        
+        SOME FUNCTIONS STILL USE THIS CORRECTLY, BUT IT SHOULD EVENTUALLY BE REMOVED.
 
         """
         the_detector = self.Ge_detectors[internal_detector_number]
@@ -22639,34 +21900,7 @@ class main_gui:
             self.set_activation(self)
             return -1
 
-    def read_yield_data(self,widget):
-        # DEPRECATED SINCE VERSION 1.6.0
-        #deactivate all button presses while this runs.
-        self.set_deactivation(self,self.all_button_list)
-        while gtk.events_pending():
-            gtk.main_iteration(False)
-        try:
-            print "REPLACE experimental yields in memory with those in the "
-            print "Gosia yield file?  ",
-            if yes_no_prompt("Are you sure [y/N]? ",False):
-                return_code = the_experiment_manager.read_experimental_yields()
-                # Reactivate GUI buttons.
-                self.set_activation(self)
-                if return_code == 0:
-                    undo.save("Read gosia.yld file")
-                else:
-                    undo.save("Read gosia.yld file (failed)")
-            else:
-                print "Read Gosia yield file cancelled."
-                # Reactivate GUI buttons.
-                self.set_activation(self)
-                return -1
 
-        except:
-            # Reactivate GUI buttons.
-            self.set_activation(self)
-            return -1
-        
     def write_true_yields(self,widget,to_force=False):
 
         print_separator()
