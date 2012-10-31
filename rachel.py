@@ -1329,6 +1329,13 @@ class DrawingAreaExample:
         self.table.show()
         window.show()
 
+    def debug(self):
+        """
+
+        """
+
+        pass
+
     def area_expose_cb(self, area, event):
         self.style = self.area.get_style()
         self.gc = self.style.fg_gc[gtk.STATE_NORMAL]
