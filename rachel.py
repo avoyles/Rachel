@@ -8,11 +8,11 @@ SCRIPT_MODE = False
 def import_error(library_name):
 
     print "Rachel could not import the library \"" + library_name + ".\""
-    print "  If this is a standard library, then your python installation"
-    print "  may not be complete."
-    print "  You may be able to install this library by typing"
+    print "  You can install this library by typing one of the following:"
     print "  sudo easy_install " + library_name 
-    print "  (You usually need root or sudo privilege.)"
+    print "  sudo apt-get install " + library_name + " (on linux systems)"
+    print "  sudo port install " + library_name + " (on OS X systems, if you have MacPorts installed)"
+    print "  (You usually need sudo privilege.)"
 
 import_error_count = 0
 
@@ -31,7 +31,7 @@ except:
     import_error_count += 1
 
 try:
-    import pickle    # This is a python standard library.  Make safety warning about unpickling from untrusted parties.
+    import pickle
 except:
     import_error("pickle")
     import_error_count += 1
@@ -66,7 +66,7 @@ except:
     import_error_count += 1
 
 try:
-    import matplotlib     # as of version 2.0.0.beta, importing the whole library to try to improve handling of the ls window active state.
+    import matplotlib     
 except:
     import_error("matplotlib")
     import_error_count += 1
@@ -84,7 +84,7 @@ except:
     import_error_count += 1
 
 try:
-    pygtk.require('2.0')  # This really only requires pygtk version 2.* (any sub-version)
+    pygtk.require('2.0')  # This command really only requires pygtk version 2.* (any sub-version).
 except:
     print "The installed version of pygtk is not 2.0 or greater."
     print "You will need to install a newer version of pygtk."
@@ -104,19 +104,19 @@ except:
     import_error_count += 1
 
 try:
-    import os          # For calling gosia, elo, etc.
+    import os
 except:
     import_error("os")
     import_error_count += 1
 
 try:
-    import signal      # For handling ctrl-c, etc.
+    import signal
 except:
     import_error("signal")
     import_error_count += 1
 
 try:
-    import pango       # for fonts
+    import pango
 except:
     import_error("pango")
     import_error_count += 1
@@ -128,9 +128,7 @@ except:
     import_error_count += 1
 
 try:
-    import subprocess  # for spawning new process to run independently, such as plotting packages.  
-                       # (Don't use for gosia, since we want to wait until completion using 
-                       # os.popen for gosia)
+    import subprocess
 except:
     import_error("subprocess")
     import_error_count += 1
@@ -142,31 +140,33 @@ except:
     import_error_count += 1
 
 try:
-    import string      # additional string methods 
+    import string
 except:
     import_error("string")
     import_error_count += 1
 
 try:
-    import textwrap    # Methods to print paragraphs with pretty blocking.
+    import textwrap
 except:
     import_error("textwrap")
     import_error_count += 1
 
 try:
-    import traceback # For error logging.
+    import traceback
 except:
     import_error("traceback")
     import_error_count += 1
 
 try:
-    import StringIO  # For temporary file-like buffers
+    import StringIO
 except:
     import_error("StringIO")
     import_error_count += 1
 
 
-# See if there were import errors.  If there were vital ones (all are vital at this point), then quit.
+# See if there were import errors.  If there were vital ones (all are vital at
+# this point), then quit.
+
 if import_error_count > 0:
     print "***There were " + str(import_error_count) + " import errors***"
     print "Rachel cannot be run until the missing libraries are installed."
@@ -187,17 +187,17 @@ UNDO_STACK = []        # A stack to keep track of what operations have been adde
 
 # Constants defined 
 ASMIDGE = 0.1                    # a small number to use for >,< comparisons where rounding
-                                 # to base 2 could be a problem.  0.1 is fine for comparing spins
-                                 # This is only used now for internal plotting with matplotlib,
-                                 # since the round(number,1) function effectively rounds to 
-                                 # half-spin.
+                                 # to base 2 could be a problem.  0.1 is fine
+                                 # for comparing spins This is only used now
+                                 # for internal plotting with matplotlib, since
+                                 # the round(number,1) function effectively
+                                 # rounds to half-spin.
 
-MAXIMUMLEVELS = 99               # This is not used yet, except in reporting to the user.
+MAXIMUMLEVELS = 99                           # This is not used yet, except in reporting to the user.
 MAXIMUM_NUMBER_OF_MATRIX_ELEMENTS = 999      # This is not used yet, except in reporting to the user.
 
-MAXALLOWEDSPIN = 60              # To be used for the general K-forbidden
-                                 # Mikhailov formula where large factorials are
-                                 # calculated.
+MAXALLOWEDSPIN = 60              # To be used for the general K-forbidden Mikhailov formula where large
+                                 # factorials are calculated.
 
 MAX2DARRAYSIZE = 200*200         # This is the maximum number of elements in the array,
                                  # regardless of the length:width ratio.  It is used in ned().
@@ -230,25 +230,30 @@ MAXIMUM_EXPERIMENTS = 50               # The most experiments allowed in Gosia.
 DEFAULT_NUMBER_OF_STOPPING_POWERS = 20  # 20 is the maximum allowed by Gosia.
 MINIMUM_NUMBER_OF_STOPPING_POWERS = 6   # At least 6 for reasonable spline interpolation.
 
-# Default minimization parameters.  The value for each key is a list of [default value, description, parameter number for easy user entry,type,lower_limit,upper_limit]
-DEFAULTMINIMIZATIONPARAMETERDICT = {"fast_approximation":[False,"If True, then fast approximation is used to calculate chi-squared derivatives.",1,"boolean"],\
-"steepest_descent":[False,"If True, use steepest-descent method; if False, use gradient-derivative.",2,"boolean"],\
-"absolute_change":[True,"If True, then absolute changes in matrix elements are used to improve the minimum; if False, then relative changes are used.",3,"boolean"],\
-"linear_yields":[True,"If True, then yields and other data are used to calculate chi-squared; if False, then a logarithmic scale is used.",4,"boolean"],\
-"max_steps":[10,"The maximum number of minimization steps.",5,"integer",0,10000],\
-"chi_squared_limit":[0.9,"The lower limit on the reduced chi-squared to stop the minimization.",6,"float",0,1.0e6],\
-"convergence_criterion":[1.0e-4,"The minimum change in the vector of matrix elements below which minimization is stopped.",7,"float",0.0,1.0e6],\
-"recalc_test":[1.01,"Internal correction factors are recalculated if the reduced chi-squared drops by a factor of recalc_test.  A faster option to setting \"fast_approximation\" to False is to set this value <1.  See the Gosia manual entry on TEST in OP,MINI.",8,"float",0.0,1.0e6],\
-"lockf":[False,"If lockf is False, then minimization is terminated when the convergence_criterion is satisfied; lockf = True causes Gosia to lock the nlock number of matrix elements having the most significant chi-squared derivatives.  This is useful for escaping a local minimum.",9,"boolean"],\
-"nlock":[0,"The number of matrix elements having the largest derivatives of chi-squared to be locked if lockf = 1 and the convergence_criterion is satisfied.",10,"integer",0,1000],\
-"forward_backward":[True,"If True, then derivatives of chi-squared are calculated using the forward-backward difference method; if False, then only the forward difference is used.",11,"boolean"],\
-"lock_less_effective":[False,"If True, then at the first step of minimization, Gosia locks all matrix elements for which the partial derivative of chi-squared is less than dlocks.",12,"boolean"],\
-"dlocks":[0,"The limit of the partial derivatives of chi-squared with respect to a matrix element, below which it will be fixed if lock_less_effective is True.",13,"float",0.0,1.0e6]}
+# Default minimization parameters.  The value for each key is a list of
+# [default value, description, parameter number for easy user
+# entry,type,lower_limit,upper_limit]
+
+DEFAULTMINIMIZATIONPARAMETERDICT = {\
+    "fast_approximation":[False,"If True, then fast approximation is used to calculate chi-squared derivatives.",1,"boolean"],\
+    "steepest_descent":[False,"If True, use steepest-descent method; if False, use gradient-derivative.",2,"boolean"],\
+    "absolute_change":[True,"If True, then absolute changes in matrix elements are used to improve the minimum; if False, then relative changes are used.",3,"boolean"],\
+    "linear_yields":[True,"If True, then yields and other data are used to calculate chi-squared; if False, then a logarithmic scale is used.",4,"boolean"],\
+    "max_steps":[10,"The maximum number of minimization steps.",5,"integer",0,10000],\
+    "chi_squared_limit":[0.9,"The lower limit on the reduced chi-squared to stop the minimization.",6,"float",0,1.0e6],\
+    "convergence_criterion":[1.0e-4,"The minimum change in the vector of matrix elements below which minimization is stopped.",7,"float",0.0,1.0e6],\
+    "recalc_test":[1.01,"Internal correction factors are recalculated if the reduced chi-squared drops by a factor of recalc_test.  A faster option to setting \"fast_approximation\" to False is to set this value <1.  See the Gosia manual entry on TEST in OP,MINI.",8,"float",0.0,1.0e6],\
+    "lockf":[False,"If lockf is False, then minimization is terminated when the convergence_criterion is satisfied; lockf = True causes Gosia to lock the nlock number of matrix elements having the most significant chi-squared derivatives.  This is useful for escaping a local minimum.",9,"boolean"],\
+    "nlock":[0,"The number of matrix elements having the largest derivatives of chi-squared to be locked if lockf = 1 and the convergence_criterion is satisfied.",10,"integer",0,1000],\
+    "forward_backward":[True,"If True, then derivatives of chi-squared are calculated using the forward-backward difference method; if False, then only the forward difference is used.",11,"boolean"],\
+    "lock_less_effective":[False,"If True, then at the first step of minimization, Gosia locks all matrix elements for which the partial derivative of chi-squared is less than dlocks.",12,"boolean"],\
+    "dlocks":[0,"The limit of the partial derivatives of chi-squared with respect to a matrix element, below which it will be fixed if lock_less_effective is True.",13,"float",0.0,1.0e6]\
+    }
 
 # A dict to lookup the parameter number for each possible VAC, entry.
 VAC_PARAMETER_NUMBER_DICT = {1:"J1",2:"Gamma",3:"Lambda",4:"tau_c",5:"g",6:"K",7:"x"}
 
-# allowed multipole codes in a dict that points to lambda           
+# All allowed multipole codes in a dict that points to lambda.
 MULTIPOLE_LAMBDA = {'E1':1,'E2':2,'E3':3,'E4':4,'E5':5,'E6':6,'M1':1,'M2':2,\
                    'e1':1,'e2':2,'e3':3,'e4':4,'e5':5,'e6':6,'m1':1,'m2':2}  
                                                                                
@@ -258,12 +263,14 @@ UNITS_DICT = {'E1':"eb^(1/2)",'E2':"eb",'E3':"eb^(3/2)",'E4':"eb^2",'E5':"eb^(5/
 # The dictionary to translate E2, M1, etc. to the codes stored in matrixdata.  
 MULTIPOLE = {'e1':1,'e2':2,'e3':3,'e4':4,'e5':5,'e6':6,'m1':7,'m2':8,\
              'E1':1,'E2':2,'E3':3,'E4':4,'E5':5,'E6':6,'M1':7,'M2':8} 
-# Use multipole code (number) where possible.  When translating from the user, printing
-# output, use text code
-REVERSE_MULTIPOLE   = {1:'E1',2:'E2',3:'E3',4:'E4',5:'E5',6:'E6',7:'M1',8:'M2'}  # prefer upper case
 
-# File extension definitions and default status and format keyed by file number
-FILE_DEF_DICT = {22:{"extension":"out","status":"3","format":1},\
+# Use multipole code (number) where possible.  When translating from the user,
+# printing output, use text code.
+REVERSE_MULTIPOLE   = {1:'E1',2:'E2',3:'E3',4:'E4',5:'E5',6:'E6',7:'M1',8:'M2'}
+
+# File extension definitions and default status and format keyed by file number.
+FILE_DEF_DICT = {\
+                 22:{"extension":"out","status":"3","format":1},\
                  25:{"extension":"inp","status":"3","format":1},\
                  9:{"extension":"gdt","status":"3","format":1},\
                  3:{"extension":"yld","status":"3","format":1},\
@@ -272,22 +279,25 @@ FILE_DEF_DICT = {22:{"extension":"out","status":"3","format":1},\
                  12:{"extension":"bst","status":"3","format":1},\
                  15:{"extension":"err","status":"3","format":1},\
                  29:{"extension":"icc","status":"3","format":1},\
-                 99:{"extension":"amp","status":"3","format":1}}  # File 99 is only written in a patched version for Rachel.
+                 99:{"extension":"amp","status":"3","format":1}
+                 }
 
-NUCLEAR_DATA_FILE_NAME = "rachel_nuclear_data.txt"   # The default file name for all nuclear data tagged by symbols in beta v. 2.0.0 and ff.
+# The default file name for all nuclear data tagged by symbols in beta v. 2.0.0
+# and ff.
+NUCLEAR_DATA_FILE_NAME = "rachel_nuclear_data.txt"   
 
 PROMPTSTRING = "~ "
 
 # Graphics parameters for the level scheme in matplotlib.
 LEVELWIDTH = 0.5
-LEVELCOLOR = 'k'  # color of levels
-RMEARROWCOLOR = 'r' # color of individual reduced matrix element arrows
-MASTERMECOLOR = 'g' # color of master matrix elements
-FIXEDMECOLOR = 'k' # color of master matrix elements
-INTRINSICARROWCOLOR = 'b' # color of intrinsic m.e. arrows (band-->band)
+LEVELCOLOR = 'k'            # color of levels
+RMEARROWCOLOR = 'r'         # color of individual reduced matrix element arrows
+MASTERMECOLOR = 'g'         # color of master matrix elements
+FIXEDMECOLOR = 'k'          # color of master matrix elements
+INTRINSICARROWCOLOR = 'b'   # color of intrinsic m.e. arrows (band-->band)
 SPINLABELFONTSIZE = 8
 LEVELSCHEMEFIGURE = 1
-LSFIGSIZE = (10,8)  # default size in inches for the level scheme figure
+LSFIGSIZE = (10,8)          # default size in inches for the level scheme figure
 
 # Graphics parameters for new gtk graphics.
 #DEFAULT_WINDOW_Y_SIZE = 300
