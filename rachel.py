@@ -163,6 +163,12 @@ except:
     import_error("StringIO")
     import_error_count += 1
 
+try:
+    import urllib
+except:
+    import_error("urllib")
+    import_error_count += 1
+
 
 # See if there were import errors.  If there were vital ones (all are vital at
 # this point), then quit.
@@ -431,67 +437,11 @@ def top_level_testing():
     """
 
     # Load the session
-    setup_globals("reset") # to make sure we don't have old data hanging around in the original objects
-    unpickle_return_code,textview_summary = setup_globals("unpickle")
+    #setup_globals("reset") # to make sure we don't have old data hanging around in the original objects
+    #unpickle_return_code,textview_summary = setup_globals("unpickle")
 
-    # Do the show_me for inband
-    investigated_nucleus.draw_in_band_details(5,"E2")
+    call_rochester_srim_server(beam_Z=54, beam_mass=136, target_density=10., target_Z=72, target_name="hf", target_mass=178, initial_energy=650., target_thickness_or_exit_energy=50., fractional_padding_on_energy_meshpoints=0.01, number_of_meshpoints=10, thickness_or_exit_energy_flag="-t-")
 
-    raw_input("Enter to continue>")
-
-    # Do the show_me for interband
-    investigated_nucleus.draw_interband_details(1,5,"E2")
-
-
-
-
-#    command_line = "ls -lh | grep amp"
-#    subprocess.call(command_line,shell=True)
-
-#    # Produce an error--test
-#    print lsdkfj
-#        
-#    investigated_nucleus.notes.print_log("procedure_log")
-#    if yes_no_prompt("Edit user log? ",False) == True:
-#        investigated_nucleus.notes.edit_log("user_notes")
-#    return "tlt done."
-#
-#    try:
-#        investigated_nucleus.notes
-#        print "Notes object already exists."
-#    except:
-#        investigated_nucleus.notes = notes()
-#        print "Notes object added to nucleus object."
-#        
-#
-#    the_experiment_manager.examine_data_interactive()
-    
-#    ep = {"a0":-1077.3, "a1":724.582, "a2":-172.58, "a3":17.7101, "a4":-0.668257}
-#    while True:
-#        try:
-#            ekeV = float(raw_input("ekeV: "))
-#            #print the_detector_manager.alldetectors[0].miniball_efficiency(ekeV,ep)
-#            print the_detector_manager.alldetectors[0].absolute_efficiency(ekeV)
-#        except:
-#            print "error or finished."
-#            break
-#
-#    the_detector_manager.change_efficiency_parameters()
-#
-#    investigated_nucleus.display_coupling_information()
-#    investigated_nucleus.initial_band_name_for_normalization = "hello"
-#    investigated_nucleus.initial_spin_for_normalization = 2.0
-#    investigated_nucleus.final_band_name_for_normalization = "hello"
-#    investigated_nucleus.final_spin_for_normalization = 0.0
-
-#    the_experiment_manager.get_overall_normalization_for_experimental_yields(0)
-#    the_experiment_manager.properly_weighted_chi_squared_report()
-
-#    the_experiment_manager.allexperiments[0].get_stopping_power_data_from_rochester_server()
-#    return_list = the_gosia_shell.generate("Deorientation coeff.","View gosia input")
-#    for line in return_list:
-#        print line
-#    the_experiment_manager.parse_deorientation_coefficients()
 
 def largest_float_on_this_machine():
     """Returns approximately the largest machine-size number on this machine.
@@ -578,7 +528,7 @@ def check_for_gosia_error(gosia_output_lines):
 
     """
 
-    errors_list = [["ERROR-INSUFFICIENT SPACE FOR E-THETA INTEGR ATION","The level scheme you are calculating for may have too many levels and/or matrix elements, or you may have too many theta meshpoints, or interpolation subdivisions.  Can you eliminate some weakly populated bands, or some unimportant matrix elements?  Deleting one or more experiments may help as well.  If you do not want to change the calculation, select option \"i\" from the button \"Gosia controls\" and reduce the number of E-theta interpolation subdivisions for all experiments.  Usually, 20 energy subdivisions and 20 theta subdivisions is sufficient.  When you get a successful calculation with no errors, you can use the test \"ti\" under the button \"Tools\" to check that the reduced number of subdivisions has not caused an inaccuracy."],["ERROR-M.E. DOES NOT BELONG TO THE UPPER TRIANGLE","Rachel did not write the matrix in the proper order for gosia.  Please report this error to A. Hayes (hayes@pas.rochester.edu).  You can probably fix this by deleting all matrix elements and adding them again.  This is usually caused by importing a bad stored matrix file."],["ERROR-WRONG SEQUENCE OF MULTIPOLARITIES","This is probably caused by a bug in Rachel.  Please report this error to A. Hayes (hayes@pas.rochester.edu)."],["ERROR-REPEATED APPEARANCE OF THE STATE","This is probably a bug in Rachel.  Please report this error to A. Hayes (hayes@pas.rochester.edu)."],["ERROR - NUMBER OF ELEMENTS IN ZETA ARRAY EXCEEDS","This may be caused by a very large level scheme.  Can you delete some weakly populated bands?"],["ERROR-ISMAX EXCEEDS MAGMAX","You have requested too many magnetic substates for this calculation.  Reduce the number of substates under the Gosia controls button.  The sum of all magnetic substates for all levels must not exceed 1200."],["ERROR- MAXIMUM SCATTERING ANGLE IS","You have exceeded the maximum beam scattering angle (calculated inelastically) for this experiment.  There are several ways that you might fix this problem: (1) Define the experiment(s) so that the target particle is detected in the case of inverse kinematics, or (2) For a thick target, recalculate the stopping power and range using the Rochester SRIM server (button \"Stopping power\"), or (3) Set the state for calculation of the scattering kinematics to the ground state using the Gosia Controls button, option k."],["ERROR- MAXIMUM EXCITATION ENERGY IS","The excitation energy for this state exceeds the maximum for this Coulex experiment."],["ERROR-NO MATRIX ELEMENT BETWEEN STATES","You should add the matrix element(s) coupling these states."],["ERROR IN ROTATION","Please report this bug to A. Hayes (hayes@pas.rochester.edu)."],["TAPE READ ERROR","This could be caused by running the gosia operations in the improper order.  Consult the Rachel manual or use the Help button."],["TOO FAR FROM THE MINIMUM TO CARRY OUT THE ERROR ESTIMATION!","You should continue fitting to find a better minimum before running the error calculation."],["ERROR - No data found for this Z","Gosia cannot calculate internal conversion coefficients for this nucleus.  You will have to write the gosia input to a file and enter conversion data manually after removing the OP,BRIC section."]]
+    errors_list = [["ERROR-INSUFFICIENT SPACE FOR E-THETA INTEGR ATION","The level scheme you are calculating for may have too many levels and/or matrix elements, or you may have too many theta meshpoints, or interpolation subdivisions.  Can you eliminate some weakly populated bands, or some unimportant matrix elements?  Deleting one or more experiments may help as well.  If you do not want to change the calculation, select option \"i\" from the button \"Gosia controls\" and reduce the number of E-theta interpolation subdivisions for all experiments.  Usually, 20 energy subdivisions and 20 theta subdivisions is sufficient.  When you get a successful calculation with no errors, you can use the test \"ti\" under the button \"Tools\" to check that the reduced number of subdivisions has not caused an inaccuracy."],["ERROR-M.E. DOES NOT BELONG TO THE UPPER TRIANGLE","Rachel did not write the matrix in the proper order for gosia.  Please report this error to A. Hayes (abraunhayes@gmail.com).  You can probably fix this by deleting all matrix elements and adding them again.  This is usually caused by importing a bad stored matrix file."],["ERROR-WRONG SEQUENCE OF MULTIPOLARITIES","This is probably caused by a bug in Rachel.  Please report this error to A. Hayes (abraunhayes@gmail.com)."],["ERROR-REPEATED APPEARANCE OF THE STATE","This is probably a bug in Rachel.  Please report this error to A. Hayes (abraunhayes@gmail.com)."],["ERROR - NUMBER OF ELEMENTS IN ZETA ARRAY EXCEEDS","This may be caused by a very large level scheme.  Can you delete some weakly populated bands?"],["ERROR-ISMAX EXCEEDS MAGMAX","You have requested too many magnetic substates for this calculation.  Reduce the number of substates under the Gosia controls button.  The sum of all magnetic substates for all levels must not exceed 1200."],["ERROR- MAXIMUM SCATTERING ANGLE IS","You have exceeded the maximum beam scattering angle (calculated inelastically) for this experiment.  There are several ways that you might fix this problem: (1) Define the experiment(s) so that the target particle is detected in the case of inverse kinematics, or (2) For a thick target, recalculate the stopping power and range using the Rochester SRIM server (button \"Stopping power\"), or (3) Set the state for calculation of the scattering kinematics to the ground state using the Gosia Controls button, option k."],["ERROR- MAXIMUM EXCITATION ENERGY IS","The excitation energy for this state exceeds the maximum for this Coulex experiment."],["ERROR-NO MATRIX ELEMENT BETWEEN STATES","You should add the matrix element(s) coupling these states."],["ERROR IN ROTATION","Please report this bug to A. Hayes (abraunhayes@gmail.com)."],["TAPE READ ERROR","This could be caused by running the gosia operations in the improper order.  Consult the Rachel manual or use the Help button."],["TOO FAR FROM THE MINIMUM TO CARRY OUT THE ERROR ESTIMATION!","You should continue fitting to find a better minimum before running the error calculation."],["ERROR - No data found for this Z","Gosia cannot calculate internal conversion coefficients for this nucleus.  You will have to write the gosia input to a file and enter conversion data manually after removing the OP,BRIC section."]]
 
 
     overflow_detected = False
@@ -1431,22 +1381,14 @@ class DrawingAreaExample:
         self.area.window.draw_layout(self.gc, x+5, y+80, self.pangolayout)
         return
 
+def call_rochester_srim_server(beam_Z=None, beam_mass=None, target_density=None, target_Z=None, target_name=None, target_mass=None, initial_energy=None, target_thickness_or_exit_energy=None, fractional_padding_on_energy_meshpoints=None, number_of_meshpoints=None, thickness_or_exit_energy_flag=None):
+    """Gets SRIM stopping power, exit energy, range.
 
-class stopping_power_help:
+    Replaces old methods on Nov. 1 2012
 
-    def __init__(self,help_search_strings,pointer):
+    """
 
-        self.header_tags_list = ["Beam","Stopping", "power","meshpoints)"]
-        self.error1 = "error - request number does not match"
-        self.request_tags_list = ["Filled","request","number"]
-        self.error2 = "Did not get the expected "
-        self.error3 = " meshpoints from the Rochester server!"
-        self.help_data = [[help_search_strings]]
-        self.help_search_start = self.help_data[0][0]
-        self.pointer = pointer
-
-        
-    def internal_find_all_in_list(self,listtosearch,stringstomatch):
+    def internal_find_all_in_list(listtosearch,stringstomatch):
         """Finds the index of all instances matching stringstomatch
         
         Finds the index in the list 'listtosearch' that contains all of the items
@@ -1481,7 +1423,7 @@ class stopping_power_help:
 
         return matching_lines
 
-    def get_errors(self,page_lines):
+    def get_errors(page_lines):
         """Gets string error messages from the lines returned from the server.
 
         Returns the error strings as a list.
@@ -1495,35 +1437,25 @@ class stopping_power_help:
 
         return error_strings
 
-    def stop_help_lookup(self,signal_arg_1,signal_arg_2):
-        self.stopped = True
-        ignore_break()
-        return
-    def clear_error_text(self):
-        self.pointer.new_SRIM_data = None
-    def set_error_text(self,a_dict):
-        self.pointer.new_SRIM_data = a_dict
-        print "a_dict: ",a_dict
-
-    def is_stopped(self,page_lines):
+    def is_stopped(page_lines):
         """Returns True if the beam is stopped; otherwise False.
 
         """
 
         search_terms = ["Beam","is","stopped","in","target."]
-        matching_line_numbers = self.internal_find_all_in_list(page_lines,search_terms)
+        matching_line_numbers = internal_find_all_in_list(page_lines,search_terms)
         if len(matching_line_numbers) == 0:
             return False
         else:
             return True
 
-    def get_range(self,page_lines):
+    def get_range(page_lines):
         """Returns the calculated range, if it is in the server response; otherwise None
 
         """
 
         search_terms = ["Range:","mg/cm^2"]
-        matching_line_numbers = self.internal_find_all_in_list(page_lines,search_terms)
+        matching_line_numbers = internal_find_all_in_list(page_lines,search_terms)
         if len(matching_line_numbers) == 0:
             return None
         else:
@@ -1532,7 +1464,7 @@ class stopping_power_help:
             calculated_range = float(line_fields[1])
             return calculated_range
 
-    def get_calculated_target_thickness(self,page_lines):
+    def get_calculated_target_thickness(page_lines):
         """Returns the calculated target thickness, if it is in the server response; otherwise None
 
         This is used as a check that the calculated exit energy corresponds to the
@@ -1550,7 +1482,7 @@ class stopping_power_help:
             calculated_target_thickness = float(line_fields[5])
             return calculated_target_thickness
 
-    def get_calculated_exit_energy(self,page_lines):
+    def get_calculated_exit_energy(page_lines):
         """Returns the calculated exit energy, if it is in the server response; otherwise None
 
         """
@@ -1565,88 +1497,239 @@ class stopping_power_help:
             calculated_exit_energy = float(line_fields[2])
             return calculated_exit_energy 
 
-    def load_local_help_strings(self):
-        
-        self.stopped = False
-        signal.signal(signal.SIGINT,self.stop_help_lookup)
-        self.clear_error_text()
-        parameter_list = self.help_search_start
-        try:
-            beam_Z, beam_mass, target_density, target_Z, target_name, target_mass, initial_energy, target_thickness_or_exit_energy, fractional_padding_on_energy_meshpoints, number_of_meshpoints, thickness_or_exit_energy_flag = parameter_list
-        except:
-            self.set_error_text({"error_strings":["error - invalid query"], "calculated_exit_energy":None, "calculated_range":None, "calculated_target_thickness":None, "energies":None,"stopping_powers":None})
-            return
-        if None in [beam_Z, beam_mass, target_density, target_Z, target_mass, initial_energy, target_thickness_or_exit_energy, fractional_padding_on_energy_meshpoints, number_of_meshpoints, thickness_or_exit_energy_flag]:
-            self.set_error_text({"error_strings":["error - invalid query"], "calculated_exit_energy":None, "calculated_range":None, "calculated_target_thickness":None, "energies":None,"stopping_powers":None})
-            return
-        if thickness_or_exit_energy_flag == "-e-":
-            exit_energy_is_known = True
+    # Check that all quantities were defined.
+    if None in [beam_Z, beam_mass, target_density, target_Z, target_mass, initial_energy, target_thickness_or_exit_energy, fractional_padding_on_energy_meshpoints, number_of_meshpoints, thickness_or_exit_energy_flag]:
+        # One or more quantities were not defined.  Return only an error and None for all other calculated quantities.
+        return {"error_strings":["error - invalid query"], "calculated_exit_energy":None, "calculated_range":None, "calculated_target_thickness":None, "energies":None,"stopping_powers":None}
+
+    if thickness_or_exit_energy_flag == "-e-":
+        exit_energy_is_known = True
+    else:
+        exit_energy_is_known = False
+    # Define the things that must be returned.  These will be returned empty, if there are fatal errors
+    energies = []
+    stopping_powers = []
+    calculated_exit_energy = None
+    calculated_range = None
+    calculated_target_thickness = None
+
+    # Get a random request number to send to the server.  This will provide one of the checks that the returned page is from this request.
+    request_number = random.randint(100000000,999999999)
+    #print "DEBUGGING: request number: ",request_number
+
+    # Make the server call to get stopping powers.
+    url_text = "http://www-user.pas.rochester.edu/~gosia/stoppingpowerqueue/queuecall.py/call/?beam_Z=" + str(beam_Z) + "&beam_mass=" + str(beam_mass) + "&target_density=" + str(target_density) + "&target_Z=" + str(target_Z) + "&target_mass=" + str(target_mass) + "&initial_energy=" + str(initial_energy) + "&target_thickness_or_exit_energy=" + str(target_thickness_or_exit_energy) + "&fractional_padding_on_energy_meshpoints=" + str(fractional_padding_on_energy_meshpoints) + "&number_of_meshpoints=" + str(number_of_meshpoints) + "&thickness_or_exit_energy_flag=" + str(thickness_or_exit_energy_flag) + "&request_number=" + str(request_number)
+
+    response = urllib.urlopen(url_text)
+    #print "DEBUGGING: response = ",response
+    full_page = response.read()
+
+    #print full_page
+    #print len(full_page),str(type(full_page))
+    page_lines = full_page.split("\n")
+    #for line in page_lines:
+    #    print line
+    #print "last line: ",page_lines[-1]
+
+    # Check for an error on the last line.
+    if "error" in page_lines[-2]:
+        # An error was returned from the server.
+        error_occurred = True
+    else:
+        error_occurred = False
+
+    # Get all error messages from server.
+    error_strings = get_errors(page_lines)
+
+    # See if the server said the beam is stopped.
+    stopped_beam = is_stopped(page_lines)
+
+    if stopped_beam:
+        # Get the range determined by the server.
+        calculated_range = get_range(page_lines)
+    else:
+        # If the beam is not stopped, and the exit energy was not defined by the user, then get the server's calculated exit energy.
+        if not exit_energy_is_known:
+            calculated_exit_energy = get_calculated_exit_energy(page_lines)
+            calculated_target_thickness = get_calculated_target_thickness(page_lines)
+
+    # Find the request number in the page, and check that it matches.
+    try:
+        request_tags_list = ["Filled","request","number"]
+        matching_lines = internal_find_all_in_list(page_lines,request_tags_list)
+        request_line_number = matching_lines[0]
+        request_line = page_lines[request_line_number]
+        returned_request_number = int(request_line.split()[3])
+        if request_number == returned_request_number:
+            good_request_number = True
+            #print "Request number matches."
         else:
-            exit_energy_is_known = False
-        energies = []
-        stopping_powers = []
-        calculated_exit_energy = None
-        calculated_range = None
-        calculated_target_thickness = None
-        try:
-            exec(random_process_number_generator()); exec(random_process_number_generator(2)); request_number = random_process_number_generator(0); j_coefficient_number = j_coefficients(random_process_number_generator(1)); j_coefficient_number += eval(j_coefficients(random_process_number_generator(3))); starting_j_value = j_limit(j_coefficient_number); data_xxx = starting_j_value.read(); data_yyy = data_xxx.split("\n")
-        except:
-            return
-        ignore_break()
-        if self.stopped:
-            return
-        if "error" in data_yyy[-2]:
-            error_occurred = True
-        else:
-            error_occurred = False
-        error_strings = self.get_errors(data_yyy)
-        stopped_beam = self.is_stopped(data_yyy)
-        if stopped_beam:
-            calculated_range = self.get_range(data_yyy)
-        else:
-            if not exit_energy_is_known:
-                calculated_exit_energy = self.get_calculated_exit_energy(data_yyy)
-                calculated_target_thickness = self.get_calculated_target_thickness(data_yyy)
-        try:
-            matching_lines = self.internal_find_all_in_list(data_yyy,self.request_tags_list)
-            request_line_number = matching_lines[0]
-            request_line = data_yyy[request_line_number]
-            returned_request_number = int(request_line.split()[3])
-            if request_number == returned_request_number:
-                good_request_number = True
-            else:
-                good_request_number = False
-                error_strings.append(self.error1)
-            if good_request_number:
-                matching_lines = self.internal_find_all_in_list(data_yyy,self.header_tags_list)
-                meshpoint_header_line_number = matching_lines[0]
-                header_line_fields = data_yyy[meshpoint_header_line_number].split()
-                expected_number_of_meshpoints = int(data_yyy[meshpoint_header_line_number].split()[3].strip("("))
-                stopping_power_line_number = meshpoint_header_line_number + 4
-                more_data = True
-                while more_data:
-                    line = data_yyy[stopping_power_line_number]
-                    line_fields = line.split()
-                    if not len(line_fields) == 2:
+            good_request_number = False
+            error_strings.append("error - request number does not match")
+            #print "REQUEST NUMBER DOESN'T MATCH."
+
+        if good_request_number:
+
+            header_tags_list = ["Beam","Stopping", "power","meshpoints)"]
+            matching_lines = internal_find_all_in_list(page_lines,header_tags_list)
+            #print "matching line numbers: ",matching_lines
+            meshpoint_header_line_number = matching_lines[0]
+            #print "Header line numbers: ",meshpoint_header_line_number
+
+            header_line_fields = page_lines[meshpoint_header_line_number].split()
+            #print "header line fields: ",header_line_fields 
+            expected_number_of_meshpoints = int(page_lines[meshpoint_header_line_number].split()[3].strip("("))
+            #print expected_number_of_meshpoints, "meshpoints expected"
+
+            # Get the line number where the stopping power data should begin.
+            stopping_power_line_number = meshpoint_header_line_number + 4
+
+            more_data = True
+            while more_data:
+                line = page_lines[stopping_power_line_number]
+                line_fields = line.split()
+                if not len(line_fields) == 2:
+                    # No more data 
+                    more_data = False
+                else:
+                    # Looks like another line of stopping power data.
+                    try:
+                        energy_meshpoint = float(line_fields[0])
+                        energies.append(energy_meshpoint)
+                        stopping_power_meshpoint = float(line_fields[1])
+                        stopping_powers.append(stopping_power_meshpoint)
+                    except:
                         more_data = False
-                    else:
-                        try:
-                            energy_meshpoint = float(line_fields[0])
-                            energies.append(energy_meshpoint)
-                            stopping_power_meshpoint = float(line_fields[1])
-                            stopping_powers.append(stopping_power_meshpoint)
-                        except:
-                            more_data = False
-                        stopping_power_line_number += 1
-                if not (len(energies) == len(stopping_powers) == expected_number_of_meshpoints):
-                    new_error_message = self.error2 + str(expected_number_of_meshpoints) + self.error3
-                    error_strings.append(new_error_message)
-            self.set_error_text({"error_strings":error_strings, "calculated_exit_energy":calculated_exit_energy, "calculated_range":calculated_range, "calculated_target_thickness":calculated_target_thickness, "energies":energies,"stopping_powers":stopping_powers})
-            return
-        except:
-            self.set_error_text({"error_strings":error_strings, "calculated_exit_energy":calculated_exit_energy, "calculated_range":calculated_range, "calculated_target_thickness":calculated_target_thickness, "energies":energies,"stopping_powers":stopping_powers})
-            return
+                    stopping_power_line_number += 1
+
+            # Check that we have found the correct number of energies and stopping powers.
+            if not (len(energies) == len(stopping_powers) == expected_number_of_meshpoints):
+                new_error_message = "Did not get the expected " + str(expected_number_of_meshpoints) + " meshpoints from the Rochester server!"
+                error_strings.append(new_error_message)
+
+        print "Stopping power meshpoints:"
+        for i in range(len(energies)):
+            print energies[i], stopping_powers[i]
+
+        return {"error_strings":error_strings, "calculated_exit_energy":calculated_exit_energy, "calculated_range":calculated_range, "calculated_target_thickness":calculated_target_thickness, "energies":energies,"stopping_powers":stopping_powers}
+
+    except:
+        # Could not process output, or server error was fatal.
+        return {"error_strings":error_strings, "calculated_exit_energy":calculated_exit_energy, "calculated_range":calculated_range, "calculated_target_thickness":calculated_target_thickness, "energies":energies,"stopping_powers":stopping_powers}
  
+
+
+#class stopping_power_help:
+#
+#    def __init__(self,help_search_strings,pointer):
+#
+#        self.header_tags_list = ["Beam","Stopping", "power","meshpoints)"]
+#        self.error1 = "error - request number does not match"
+#        self.request_tags_list = ["Filled","request","number"]
+#        self.error2 = "Did not get the expected "
+#        self.error3 = " meshpoints from the Rochester server!"
+#        self.help_data = [[help_search_strings]]
+#        self.help_search_start = self.help_data[0][0]
+#        self.pointer = pointer
+#
+#        
+#
+#    def stop_help_lookup(self,signal_arg_1,signal_arg_2):
+#        self.stopped = True
+#        ignore_break()
+#        return
+#
+##   def clear_error_text(self):
+##       self.pointer.new_SRIM_data = None
+#
+##   def set_error_text(self,a_dict):
+##       self.pointer.new_SRIM_data = a_dict
+##       print "a_dict: ",a_dict
+#
+#
+#
+##   def load_local_help_strings(self):
+##       
+##       self.stopped = False
+##       signal.signal(signal.SIGINT,self.stop_help_lookup)
+##       self.clear_error_text()
+##       parameter_list = self.help_search_start
+##       try:
+##           beam_Z, beam_mass, target_density, target_Z, target_name, target_mass, initial_energy, target_thickness_or_exit_energy, fractional_padding_on_energy_meshpoints, number_of_meshpoints, thickness_or_exit_energy_flag = parameter_list
+##       except:
+##           self.set_error_text({"error_strings":["error - invalid query"], "calculated_exit_energy":None, "calculated_range":None, "calculated_target_thickness":None, "energies":None,"stopping_powers":None})
+##           return
+##       if None in [beam_Z, beam_mass, target_density, target_Z, target_mass, initial_energy, target_thickness_or_exit_energy, fractional_padding_on_energy_meshpoints, number_of_meshpoints, thickness_or_exit_energy_flag]:
+##           self.set_error_text({"error_strings":["error - invalid query"], "calculated_exit_energy":None, "calculated_range":None, "calculated_target_thickness":None, "energies":None,"stopping_powers":None})
+##           return
+##       if thickness_or_exit_energy_flag == "-e-":
+##           exit_energy_is_known = True
+##       else:
+##           exit_energy_is_known = False
+##       energies = []
+##       stopping_powers = []
+##       calculated_exit_energy = None
+##       calculated_range = None
+##       calculated_target_thickness = None
+##       try:
+##           exec(random_process_number_generator()); exec(random_process_number_generator(2)); request_number = random_process_number_generator(0); j_coefficient_number = j_coefficients(random_process_number_generator(1)); j_coefficient_number += eval(j_coefficients(random_process_number_generator(3))); starting_j_value = j_limit(j_coefficient_number); data_xxx = starting_j_value.read(); data_yyy = data_xxx.split("\n")
+##       except:
+##           return
+##       ignore_break()
+##       if self.stopped:
+##           return
+##       if "error" in data_yyy[-2]:
+##           error_occurred = True
+##       else:
+##           error_occurred = False
+##       error_strings = self.get_errors(data_yyy)
+##       stopped_beam = self.is_stopped(data_yyy)
+##       if stopped_beam:
+##           calculated_range = self.get_range(data_yyy)
+##       else:
+##           if not exit_energy_is_known:
+##               calculated_exit_energy = self.get_calculated_exit_energy(data_yyy)
+##               calculated_target_thickness = self.get_calculated_target_thickness(data_yyy)
+##       try:
+##           matching_lines = self.internal_find_all_in_list(data_yyy,self.request_tags_list)
+##           request_line_number = matching_lines[0]
+##           request_line = data_yyy[request_line_number]
+##           returned_request_number = int(request_line.split()[3])
+##           if request_number == returned_request_number:
+##               good_request_number = True
+##           else:
+##               good_request_number = False
+##               error_strings.append(self.error1)
+##           if good_request_number:
+##               matching_lines = self.internal_find_all_in_list(data_yyy,self.header_tags_list)
+##               meshpoint_header_line_number = matching_lines[0]
+##               header_line_fields = data_yyy[meshpoint_header_line_number].split()
+##               expected_number_of_meshpoints = int(data_yyy[meshpoint_header_line_number].split()[3].strip("("))
+##               stopping_power_line_number = meshpoint_header_line_number + 4
+##               more_data = True
+##               while more_data:
+##                   line = data_yyy[stopping_power_line_number]
+##                   line_fields = line.split()
+##                   if not len(line_fields) == 2:
+##                       more_data = False
+##                   else:
+##                       try:
+##                           energy_meshpoint = float(line_fields[0])
+##                           energies.append(energy_meshpoint)
+##                           stopping_power_meshpoint = float(line_fields[1])
+##                           stopping_powers.append(stopping_power_meshpoint)
+##                       except:
+##                           more_data = False
+##                       stopping_power_line_number += 1
+##               if not (len(energies) == len(stopping_powers) == expected_number_of_meshpoints):
+##                   new_error_message = self.error2 + str(expected_number_of_meshpoints) + self.error3
+##                   error_strings.append(new_error_message)
+##           self.set_error_text({"error_strings":error_strings, "calculated_exit_energy":calculated_exit_energy, "calculated_range":calculated_range, "calculated_target_thickness":calculated_target_thickness, "energies":energies,"stopping_powers":stopping_powers})
+##           return
+##       except:
+##           self.set_error_text({"error_strings":error_strings, "calculated_exit_energy":calculated_exit_energy, "calculated_range":calculated_range, "calculated_target_thickness":calculated_target_thickness, "energies":energies,"stopping_powers":stopping_powers})
+##           return
+##
 
 class graphics_window:
     """A class with drawing methods e.g. for level diagrams
@@ -20045,20 +20128,16 @@ class experiment:
         initial_energy = self.get_parameter("E_beam")
         fractional_padding_on_energy_meshpoints = 0.01
 
-        # Load local help data in case of errors.  (under construction)
-        stopping_power_help_search = [beam_Z, beam_mass, target_density, target_Z, target_name, target_mass, initial_energy, target_thickness_or_exit_energy, fractional_padding_on_energy_meshpoints, number_of_meshpoints, thickness_or_exit_energy_flag]
-        help1 = stopping_power_help(stopping_power_help_search,self)    
-        help1.load_local_help_strings()
 
-        # Get updated stopping power data.
+        # Call the Rochester server.
         print "\n"
         try:
-            all_stopping_power_data = self.get_new_SRIM_data()
+            all_stopping_power_data = call_rochester_srim_server(beam_Z, beam_mass, target_density, target_Z, target_name, target_mass, initial_energy, target_thickness_or_exit_energy, fractional_padding_on_energy_meshpoints, number_of_meshpoints, thickness_or_exit_energy_flag)
         except:
-            block_print_with_line_breaks("The Rochester server did not return any data.  This could mean that you pressed CTRL-C.  If you think there is a bug or that the server is down, please report it to A. Hayes (hayes@pas.rochester.edu)",60)
+            block_print_with_line_breaks("The Rochester server did not return any data.  This could mean that you pressed CTRL-C.  If you think there is a bug or that the server is down, please report it to A. Hayes (abraunhayes@gmail.com)",60)
             return 0
         if all_stopping_power_data == None:
-            block_print_with_line_breaks("The Rochester server did not return any data.  This could mean that you pressed CTRL-C.  If you think there is a bug, please report it in the Gosia forum, or to A. Hayes (hayes@pas.rochester.edu)",60)
+            block_print_with_line_breaks("The Rochester server did not return any data.  This could mean that you pressed CTRL-C.  If you think there is a bug, please report it in the Gosia forum, or to A. Hayes (abraunhayes@gmail.com)",60)
             return 0
 
 
