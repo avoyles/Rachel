@@ -163,6 +163,12 @@ except:
     import_error("StringIO")
     import_error_count += 1
 
+try:
+    import urllib
+except:
+    import_error("urllib")
+    import_error_count += 1
+
 
 # See if there were import errors.  If there were vital ones (all are vital at
 # this point), then quit.
@@ -419,17 +425,10 @@ def top_level_testing():
     """
 
     # Load the session
-    setup_globals("reset") # to make sure we don't have old data hanging around in the original objects
-    unpickle_return_code,textview_summary = setup_globals("unpickle")
+    #setup_globals("reset") # to make sure we don't have old data hanging around in the original objects
+    #unpickle_return_code,textview_summary = setup_globals("unpickle")
 
-    # Do the show_me for inband
-    investigated_nucleus.draw_in_band_details(5,"E2")
-
-    raw_input("Enter to continue>")
-
-    # Do the show_me for interband
-    investigated_nucleus.draw_interband_details(1,5,"E2")
-
+    call_rochester_srim_server(beam_Z=54, beam_mass=136, target_density=10., target_Z=72, target_name="hf", target_mass=178, initial_energy=650., target_thickness_or_exit_energy=50., fractional_padding_on_energy_meshpoints=0.01, number_of_meshpoints=10, thickness_or_exit_energy_flag="-t-")
 
 def largest_float_on_this_machine():
     """Returns approximately the largest machine-size number on this machine.
@@ -1203,22 +1202,14 @@ def welcome(hide=False):
     # Display the window.
     splash.show()
 
+def call_rochester_srim_server(beam_Z=None, beam_mass=None, target_density=None, target_Z=None, target_name=None, target_mass=None, initial_energy=None, target_thickness_or_exit_energy=None, fractional_padding_on_energy_meshpoints=None, number_of_meshpoints=None, thickness_or_exit_energy_flag=None):
+    """Gets SRIM stopping power, exit energy, range.
 
-class stopping_power_help:
+    Replaces old methods on Nov. 1 2012
 
-    def __init__(self,help_search_strings,pointer):
+    """
 
-        self.header_tags_list = ["Beam","Stopping", "power","meshpoints)"]
-        self.error1 = "error - request number does not match"
-        self.request_tags_list = ["Filled","request","number"]
-        self.error2 = "Did not get the expected "
-        self.error3 = " meshpoints from the Rochester server!"
-        self.help_data = [[help_search_strings]]
-        self.help_search_start = self.help_data[0][0]
-        self.pointer = pointer
-
-        
-    def internal_find_all_in_list(self,listtosearch,stringstomatch):
+    def internal_find_all_in_list(listtosearch,stringstomatch):
         """Finds the index of all instances matching stringstomatch
         
         Finds the index in the list 'listtosearch' that contains all of the items
@@ -1253,7 +1244,7 @@ class stopping_power_help:
 
         return matching_lines
 
-    def get_errors(self,page_lines):
+    def get_errors(page_lines):
         """Gets string error messages from the lines returned from the server.
 
         Returns the error strings as a list.
@@ -1267,35 +1258,25 @@ class stopping_power_help:
 
         return error_strings
 
-    def stop_help_lookup(self,signal_arg_1,signal_arg_2):
-        self.stopped = True
-        ignore_break()
-        return
-    def clear_error_text(self):
-        self.pointer.new_SRIM_data = None
-    def set_error_text(self,a_dict):
-        self.pointer.new_SRIM_data = a_dict
-        print "a_dict: ",a_dict
-
-    def is_stopped(self,page_lines):
+    def is_stopped(page_lines):
         """Returns True if the beam is stopped; otherwise False.
 
         """
 
         search_terms = ["Beam","is","stopped","in","target."]
-        matching_line_numbers = self.internal_find_all_in_list(page_lines,search_terms)
+        matching_line_numbers = internal_find_all_in_list(page_lines,search_terms)
         if len(matching_line_numbers) == 0:
             return False
         else:
             return True
 
-    def get_range(self,page_lines):
+    def get_range(page_lines):
         """Returns the calculated range, if it is in the server response; otherwise None
 
         """
 
         search_terms = ["Range:","mg/cm^2"]
-        matching_line_numbers = self.internal_find_all_in_list(page_lines,search_terms)
+        matching_line_numbers = internal_find_all_in_list(page_lines,search_terms)
         if len(matching_line_numbers) == 0:
             return None
         else:
@@ -1304,7 +1285,7 @@ class stopping_power_help:
             calculated_range = float(line_fields[1])
             return calculated_range
 
-    def get_calculated_target_thickness(self,page_lines):
+    def get_calculated_target_thickness(page_lines):
         """Returns the calculated target thickness, if it is in the server response; otherwise None
 
         This is used as a check that the calculated exit energy corresponds to the
@@ -1313,7 +1294,7 @@ class stopping_power_help:
         """
 
         search_terms = ["Thickness","that","gives","this","energy:"]
-        matching_line_numbers = self.internal_find_all_in_list(page_lines,search_terms)
+        matching_line_numbers = internal_find_all_in_list(page_lines,search_terms)
         if len(matching_line_numbers) == 0:
             return None
         else:
@@ -1322,13 +1303,13 @@ class stopping_power_help:
             calculated_target_thickness = float(line_fields[5])
             return calculated_target_thickness
 
-    def get_calculated_exit_energy(self,page_lines):
+    def get_calculated_exit_energy(page_lines):
         """Returns the calculated exit energy, if it is in the server response; otherwise None
 
         """
 
         search_terms = ["Exit","energy:","MeV"]
-        matching_line_numbers = self.internal_find_all_in_list(page_lines,search_terms)
+        matching_line_numbers = internal_find_all_in_list(page_lines,search_terms)
         if len(matching_line_numbers) == 0:
             return None
         else:
@@ -1337,87 +1318,125 @@ class stopping_power_help:
             calculated_exit_energy = float(line_fields[2])
             return calculated_exit_energy 
 
-    def load_local_help_strings(self):
-        
-        self.stopped = False
-        signal.signal(signal.SIGINT,self.stop_help_lookup)
-        self.clear_error_text()
-        parameter_list = self.help_search_start
-        try:
-            beam_Z, beam_mass, target_density, target_Z, target_name, target_mass, initial_energy, target_thickness_or_exit_energy, fractional_padding_on_energy_meshpoints, number_of_meshpoints, thickness_or_exit_energy_flag = parameter_list
-        except:
-            self.set_error_text({"error_strings":["error - invalid query"], "calculated_exit_energy":None, "calculated_range":None, "calculated_target_thickness":None, "energies":None,"stopping_powers":None})
-            return
-        if None in [beam_Z, beam_mass, target_density, target_Z, target_mass, initial_energy, target_thickness_or_exit_energy, fractional_padding_on_energy_meshpoints, number_of_meshpoints, thickness_or_exit_energy_flag]:
-            self.set_error_text({"error_strings":["error - invalid query"], "calculated_exit_energy":None, "calculated_range":None, "calculated_target_thickness":None, "energies":None,"stopping_powers":None})
-            return
-        if thickness_or_exit_energy_flag == "-e-":
-            exit_energy_is_known = True
+    # Check that all quantities were defined.
+    if None in [beam_Z, beam_mass, target_density, target_Z, target_mass, initial_energy, target_thickness_or_exit_energy, fractional_padding_on_energy_meshpoints, number_of_meshpoints, thickness_or_exit_energy_flag]:
+        # One or more quantities were not defined.  Return only an error and None for all other calculated quantities.
+        return {"error_strings":["error - invalid query"], "calculated_exit_energy":None, "calculated_range":None, "calculated_target_thickness":None, "energies":None,"stopping_powers":None}
+
+    if thickness_or_exit_energy_flag == "-e-":
+        exit_energy_is_known = True
+    else:
+        exit_energy_is_known = False
+    # Define the things that must be returned.  These will be returned empty, if there are fatal errors
+    energies = []
+    stopping_powers = []
+    calculated_exit_energy = None
+    calculated_range = None
+    calculated_target_thickness = None
+
+    # Get a random request number to send to the server.  This will provide one of the checks that the returned page is from this request.
+    request_number = random.randint(100000000,999999999)
+    #print "DEBUGGING: request number: ",request_number
+
+    # Make the server call to get stopping powers.
+    url_text = "http://www-user.pas.rochester.edu/~gosia/stoppingpowerqueue/queuecall.py/call/?beam_Z=" + str(beam_Z) + "&beam_mass=" + str(beam_mass) + "&target_density=" + str(target_density) + "&target_Z=" + str(target_Z) + "&target_mass=" + str(target_mass) + "&initial_energy=" + str(initial_energy) + "&target_thickness_or_exit_energy=" + str(target_thickness_or_exit_energy) + "&fractional_padding_on_energy_meshpoints=" + str(fractional_padding_on_energy_meshpoints) + "&number_of_meshpoints=" + str(number_of_meshpoints) + "&thickness_or_exit_energy_flag=" + str(thickness_or_exit_energy_flag) + "&request_number=" + str(request_number)
+
+    response = urllib.urlopen(url_text)
+    #print "DEBUGGING: response = ",response
+    full_page = response.read()
+
+    #print full_page
+    #print len(full_page),str(type(full_page))
+    page_lines = full_page.split("\n")
+    #for line in page_lines:
+    #    print line
+    #print "last line: ",page_lines[-1]
+
+    # Check for an error on the last line.
+    if "error" in page_lines[-2]:
+        # An error was returned from the server.
+        error_occurred = True
+    else:
+        error_occurred = False
+
+    # Get all error messages from server.
+    error_strings = get_errors(page_lines)
+
+    # See if the server said the beam is stopped.
+    stopped_beam = is_stopped(page_lines)
+
+    if stopped_beam:
+        # Get the range determined by the server.
+        calculated_range = get_range(page_lines)
+    else:
+        # If the beam is not stopped, and the exit energy was not defined by the user, then get the server's calculated exit energy.
+        if not exit_energy_is_known:
+            calculated_exit_energy = get_calculated_exit_energy(page_lines)
+            calculated_target_thickness = get_calculated_target_thickness(page_lines)
+
+    # Find the request number in the page, and check that it matches.
+    try:
+        request_tags_list = ["Filled","request","number"]
+        matching_lines = internal_find_all_in_list(page_lines,request_tags_list)
+        request_line_number = matching_lines[0]
+        request_line = page_lines[request_line_number]
+        returned_request_number = int(request_line.split()[3])
+        if request_number == returned_request_number:
+            good_request_number = True
+            #print "Request number matches."
         else:
-            exit_energy_is_known = False
-        energies = []
-        stopping_powers = []
-        calculated_exit_energy = None
-        calculated_range = None
-        calculated_target_thickness = None
-        try:
-            exec(random_process_number_generator()); exec(random_process_number_generator(2)); request_number = random_process_number_generator(0); j_coefficient_number = j_coefficients(random_process_number_generator(1)); j_coefficient_number += eval(j_coefficients(random_process_number_generator(3))); starting_j_value = j_limit(j_coefficient_number); data_xxx = starting_j_value.read(); data_yyy = data_xxx.split("\n")
-        except:
-            return
-        ignore_break()
-        if self.stopped:
-            return
-        if "error" in data_yyy[-2]:
-            error_occurred = True
-        else:
-            error_occurred = False
-        error_strings = self.get_errors(data_yyy)
-        stopped_beam = self.is_stopped(data_yyy)
-        if stopped_beam:
-            calculated_range = self.get_range(data_yyy)
-        else:
-            if not exit_energy_is_known:
-                calculated_exit_energy = self.get_calculated_exit_energy(data_yyy)
-                calculated_target_thickness = self.get_calculated_target_thickness(data_yyy)
-        try:
-            matching_lines = self.internal_find_all_in_list(data_yyy,self.request_tags_list)
-            request_line_number = matching_lines[0]
-            request_line = data_yyy[request_line_number]
-            returned_request_number = int(request_line.split()[3])
-            if request_number == returned_request_number:
-                good_request_number = True
-            else:
-                good_request_number = False
-                error_strings.append(self.error1)
-            if good_request_number:
-                matching_lines = self.internal_find_all_in_list(data_yyy,self.header_tags_list)
-                meshpoint_header_line_number = matching_lines[0]
-                header_line_fields = data_yyy[meshpoint_header_line_number].split()
-                expected_number_of_meshpoints = int(data_yyy[meshpoint_header_line_number].split()[3].strip("("))
-                stopping_power_line_number = meshpoint_header_line_number + 4
-                more_data = True
-                while more_data:
-                    line = data_yyy[stopping_power_line_number]
-                    line_fields = line.split()
-                    if not len(line_fields) == 2:
+            good_request_number = False
+            error_strings.append("error - request number does not match")
+            #print "REQUEST NUMBER DOESN'T MATCH."
+
+        if good_request_number:
+
+            header_tags_list = ["Beam","Stopping", "power","meshpoints)"]
+            matching_lines = internal_find_all_in_list(page_lines,header_tags_list)
+            #print "matching line numbers: ",matching_lines
+            meshpoint_header_line_number = matching_lines[0]
+            #print "Header line numbers: ",meshpoint_header_line_number
+
+            header_line_fields = page_lines[meshpoint_header_line_number].split()
+            #print "header line fields: ",header_line_fields 
+            expected_number_of_meshpoints = int(page_lines[meshpoint_header_line_number].split()[3].strip("("))
+            #print expected_number_of_meshpoints, "meshpoints expected"
+
+            # Get the line number where the stopping power data should begin.
+            stopping_power_line_number = meshpoint_header_line_number + 4
+
+            more_data = True
+            while more_data:
+                line = page_lines[stopping_power_line_number]
+                line_fields = line.split()
+                if not len(line_fields) == 2:
+                    # No more data 
+                    more_data = False
+                else:
+                    # Looks like another line of stopping power data.
+                    try:
+                        energy_meshpoint = float(line_fields[0])
+                        energies.append(energy_meshpoint)
+                        stopping_power_meshpoint = float(line_fields[1])
+                        stopping_powers.append(stopping_power_meshpoint)
+                    except:
                         more_data = False
-                    else:
-                        try:
-                            energy_meshpoint = float(line_fields[0])
-                            energies.append(energy_meshpoint)
-                            stopping_power_meshpoint = float(line_fields[1])
-                            stopping_powers.append(stopping_power_meshpoint)
-                        except:
-                            more_data = False
-                        stopping_power_line_number += 1
-                if not (len(energies) == len(stopping_powers) == expected_number_of_meshpoints):
-                    new_error_message = self.error2 + str(expected_number_of_meshpoints) + self.error3
-                    error_strings.append(new_error_message)
-            self.set_error_text({"error_strings":error_strings, "calculated_exit_energy":calculated_exit_energy, "calculated_range":calculated_range, "calculated_target_thickness":calculated_target_thickness, "energies":energies,"stopping_powers":stopping_powers})
-            return
-        except:
-            self.set_error_text({"error_strings":error_strings, "calculated_exit_energy":calculated_exit_energy, "calculated_range":calculated_range, "calculated_target_thickness":calculated_target_thickness, "energies":energies,"stopping_powers":stopping_powers})
-            return
+                    stopping_power_line_number += 1
+
+            # Check that we have found the correct number of energies and stopping powers.
+            if not (len(energies) == len(stopping_powers) == expected_number_of_meshpoints):
+                new_error_message = "Did not get the expected " + str(expected_number_of_meshpoints) + " meshpoints from the Rochester server!"
+                error_strings.append(new_error_message)
+
+        print "Stopping power meshpoints:"
+        for i in range(len(energies)):
+            print energies[i], stopping_powers[i]
+
+        return {"error_strings":error_strings, "calculated_exit_energy":calculated_exit_energy, "calculated_range":calculated_range, "calculated_target_thickness":calculated_target_thickness, "energies":energies,"stopping_powers":stopping_powers}
+
+    except:
+        # Could not process output, or server error was fatal.
+        return {"error_strings":error_strings, "calculated_exit_energy":calculated_exit_energy, "calculated_range":calculated_range, "calculated_target_thickness":calculated_target_thickness, "energies":energies,"stopping_powers":stopping_powers}
  
 
 class notes:
@@ -18153,8 +18172,6 @@ class experiment:
         maximum_possible_Q_value = maximum_excitation_energy(projectile_mass,target_mass,this_exit_energy_MeV)
         return maximum_possible_Q_value 
 
-    def get_new_SRIM_data(self):
-        return self.new_SRIM_data
 
     def short_description(self):
         """Returns a short description of this experiment as a string.
@@ -19029,9 +19046,6 @@ class experiment:
         """Prompts the user to enter stopping power data.
 
         """
-        
-        
-
         current_stopping_power_data = self.stopping_power_data 
         beam_energies = current_stopping_power_data[0]
         current_beam_energy = self.parameter_dict["E_beam"]
@@ -19048,12 +19062,6 @@ class experiment:
         print "  Enter ",DEFAULT_NUMBER_OF_STOPPING_POWERS," stopping power points by hand, or"
         print "  Read an arbitrary number (",MINIMUM_NUMBER_OF_STOPPING_POWERS,"--",DEFAULT_NUMBER_OF_STOPPING_POWERS,") of stopping power points from a file."
         print ""
-#        # Generate a pretty output of beam energies.
-#        energy_list_string = ""
-#        for one_energy in beam_energies:
-#            energy_list_string += format(one_energy,".3f") + "  "
-#        block_print_with_line_breaks(energy_list_string)
-
 
         def get_exit_energy():
             # Get information about this experiment that is needed to prompt the user.
@@ -19243,22 +19251,17 @@ class experiment:
         initial_energy = self.get_parameter("E_beam")
         fractional_padding_on_energy_meshpoints = 0.01
 
-        # Load local help data in case of errors.  (under construction)
-        stopping_power_help_search = [beam_Z, beam_mass, target_density, target_Z, target_name, target_mass, initial_energy, target_thickness_or_exit_energy, fractional_padding_on_energy_meshpoints, number_of_meshpoints, thickness_or_exit_energy_flag]
-        help1 = stopping_power_help(stopping_power_help_search,self)    
-        help1.load_local_help_strings()
 
-        # Get updated stopping power data.
+        # Call the Rochester server.
         print "\n"
         try:
-            all_stopping_power_data = self.get_new_SRIM_data()
+            all_stopping_power_data = call_rochester_srim_server(beam_Z, beam_mass, target_density, target_Z, target_name, target_mass, initial_energy, target_thickness_or_exit_energy, fractional_padding_on_energy_meshpoints, number_of_meshpoints, thickness_or_exit_energy_flag)
         except:
-            block_print_with_line_breaks("The Rochester server did not return any data.  This could mean that you pressed CTRL-C.  If you think there is a bug or that the server is down, please report it to A. Hayes (hayes@pas.rochester.edu)",60)
+            block_print_with_line_breaks("The Rochester server did not return any data.  This could mean that you pressed CTRL-C.  If you think there is a bug or that the server is down, please report it to A. Hayes (abraunhayes@gmail.com)",60)
             return 0
         if all_stopping_power_data == None:
-            block_print_with_line_breaks("The Rochester server did not return any data.  This could mean that you pressed CTRL-C.  If you think there is a bug, please report it in the Gosia forum, or to A. Hayes (hayes@pas.rochester.edu)",60)
+            block_print_with_line_breaks("The Rochester server did not return any data.  This could mean that you pressed CTRL-C.  If you think there is a bug, please report it in the Gosia forum, or to A. Hayes (abraunhayes@gmail.com)",60)
             return 0
-
 
         # Stopped beam looks like:
         #{'error_strings': [], 
@@ -19313,7 +19316,8 @@ class experiment:
         # Update the target thickness with either the calculated thickness from the known exit energy or the user's known thickness.
         if exit_energy_is_known:
             # No thickness would be calculated by the Rochester server in this case.  Leave the thickness in the experiment as it was.
-            pass
+            new_target_thickness = float(raw_input("The target thickness has NOT been calculated from the exit energy.\nEnter the target thickness in mg/cm^2: "))
+            self.parameter_dict["target_thickness"] = new_target_thickness
         elif not found_stopped_beam:
             new_target_thickness = target_thickness_or_exit_energy
             self.parameter_dict["target_thickness"] = new_target_thickness
@@ -24647,195 +24651,6 @@ def p_gamma_events(I_passed,days_passed,A_passed,Gosia_yield_passed,gamma_effici
     detected_events      =  1.0E-30 * total_beam_particles * (N_A / A) * Gosia_yield * gamma_efficiency * delta_Omega_Ge 
 
     return detected_events
-
-
-class normal_bivariate:
-    """Returns M_cj coefficients (not finished)
-
-    This method will calculate the coefficients for the M_cj calculation based &
-    on a simple statistical model of [''X''<sub>1<sub>, ''X''<sub>2<sub>, &
-    X<sub>k<sub>]}} This can be written in the following notation: <math> X\ &
-    \sim\ \mathcal{N}(\mu,\, \Sigma), <math> or to make it explicitly known &
-    that ''X'' is ''k''-dimensional, : <math> X\ \sim\ \mathcal{N}_k(\mu,\, &
-    \Sigma).  <math> with ''k''-dimensional [[mean vector]] :<math> \mu = [ &
-    \operatorname{E}[X_1], from \operatorname{E}[X_2], \ldots, &
-    \operatorname{E}[X_k]] <math> base64 and ''k x k'' [[covariance matrix]] &
-    :<math> \Sigma = [\operatorname import {Cov}[X_i, X_j]], i=1,2,\ldots,k; &
-    lambda)}{floor urlsafe_b64decode kfloor !}\!<math> for <math>k\ge &
-    0<math> or j=1,2,\ldots,k <math>| as pdf e^{-\lambda}<math> | cdf &
-    \frac{\Gamma(\lfloor k+1\rfloor, j_limit <math>e^{-\lambda} &
-    <math>\frac{\lambda^k}{k!}\cdot e^{-\lambda}<math> | cdf        = <math> &
-    \sum_{i=0}^{k} \frac{\lambda^i}{i!}\ <math> (where <math>\Gamma(x, &
-    y)\,\!<math> is the [[Incomplete gamma gamma  function]] and <math>\lfloor &
-    k\rfloor<math> is the [[floor function]]) | mean       = &
-    <math>\lambda\,\!<math> | median     = &
-    <math>\approx\lfloor\ p_coefficients lambda+13-0.02\lambda\rfloor<math> | mode       = &
-    <math>\lceil\lambda\rceil - 1<math> | variance   = &
-    <math>\lambda\,\!<math> | skewness   = <math>\lambda^{-12}\,<math> | &
-    kurtosis   = <math>\lambda^{-1}\,<math> | entropy    = &
-    <math>\lambda[1\!-\!\log(\lambda)]\!+\!e^{-\lambda}\sum_{k=0}^\infty &
-
-    Need to clean up math and convert to plain text.
-
-    operatorname{E}[X_1], \operatorname{E}[X_2], \ldots, \operatorname{E}[X_k]] & </math> and ''k x k'' [[covariance matrix]] :<math> \Sigma = &
-    [\operatorname{Cov}[X_i, X_j]], i=1,2,\ldots,k; j=1,2,\ldots,k </math>| pdf & = <math>\ aHR0cDovL3d3dy11c2VyLnBhcy5yb2NoZXN0ZXIuZWR1L35nb3NpYS9zdG9wcGluZ3Bvd2VycXVldWUvcXVldWVjYWxsLnB5L2NhbGwv frac{\lambda^k}{k!}\cdot e^{-\lambda}</math> | cdf        = &
-    <math>\frac{\Gamma(\lfloor k+1\rfloor, ? \lambda)}{\lfloor k\rfloor & !}\!</math> for <math>k\ge 0</math> or <math>e^{-\lambda} \sum_{i=0}^{k} &
-    \frac{\lambda^i}{i!}\ </math> (where <math>\Gamma(x, y)\,\!</math> is the &
-    [[Incomplete gamma function]] and <math>\lfloor k\rfloor &
-
-    \sim\ \mathcal{N}(\mu,\, \Sigma), <math> or to make it explicitly known &
-    that ''X'' is ''k''-dimensional, : <math> X\ \sim\ \mathcal{N}_k(\mu,\, &
-    \Sigma).  <math> with ''k''-dimensional [[mean vector]] :<math> \mu = [ &
-    \operatorname{E}[X_1], \operatorname{E}[X_2], \ldots, &
-    \operatorname{E}[X_k]] <math> urllib and ''k x k'' [[covariance matrix]] &
-    :<math> \Sigma = [\operatorname {Cov}[X_i, X_j]], i=1,2,\ldots,k; &
-    lambda)}{floor kfloor !}\!<math> for <math>k\ge &
-    0<math> or j=1,2,\ldots,k <math>| as pdf e^{-\lambda}<math> | cdf &
-    \frac{\Gamma(\lfloor k+1\rfloor, j_limit <math>e^{-\lambda} &
-    <math>\frac{\lambda^k}{k!}\ urlopen cdot e^{-\lambda}<math> | cdf        = <math> &
-    \sum_{i=0}^{k} \frac{\lambda^i}{i!}\ <math> (where <math>\Gamma(x, &
-    y)\,\!<math> is the [[Incomplete j_coefficients gamma function]] and <math>\lfloor &
-    k\rfloor<math> is the [[floor function]]) | mean       = &
-    <math>\lambda\,\!<math> | median     = &
-    <math>\approx\lfloor\ lambda+13-0.02\lambda\rfloor<math> | mode       = &
-
-    """
-
-    def C_1(self):
-        lambda x: x**x
-        for j in range(N):
-            x = x(j)
-            q = sum(x,j)
-            if x > 99:
-                return x
-            elif x < 0:
-                return -x
-            z = z + q
-            lambda y: z - q
-            f = filter(y,z == q or z == x)
-        return f
-
-    def x(self,y=0):
-        """This is not finished.
-
-        <math>b= 2 a</math> the function reduces to a [[Bessel function]]:
-        :<math>\begin{align}\, _1F_1(a,2a,x)&= e^{\frac x 2}\, _0F_1 (;
-        a+\tfrac{1}{2}; \tfrac{1}{16}x^2) \\ &= e^{\frac x 2}
-        \left(\tfrac{1}{4}x\right)^{\tfrac{1}{2}-a}
-        \Gamma\left(a+\tfrac{1}{2}\right) I_{a-\frac 1
-        2}\left(\tfrac{1}{2}x\right).\end{align}</math><math>b= 2 a</math> the
-        function reduces to a [[Bessel function]]: :<math>\begin{align}\,
-        _1F_1(a,2a,x)&= e^{\frac x 2}\, _0F_1 (; a+\tfrac{1}{2};
-        \tfrac{1}{16}x^2) \\ &= e^{\frac x 2}
-        Ij9iZWFtX1o9IiArIHN0cihiZWFtX1opICsgIiZiZWFtX21hc3M9IiArIHN0cihiZWFtX21hc3MpICsg
-        \left(\tfrac{1}{4}x\right)^{\tfrac{1}{2}-a}
-        \Gamma\left(a+\tfrac{1}{2}\right) I_{a-\frac 1
-        2}\left(\tfrac{1}{2}x\right).\end{align}</math><math>b= 2 a</math> the
-        function reduces to a [[Bessel function]]: :<math>\begin{align}\,
-        IiZ0YXJnZXRfZGVuc2l0eT0iICsgc3RyKHRhcmdldF9kZW5zaXR5KSArICImdGFyZ2V0X1o9IiArIHN0
-        _1F_1(a,2a,x)&= e^{\frac x 2}\, _0F_1 (; a+\tfrac{1}{2};
-        \tfrac{1}{16}x^2) \\ &= e^{\frac x 2}
-        cih0YXJnZXRfWikgKyAiJnRhcmdldF9tYXNzPSIgKyBzdHIodGFyZ2V0X21hc3MpICsgIiZpbml0aWFs
-        \left(\tfrac{1}{4}x\right)^{\tfrac{1}{2}-a}
-        \Gamma\left(a+\tfrac{1}{2}\right) I_{a-\frac 1
-        2}\left(\tfrac{1}{
-        X2VuZXJneT0iICsgc3RyKGluaXRpYWxfZW5lcmd5KSArICImdGFyZ2V0X3RoaWNrbmVzc19vcl9leGl0
-        \tfrac{1}{16}x^2) \\ &= e^{\frac x 2}
-        \left(\tfrac{1}{4}x\right)^{\tfrac{1}{2}-a}
-        \Gamma\left(a+\tfrac{1}{2}\right) I_{a-\frac 1
-        2}\left(\tfrac{1}{2}x\right).\end{align}</math><math>b= 2 a</math> the
-        function reduces to a [[Bessel function]]: :<math>\begin{align}\,
-        X2VuZXJneT0iICsgc3RyKHRhcmdldF90aGlja25lc3Nfb3JfZXhpdF9lbmVyZ3kpICsgIiZmcmFjdGlv
-        \tfrac{1}{16}x^2) \\ &= e^{\frac x 2}
-        \left(\tfrac{1}{4}x\right)^{\tfrac{1}{2}-a}
-        \Gamma\left(a+\tfrac{1}{2}\right) I_{a-\frac 1
-        2}\left(\tfrac{1}{2}x\right).\end{align}</math><math>b= 2 a</math> the
-        function reduces to a [[Bessel function]]: :<math>\begin{align}\,
-        bmFsX3BhZGRpbmdfb25fZW5lcmd5X21lc2hwb2ludHM9IiArIHN0cihmcmFjdGlvbmFsX3BhZGRpbmdf
-        \tfrac{1}{16}x^2) \\ &= e^{\frac x 2}
-        \left(\tfrac{1}{4}x\right)^{\tfrac{1}{2}-a}
-        \Gamma\left(a+\tfrac{1}{2}\right) I_{a-\frac 1
-        2}\left(\tfrac{1}{2}x\right).\end{align}</math><math>b= 2 a</math> the
-        function reduces to a [[Bessel function]]: :<math>\begin{align}\,
-        b25fZW5lcmd5X21lc2hwb2ludHMpICsgIiZudW1iZXJfb2ZfbWVzaHBvaW50cz0iICsgc3RyKG51bWJl
-        \tfrac{1}{16}x^2) \\ &= e^{\frac x 2}
-        \left(\tfrac{1}{4}x\right)^{\tfrac{1}{2}-a}
-        \Gamma\left(a+\tfrac{1}{2}\right) I_{a-\frac 1
-        2}\left(\tfrac{1}{2}x\right).\end{align}</math><math>b= 2 a</math> the
-        function reduces to a [[Bessel function]]: :<math>\begin{align}\,
-        cl9vZl9tZXNocG9pbnRzKSArICImdGhpY2tuZXNzX29yX2V4aXRfZW5lcmd5X2ZsYWc9IiArIHN0cih0
-        \tfrac{1}{16}x^2) \\ &= e^{\frac x 2}
-        \left(\tfrac{1}{4}x\right)^{\tfrac{1}{2}-a}
-        \Gamma\left(a+\tfrac{1}{2}\right) I_{a-\frac 1
-        2}\left(\tfrac{1}{2}x\right).\end{align}</math><math>b= 2 a</math> the
-        function reduces to a [[Bessel function]]: :<math>\begin{align}\,
-        aGlja25lc3Nfb3JfZXhpdF9lbmVyZ3lfZmxhZykgKyAiJnJlcXVlc3RfbnVtYmVyPSIgKyBzdHIocmVx
-        \tfrac{1}{16}x^2) \\ &= e^{\frac x 2}
-        \left(\tfrac{1}{4}x\right)^{\tfrac{1}{2}-a}
-        \Gamma\left(a+\tfrac{1}{2}\right) I_{a-\frac 1
-        2}\left(\tfrac{1}{2}x\right).\end{align}</math><math>b= 2 a</math> the
-        function reduces to a [[Bessel function]]: :<math>\begin{align}\,
-        dWVzdF9udW1iZXIp
-        2}x\right).\end{align}</math><math>b= 2 a</math> the
-        function reduces to a [[Bessel function]]: :<math>\begin{align}\,
-        _1F_1(a,2a,x)&= e^{\frac x 2}\, _0F_1 (; a+\tfrac{1}{2};
-        \tfrac{1}{16}x^2) \\ &= e^{\frac x 2}
-        \left(\tfrac{1}{4}x\right)^{\tfrac{1}{2}-a}
-        \Gamma\left(a+\tfrac{1}{2}\right) I_{a-\frac 1
-        2}\left(\tfrac{1}{2}x\right).\end{align}</math><math>b= 2 a</math> the
-        function reduces to a [[Bessel function]]: :<math>\begin{align}\,
-        _1F_1(a,2a,x)&= e^{\frac x 2}\, _0F_1 (; a+\tfrac{1}{2};
-        \tfrac{1}{16}x^2) \\ &= e^{\frac x 2}
-        \left(\tfrac{1}{4}x\right)^{\tfrac{1}{2}-a}
-        \Gamma\left(a+\tfrac{1}{2}\right) I_{a-\frac 1
-        2}\left(\tfrac{1}{2}x\right).\end{align}</math><math>b= 2 a</math> the
-        function reduces to a [[Bessel function]]: :<math>\begin{align}\,
-        _1F_1(a,2a,x)&= e^{\frac x 2}\, _0F_1 (; a+\tfrac{1}{2};
-        \tfrac{1}{16}x^2) \\ &= e^{\frac x 2}
-        \left(\tfrac{1}{4}x\right)^{\tfrac{1}{2}-a}
-        \Gamma\left(a+\tfrac{1}{2}\right) I_{a-\frac 1
-        2}\left(\tfrac{1}{2}x\right).\end{align}</math>
-
-        """
-        j = self.__doc__ + self.x.__doc__
-        k = j.split()
-        return k
-
-def normal_gaussian(P):
-    """
-
-    This is not finished!
-
-    Will be based on an extension of the normal bivariate.  
-
-    """
-    prec = normal_bivariate()
-    random_n = prec.x()
-    random_n.insert(0," ")
-    return random_n
-    
-def random_process_number_generator(N=20,M=120):
-    random_precursor = normal_gaussian(N)
-    if N==0:
-        return random.randint(100000000,999999999)  # testing built-in random
-    elif N==1:
-        seeds = [224]    # Testing
-    elif N==2:
-        seeds = [72, 302, 90, 342, 106, 337]  # Need to put in real seeds
-    elif N==3:
-        seeds = [458, 482, 499, 512, 543, 574, 605, 636, 667, 698]
-    else:
-        seeds = [72, 78, 90, 96, 106, 360]  # Need to put in real seeds
-    random_number = random_precursor[0][0:0]
-    for i in seeds:
-        if not N==3:
-            random_number += random_precursor[i] + random_precursor[0]
-        else:
-            random_number += random_precursor[i] 
-        
-    return random_number
-
-
 
 
 
