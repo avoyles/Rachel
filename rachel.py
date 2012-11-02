@@ -19,9 +19,16 @@ import_error_count = 0
 
 try:
     import readline  # Importing this makes up/down arrow, right/left, ctrl-a, ctrl-e, etc. work on the eval expression prompt.
-                     # No calls to readline are necessary; it is sufficient to import it.
+                     # No calls to readline are necessary for up/down arrow completion; it is sufficient to import it.
 except:
     import_error("readline")
+    import_error_count += 1
+
+try:
+    import re        # This is used in conjuntion wit os and readline to complete filenames and other commands.
+
+except:
+    import_error("re")
     import_error_count += 1
 
 try:
@@ -183,6 +190,10 @@ if import_error_count > 0:
 global LAST_POPUP_TIP
 
 TEXTVIEW_COLUMNS = 50  # the default number of columns to display in the textview of the control panel.
+
+# Setup for command and filename completion:
+COMMANDS = [] # e.g. ['extra', 'extension', 'stuff', 'errors', 'email', 'foobar', 'foo']
+RE_SPACE = re.compile('.*\s+$', re.M)
 
 # Undo settings.
 UNDOBASEFILENAME = ".rachel_undo_information."
@@ -1438,6 +1449,99 @@ def call_rochester_srim_server(beam_Z=None, beam_mass=None, target_density=None,
         # Could not process output, or server error was fatal.
         return {"error_strings":error_strings, "calculated_exit_energy":calculated_exit_energy, "calculated_range":calculated_range, "calculated_target_thickness":calculated_target_thickness, "energies":energies,"stopping_powers":stopping_powers}
  
+class Completer(object):
+    """Used to set up command completion and filename completion.
+
+    This was written in answer to a question on stackoverflow by
+    http://stackoverflow.com/users/538718/samplebias
+    The code was found here:
+    http://stackoverflow.com/questions/5637124/tab-completion-in-pythons-raw-input
+
+    There are examples below for customizing the completion choices for
+    different commands.
+
+    """
+
+    def _listdir(self, base_dir):
+        "List directory 'base_dir' appending the path separator to subdirs."
+        res = []
+        for name in os.listdir(base_dir):
+            path = os.path.join(base_dir, name)
+            if os.path.isdir(path):
+                name += os.sep
+            res.append(name)
+        return res
+
+    def _complete_path(self, path=None):
+        "Perform completion of filesystem path."
+        if not path:
+            return self._listdir('.')
+        dirname, rest = os.path.split(path)
+        tmp = dirname if dirname else '.'
+        res = [os.path.join(dirname, p)
+            for p in self._listdir(tmp) if p.startswith(rest)]
+        # more than one match, or single match which does not exist (typo)
+        if len(res) > 1 or not os.path.exists(path):
+            return res
+        # resolved to a single directory, so return list of files below it
+        if os.path.isdir(path):
+            return [os.path.join(path, p) for p in self._listdir(path)]
+        # exact file match terminates this completion
+        return [path + ' ']
+
+    def complete_extra(self, args):
+        "Completions for the 'extra' command."
+        if not args:
+            return self._complete_path('.')
+        # treat the last arg as a path and complete it
+        return self._complete_path(args[-1])
+
+    def complete_path_only(self,text,state):
+        "Generic readline completion entry point."
+        path_list = os.listdir(".")
+        buffer = readline.get_line_buffer()
+        line = readline.get_line_buffer().split()
+        # show all commands
+        if not line:
+            return [c + ' ' for c in path_list][state]
+        # account for last argument ending in a space
+        if RE_SPACE.match(buffer):
+            line.append('')
+        # resolve command to the implementation function
+        cmd = line[0].strip()
+        if cmd in path_list:
+            impl = getattr(self, 'complete_%s' % cmd)
+            args = line[1:]
+            if args:
+                return (impl(args) + [None])[state]
+            return [cmd][state]
+        results = [c + ' ' for c in path_list if c.startswith(cmd)] + [None]
+
+        # Adam added a strip to this, so that filenames are not returned with a trailing whitespace, which is not handled well.
+        return results[state].strip()
+
+        
+    def complete(self, text, state):
+        "Generic readline completion entry point."
+        buffer = readline.get_line_buffer()
+        line = readline.get_line_buffer().split()
+        # show all commands
+        if not line:
+            return [c + ' ' for c in COMMANDS][state]
+        # account for last argument ending in a space
+        if RE_SPACE.match(buffer):
+            line.append('')
+        # resolve command to the implementation function
+        cmd = line[0].strip()
+        if cmd in COMMANDS:
+            impl = getattr(self, 'complete_%s' % cmd)
+            args = line[1:]
+            if args:
+                return (impl(args) + [None])[state]
+            return [cmd + ' '][state]
+        results = [c + ' ' for c in COMMANDS if c.startswith(cmd)] + [None]
+        return results[state]
+
 
 class notes:
     """A class to save user notes in each session file.
@@ -2771,6 +2875,7 @@ class nucleus:
         # This list will be used to redraw the major couplings to the level
         # scheme window
         self.major_couplings = []
+
 
         # Make a window for the level scheme
         self.makewindow()  # All objects must exist to be filled with pickled data.
@@ -6234,12 +6339,13 @@ class nucleus:
         else:
             first_level_scheme = False
             
-        print "Attempting to read file \"",txt_file_name,"\"."
+        print "Attempting to read file \"" + txt_file_name + "\"."
+        print "testing"
         try:
             with open(txt_file_name,'r') as txt_file:
                 txt_lines = txt_file.readlines()
         except:
-            print "File \"" + txt_file_name + "\" not found."
+            print "File \"" + txt_file_name + "\" not found, or file format is bad."
             print "Quitting."
             return -1
         print "File is ",len(txt_lines)," lines long"
@@ -6388,6 +6494,7 @@ class nucleus:
                     print " --->",
                 print "     " + agsfilelines[debug_line_number]
             to_skip = yes_no_prompt("You can skip this level, or quit loading.\nSkip [Y/n]? ",True)
+            print "YOU MUST FIX THE AGS FILE IF YOU ARE GOING TO READ EXPERIMENTAL YIELD DATA FROM IT."
             return to_skip
 
         # Get the existing band names, so that the names of duplicate bands can
@@ -6404,12 +6511,12 @@ class nucleus:
         agsfilelines=[] # The whole ags file is read into here, and then it can
                         # be parsed later as desired.
 
-        print "Attempting to read file \"",nameofagsfile
+        print "Attempting to read file \"" + nameofagsfile + "\"."
         try:
             with open(nameofagsfile,'r') as agsfile:
                 agsfilelines.extend(agsfile.readlines())
         except:
-            print "File \"" + nameofagsfile + "\" not found."
+            print "File \"" + nameofagsfile + "\" not found, or file format is bad."
             print "Quitting."
             return -1
 
@@ -21319,7 +21426,6 @@ class main_gui:
 
     """
 
-
     # Callbacks for the main_gui buttons follow.
     
     def set_deactivation(self,widget,button_pointers):
@@ -22372,6 +22478,8 @@ class main_gui:
 
     def read_level_scheme(self,widget):
 
+
+
         print_separator()
         create_popup_tip("read_level_scheme")
 
@@ -22379,28 +22487,28 @@ class main_gui:
         self.set_deactivation(self,self.all_button_list)
         while gtk.events_pending():
             gtk.main_iteration(False)
-        #try:    # DEBUGGING: TURNED OFF THE TRY/EXCEPT
-        txt_or_ags = raw_input("Import from AGS[a] or TXT[t] file? ").lower()[0]
-        file_name = raw_input("Enter filename to read: ")
-        if txt_or_ags == "t":
-            return_code = investigated_nucleus.read_txt_level_scheme(file_name)
-            if return_code == 0:
-                undo.save("Read txt level scheme")
+        try:
+            txt_or_ags = raw_input("Import from AGS[a] or TXT[t] file? ").lower()[0]
+            file_name = raw_input("Enter filename to read: ")
+            if txt_or_ags == "t":
+                return_code = investigated_nucleus.read_txt_level_scheme(file_name)
+                if return_code == 0:
+                    undo.save("Read txt level scheme")
+                else:
+                    undo.save("Read txt level scheme (failed)")
+            elif txt_or_ags == "a":
+                return_code = investigated_nucleus.read_ags_file_level_scheme(file_name)
+                if return_code == 0:
+                    undo.save("Read .ags file")
+                else:
+                    undo.save("Read .ags file (failed)")
             else:
-                undo.save("Read txt level scheme (failed)")
-        elif txt_or_ags == "a":
-            return_code = investigated_nucleus.read_ags_file_level_scheme(file_name)
-            if return_code == 0:
-                undo.save("Read .ags file")
-            else:
-                undo.save("Read .ags file (failed)")
-        else:
-            print "Invalid choice.  Cancelled."
-        #except:    # DEBUGGING: TURNED OFF THE TRY/EXCEPT
-            #print "Error reading a level scheme."
+                print "Invalid choice.  Cancelled."
+        except:
+            print "Error reading a level scheme."
             # Reactivate GUI buttons.
-            #self.set_activation(self)
-            #return -1
+            self.set_activation(self)
+            return -1
 
         # Create a popup about what to do if the level scheme window is not active.
         matplotlib_dialog()
@@ -26880,6 +26988,16 @@ def main():
 
 if __name__ == "__main__":
 
+
+    # Set up tab-completion using the Completer class.
+    # We want to treat '/' as part of a word, so override the delimiters.
+    # (See class Completer for credit to "samplebias.")
+    raw_input("type something: ")
+    readline.set_completer_delims(' \t\n;')
+    readline.parse_and_bind("tab: complete")
+    comp = Completer()
+    readline.set_completer(comp.complete_path_only)
+    raw_input("type something else: ")
 
     global LAST_POPUP_TIP
     LAST_POPUP_TIP = None
