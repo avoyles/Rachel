@@ -1473,7 +1473,7 @@ def call_rochester_srim_server(beam_Z=None, beam_mass=None, target_density=None,
         """
 
         search_terms = ["Thickness","that","gives","this","energy:"]
-        matching_line_numbers = self.internal_find_all_in_list(page_lines,search_terms)
+        matching_line_numbers = internal_find_all_in_list(page_lines,search_terms)
         if len(matching_line_numbers) == 0:
             return None
         else:
@@ -1488,7 +1488,7 @@ def call_rochester_srim_server(beam_Z=None, beam_mass=None, target_density=None,
         """
 
         search_terms = ["Exit","energy:","MeV"]
-        matching_line_numbers = self.internal_find_all_in_list(page_lines,search_terms)
+        matching_line_numbers = internal_find_all_in_list(page_lines,search_terms)
         if len(matching_line_numbers) == 0:
             return None
         else:
@@ -19007,6 +19007,7 @@ class experiment:
         return maximum_possible_Q_value 
 
     def get_new_SRIM_data(self):
+        
         return self.new_SRIM_data
 
     def short_description(self):
@@ -20185,6 +20186,8 @@ class experiment:
 
         # The gosia shell will set the NCM flag properly for stopped beams, so we don't change it from 0 here.
         self.parameter_dict["E_exit"] = new_exit_energy 
+
+        import pdb; pdb.set_trace()
 
         # Now save the new stopping power data to this experiment.
         new_beam_energies   = copy.deepcopy(all_stopping_power_data["energies"])
