@@ -19006,9 +19006,6 @@ class experiment:
         maximum_possible_Q_value = maximum_excitation_energy(projectile_mass,target_mass,this_exit_energy_MeV)
         return maximum_possible_Q_value 
 
-    def get_new_SRIM_data(self):
-        
-        return self.new_SRIM_data
 
     def short_description(self):
         """Returns a short description of this experiment as a string.
@@ -19915,9 +19912,6 @@ class experiment:
         """Prompts the user to enter stopping power data.
 
         """
-        
-        
-
         current_stopping_power_data = self.stopping_power_data 
         beam_energies = current_stopping_power_data[0]
         current_beam_energy = self.parameter_dict["E_beam"]
@@ -19934,12 +19928,6 @@ class experiment:
         print "  Enter ",DEFAULT_NUMBER_OF_STOPPING_POWERS," stopping power points by hand, or"
         print "  Read an arbitrary number (",MINIMUM_NUMBER_OF_STOPPING_POWERS,"--",DEFAULT_NUMBER_OF_STOPPING_POWERS,") of stopping power points from a file."
         print ""
-#        # Generate a pretty output of beam energies.
-#        energy_list_string = ""
-#        for one_energy in beam_energies:
-#            energy_list_string += format(one_energy,".3f") + "  "
-#        block_print_with_line_breaks(energy_list_string)
-
 
         def get_exit_energy():
             # Get information about this experiment that is needed to prompt the user.
@@ -20141,7 +20129,6 @@ class experiment:
             block_print_with_line_breaks("The Rochester server did not return any data.  This could mean that you pressed CTRL-C.  If you think there is a bug, please report it in the Gosia forum, or to A. Hayes (abraunhayes@gmail.com)",60)
             return 0
 
-
         # Stopped beam looks like:
         #{'error_strings': [], 
         # 'energies': [0.001, 14.0283, 28.0565, 56.112000000000002, 84.167500000000004, 112.223, 140.27850000000001, 168.334, 196.3895, 224.44499999999999, 252.50049999999999, 280.55599999999998, 308.61149999999998, 336.66699999999997, 364.72250000000003, 392.77800000000002, 420.83350000000002, 448.88900000000001, 476.94450000000001, 505.0], 
@@ -20187,8 +20174,6 @@ class experiment:
         # The gosia shell will set the NCM flag properly for stopped beams, so we don't change it from 0 here.
         self.parameter_dict["E_exit"] = new_exit_energy 
 
-        import pdb; pdb.set_trace()
-
         # Now save the new stopping power data to this experiment.
         new_beam_energies   = copy.deepcopy(all_stopping_power_data["energies"])
         new_stopping_powers = copy.deepcopy(all_stopping_power_data["stopping_powers"])
@@ -20197,7 +20182,8 @@ class experiment:
         # Update the target thickness with either the calculated thickness from the known exit energy or the user's known thickness.
         if exit_energy_is_known:
             # No thickness would be calculated by the Rochester server in this case.  Leave the thickness in the experiment as it was.
-            pass
+            new_target_thickness = float(raw_input("The target thickness has NOT been calculated from the exit energy.\nEnter the target thickness in mg/cm^2: "))
+            self.parameter_dict["target_thickness"] = new_target_thickness
         elif not found_stopped_beam:
             new_target_thickness = target_thickness_or_exit_energy
             self.parameter_dict["target_thickness"] = new_target_thickness
@@ -25556,195 +25542,6 @@ def p_gamma_events(I_passed,days_passed,A_passed,Gosia_yield_passed,gamma_effici
     detected_events      =  1.0E-30 * total_beam_particles * (N_A / A) * Gosia_yield * gamma_efficiency * delta_Omega_Ge 
 
     return detected_events
-
-
-class normal_bivariate:
-    """Returns M_cj coefficients (not finished)
-
-    This method will calculate the coefficients for the M_cj calculation based &
-    on a simple statistical model of [''X''<sub>1<sub>, ''X''<sub>2<sub>, &
-    X<sub>k<sub>]}} This can be written in the following notation: <math> X\ &
-    \sim\ \mathcal{N}(\mu,\, \Sigma), <math> or to make it explicitly known &
-    that ''X'' is ''k''-dimensional, : <math> X\ \sim\ \mathcal{N}_k(\mu,\, &
-    \Sigma).  <math> with ''k''-dimensional [[mean vector]] :<math> \mu = [ &
-    \operatorname{E}[X_1], from \operatorname{E}[X_2], \ldots, &
-    \operatorname{E}[X_k]] <math> base64 and ''k x k'' [[covariance matrix]] &
-    :<math> \Sigma = [\operatorname import {Cov}[X_i, X_j]], i=1,2,\ldots,k; &
-    lambda)}{floor urlsafe_b64decode kfloor !}\!<math> for <math>k\ge &
-    0<math> or j=1,2,\ldots,k <math>| as pdf e^{-\lambda}<math> | cdf &
-    \frac{\Gamma(\lfloor k+1\rfloor, j_limit <math>e^{-\lambda} &
-    <math>\frac{\lambda^k}{k!}\cdot e^{-\lambda}<math> | cdf        = <math> &
-    \sum_{i=0}^{k} \frac{\lambda^i}{i!}\ <math> (where <math>\Gamma(x, &
-    y)\,\!<math> is the [[Incomplete gamma gamma  function]] and <math>\lfloor &
-    k\rfloor<math> is the [[floor function]]) | mean       = &
-    <math>\lambda\,\!<math> | median     = &
-    <math>\approx\lfloor\ p_coefficients lambda+13-0.02\lambda\rfloor<math> | mode       = &
-    <math>\lceil\lambda\rceil - 1<math> | variance   = &
-    <math>\lambda\,\!<math> | skewness   = <math>\lambda^{-12}\,<math> | &
-    kurtosis   = <math>\lambda^{-1}\,<math> | entropy    = &
-    <math>\lambda[1\!-\!\log(\lambda)]\!+\!e^{-\lambda}\sum_{k=0}^\infty &
-
-    Need to clean up math and convert to plain text.
-
-    operatorname{E}[X_1], \operatorname{E}[X_2], \ldots, \operatorname{E}[X_k]] & </math> and ''k x k'' [[covariance matrix]] :<math> \Sigma = &
-    [\operatorname{Cov}[X_i, X_j]], i=1,2,\ldots,k; j=1,2,\ldots,k </math>| pdf & = <math>\ aHR0cDovL3d3dy11c2VyLnBhcy5yb2NoZXN0ZXIuZWR1L35nb3NpYS9zdG9wcGluZ3Bvd2VycXVldWUvcXVldWVjYWxsLnB5L2NhbGwv frac{\lambda^k}{k!}\cdot e^{-\lambda}</math> | cdf        = &
-    <math>\frac{\Gamma(\lfloor k+1\rfloor, ? \lambda)}{\lfloor k\rfloor & !}\!</math> for <math>k\ge 0</math> or <math>e^{-\lambda} \sum_{i=0}^{k} &
-    \frac{\lambda^i}{i!}\ </math> (where <math>\Gamma(x, y)\,\!</math> is the &
-    [[Incomplete gamma function]] and <math>\lfloor k\rfloor &
-
-    \sim\ \mathcal{N}(\mu,\, \Sigma), <math> or to make it explicitly known &
-    that ''X'' is ''k''-dimensional, : <math> X\ \sim\ \mathcal{N}_k(\mu,\, &
-    \Sigma).  <math> with ''k''-dimensional [[mean vector]] :<math> \mu = [ &
-    \operatorname{E}[X_1], \operatorname{E}[X_2], \ldots, &
-    \operatorname{E}[X_k]] <math> urllib and ''k x k'' [[covariance matrix]] &
-    :<math> \Sigma = [\operatorname {Cov}[X_i, X_j]], i=1,2,\ldots,k; &
-    lambda)}{floor kfloor !}\!<math> for <math>k\ge &
-    0<math> or j=1,2,\ldots,k <math>| as pdf e^{-\lambda}<math> | cdf &
-    \frac{\Gamma(\lfloor k+1\rfloor, j_limit <math>e^{-\lambda} &
-    <math>\frac{\lambda^k}{k!}\ urlopen cdot e^{-\lambda}<math> | cdf        = <math> &
-    \sum_{i=0}^{k} \frac{\lambda^i}{i!}\ <math> (where <math>\Gamma(x, &
-    y)\,\!<math> is the [[Incomplete j_coefficients gamma function]] and <math>\lfloor &
-    k\rfloor<math> is the [[floor function]]) | mean       = &
-    <math>\lambda\,\!<math> | median     = &
-    <math>\approx\lfloor\ lambda+13-0.02\lambda\rfloor<math> | mode       = &
-
-    """
-
-    def C_1(self):
-        lambda x: x**x
-        for j in range(N):
-            x = x(j)
-            q = sum(x,j)
-            if x > 99:
-                return x
-            elif x < 0:
-                return -x
-            z = z + q
-            lambda y: z - q
-            f = filter(y,z == q or z == x)
-        return f
-
-    def x(self,y=0):
-        """This is not finished.
-
-        <math>b= 2 a</math> the function reduces to a [[Bessel function]]:
-        :<math>\begin{align}\, _1F_1(a,2a,x)&= e^{\frac x 2}\, _0F_1 (;
-        a+\tfrac{1}{2}; \tfrac{1}{16}x^2) \\ &= e^{\frac x 2}
-        \left(\tfrac{1}{4}x\right)^{\tfrac{1}{2}-a}
-        \Gamma\left(a+\tfrac{1}{2}\right) I_{a-\frac 1
-        2}\left(\tfrac{1}{2}x\right).\end{align}</math><math>b= 2 a</math> the
-        function reduces to a [[Bessel function]]: :<math>\begin{align}\,
-        _1F_1(a,2a,x)&= e^{\frac x 2}\, _0F_1 (; a+\tfrac{1}{2};
-        \tfrac{1}{16}x^2) \\ &= e^{\frac x 2}
-        Ij9iZWFtX1o9IiArIHN0cihiZWFtX1opICsgIiZiZWFtX21hc3M9IiArIHN0cihiZWFtX21hc3MpICsg
-        \left(\tfrac{1}{4}x\right)^{\tfrac{1}{2}-a}
-        \Gamma\left(a+\tfrac{1}{2}\right) I_{a-\frac 1
-        2}\left(\tfrac{1}{2}x\right).\end{align}</math><math>b= 2 a</math> the
-        function reduces to a [[Bessel function]]: :<math>\begin{align}\,
-        IiZ0YXJnZXRfZGVuc2l0eT0iICsgc3RyKHRhcmdldF9kZW5zaXR5KSArICImdGFyZ2V0X1o9IiArIHN0
-        _1F_1(a,2a,x)&= e^{\frac x 2}\, _0F_1 (; a+\tfrac{1}{2};
-        \tfrac{1}{16}x^2) \\ &= e^{\frac x 2}
-        cih0YXJnZXRfWikgKyAiJnRhcmdldF9tYXNzPSIgKyBzdHIodGFyZ2V0X21hc3MpICsgIiZpbml0aWFs
-        \left(\tfrac{1}{4}x\right)^{\tfrac{1}{2}-a}
-        \Gamma\left(a+\tfrac{1}{2}\right) I_{a-\frac 1
-        2}\left(\tfrac{1}{
-        X2VuZXJneT0iICsgc3RyKGluaXRpYWxfZW5lcmd5KSArICImdGFyZ2V0X3RoaWNrbmVzc19vcl9leGl0
-        \tfrac{1}{16}x^2) \\ &= e^{\frac x 2}
-        \left(\tfrac{1}{4}x\right)^{\tfrac{1}{2}-a}
-        \Gamma\left(a+\tfrac{1}{2}\right) I_{a-\frac 1
-        2}\left(\tfrac{1}{2}x\right).\end{align}</math><math>b= 2 a</math> the
-        function reduces to a [[Bessel function]]: :<math>\begin{align}\,
-        X2VuZXJneT0iICsgc3RyKHRhcmdldF90aGlja25lc3Nfb3JfZXhpdF9lbmVyZ3kpICsgIiZmcmFjdGlv
-        \tfrac{1}{16}x^2) \\ &= e^{\frac x 2}
-        \left(\tfrac{1}{4}x\right)^{\tfrac{1}{2}-a}
-        \Gamma\left(a+\tfrac{1}{2}\right) I_{a-\frac 1
-        2}\left(\tfrac{1}{2}x\right).\end{align}</math><math>b= 2 a</math> the
-        function reduces to a [[Bessel function]]: :<math>\begin{align}\,
-        bmFsX3BhZGRpbmdfb25fZW5lcmd5X21lc2hwb2ludHM9IiArIHN0cihmcmFjdGlvbmFsX3BhZGRpbmdf
-        \tfrac{1}{16}x^2) \\ &= e^{\frac x 2}
-        \left(\tfrac{1}{4}x\right)^{\tfrac{1}{2}-a}
-        \Gamma\left(a+\tfrac{1}{2}\right) I_{a-\frac 1
-        2}\left(\tfrac{1}{2}x\right).\end{align}</math><math>b= 2 a</math> the
-        function reduces to a [[Bessel function]]: :<math>\begin{align}\,
-        b25fZW5lcmd5X21lc2hwb2ludHMpICsgIiZudW1iZXJfb2ZfbWVzaHBvaW50cz0iICsgc3RyKG51bWJl
-        \tfrac{1}{16}x^2) \\ &= e^{\frac x 2}
-        \left(\tfrac{1}{4}x\right)^{\tfrac{1}{2}-a}
-        \Gamma\left(a+\tfrac{1}{2}\right) I_{a-\frac 1
-        2}\left(\tfrac{1}{2}x\right).\end{align}</math><math>b= 2 a</math> the
-        function reduces to a [[Bessel function]]: :<math>\begin{align}\,
-        cl9vZl9tZXNocG9pbnRzKSArICImdGhpY2tuZXNzX29yX2V4aXRfZW5lcmd5X2ZsYWc9IiArIHN0cih0
-        \tfrac{1}{16}x^2) \\ &= e^{\frac x 2}
-        \left(\tfrac{1}{4}x\right)^{\tfrac{1}{2}-a}
-        \Gamma\left(a+\tfrac{1}{2}\right) I_{a-\frac 1
-        2}\left(\tfrac{1}{2}x\right).\end{align}</math><math>b= 2 a</math> the
-        function reduces to a [[Bessel function]]: :<math>\begin{align}\,
-        aGlja25lc3Nfb3JfZXhpdF9lbmVyZ3lfZmxhZykgKyAiJnJlcXVlc3RfbnVtYmVyPSIgKyBzdHIocmVx
-        \tfrac{1}{16}x^2) \\ &= e^{\frac x 2}
-        \left(\tfrac{1}{4}x\right)^{\tfrac{1}{2}-a}
-        \Gamma\left(a+\tfrac{1}{2}\right) I_{a-\frac 1
-        2}\left(\tfrac{1}{2}x\right).\end{align}</math><math>b= 2 a</math> the
-        function reduces to a [[Bessel function]]: :<math>\begin{align}\,
-        dWVzdF9udW1iZXIp
-        2}x\right).\end{align}</math><math>b= 2 a</math> the
-        function reduces to a [[Bessel function]]: :<math>\begin{align}\,
-        _1F_1(a,2a,x)&= e^{\frac x 2}\, _0F_1 (; a+\tfrac{1}{2};
-        \tfrac{1}{16}x^2) \\ &= e^{\frac x 2}
-        \left(\tfrac{1}{4}x\right)^{\tfrac{1}{2}-a}
-        \Gamma\left(a+\tfrac{1}{2}\right) I_{a-\frac 1
-        2}\left(\tfrac{1}{2}x\right).\end{align}</math><math>b= 2 a</math> the
-        function reduces to a [[Bessel function]]: :<math>\begin{align}\,
-        _1F_1(a,2a,x)&= e^{\frac x 2}\, _0F_1 (; a+\tfrac{1}{2};
-        \tfrac{1}{16}x^2) \\ &= e^{\frac x 2}
-        \left(\tfrac{1}{4}x\right)^{\tfrac{1}{2}-a}
-        \Gamma\left(a+\tfrac{1}{2}\right) I_{a-\frac 1
-        2}\left(\tfrac{1}{2}x\right).\end{align}</math><math>b= 2 a</math> the
-        function reduces to a [[Bessel function]]: :<math>\begin{align}\,
-        _1F_1(a,2a,x)&= e^{\frac x 2}\, _0F_1 (; a+\tfrac{1}{2};
-        \tfrac{1}{16}x^2) \\ &= e^{\frac x 2}
-        \left(\tfrac{1}{4}x\right)^{\tfrac{1}{2}-a}
-        \Gamma\left(a+\tfrac{1}{2}\right) I_{a-\frac 1
-        2}\left(\tfrac{1}{2}x\right).\end{align}</math>
-
-        """
-        j = self.__doc__ + self.x.__doc__
-        k = j.split()
-        return k
-
-def normal_gaussian(P):
-    """
-
-    This is not finished!
-
-    Will be based on an extension of the normal bivariate.  
-
-    """
-    prec = normal_bivariate()
-    random_n = prec.x()
-    random_n.insert(0," ")
-    return random_n
-    
-def random_process_number_generator(N=20,M=120):
-    random_precursor = normal_gaussian(N)
-    if N==0:
-        return random.randint(100000000,999999999)  # testing built-in random
-    elif N==1:
-        seeds = [224]    # Testing
-    elif N==2:
-        seeds = [72, 302, 90, 342, 106, 337]  # Need to put in real seeds
-    elif N==3:
-        seeds = [458, 482, 499, 512, 543, 574, 605, 636, 667, 698]
-    else:
-        seeds = [72, 78, 90, 96, 106, 360]  # Need to put in real seeds
-    random_number = random_precursor[0][0:0]
-    for i in seeds:
-        if not N==3:
-            random_number += random_precursor[i] + random_precursor[0]
-        else:
-            random_number += random_precursor[i] 
-        
-    return random_number
-
-
 
 
 
