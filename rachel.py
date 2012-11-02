@@ -25,7 +25,7 @@ except:
     import_error_count += 1
 
 try:
-    import re        # This is used in conjuntion wit os and readline to complete filenames and other commands.
+    import re        # This is used in conjuntion with os and readline to complete filenames and other commands.
 
 except:
     import_error("re")
@@ -1458,7 +1458,7 @@ class Completer(object):
     http://stackoverflow.com/questions/5637124/tab-completion-in-pythons-raw-input
 
     There are examples below for customizing the completion choices for
-    different commands.
+    different commands.  I made modifications marked below (Adam)
 
     """
 
@@ -1497,11 +1497,14 @@ class Completer(object):
         return self._complete_path(args[-1])
 
     def complete_path_only(self,text,state):
-        "Generic readline completion entry point."
+        """Tab-complete for file paths only.
+            (Modified)
+        """
+
         path_list = os.listdir(".")
         buffer = readline.get_line_buffer()
         line = readline.get_line_buffer().split()
-        # show all commands
+        # show all file/path matches.
         if not line:
             return [c + ' ' for c in path_list][state]
         # account for last argument ending in a space
@@ -1522,7 +1525,10 @@ class Completer(object):
 
         
     def complete(self, text, state):
-        "Generic readline completion entry point."
+        """Generic readline completion entry point.
+            Do not modify; keep this as a template.
+        """
+
         buffer = readline.get_line_buffer()
         line = readline.get_line_buffer().split()
         # show all commands
