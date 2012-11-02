@@ -20960,6 +20960,7 @@ def setup_globals(action=None,pickle_file_name=None,force=False):
             except:
                 # Couldn't open pickle file
                 return_text = "No session file named " + pickle_file_name + " was found in the working directory."
+                print "No session file named " + pickle_file_name + " was found in the working directory."
                 return 1,[return_text]
 
             if not force:
