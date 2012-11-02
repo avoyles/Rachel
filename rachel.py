@@ -6378,6 +6378,18 @@ class nucleus:
 
         """
 
+        def print_debug_file_lines():
+            print "Cannot parse ags file line #" + str(linenumber + 1) + "."
+            print "Could be missing fields, such as spin or parity, or"
+            print "multiple spin assignments."
+            print "Lines: "
+            for debug_line_number in range(linenumber - 3, linenumber + 3):
+                if debug_line_number == linenumber:
+                    print " --->",
+                print "     " + agsfilelines[debug_line_number]
+            to_skip = yes_no_prompt("You can skip this level, or quit loading.\nSkip [Y/n]? ",True)
+            return to_skip
+
         # Get the existing band names, so that the names of duplicate bands can
         # be modified.
         old_band_names = self.get_all_band_names()
@@ -6471,16 +6483,40 @@ class nucleus:
 
 
         for i in range(nlevels):
-            ags_level_number = int(agsfilelines[linenumber].split()[0])  # Added reading of radware level number.
-            level_energy     = float(agsfilelines[linenumber].split()[1])
-            ags_band_number  = int(agsfilelines[linenumber].split()[5])  
-            band_name        = new_level_scheme_band_name_dictionary[ags_band_number]
+            try:
+                ags_level_number = int(agsfilelines[linenumber].split()[0])  # Added reading of radware level number.
+                level_energy     = float(agsfilelines[linenumber].split()[1])
+                ags_band_number  = int(agsfilelines[linenumber].split()[5])  
+                band_name        = new_level_scheme_band_name_dictionary[ags_band_number]
+            except:
+                to_skip = print_debug_file_lines()
+                # If the user wants to skip this level, continue to the next iteration of the loop.
+                # Otherwise, exit with an error.
+                if to_skip:
+                    print "Skipping this level."
+                    linenumber = linenumber + 2
+                    continue
+                else:
+                    print "Quitting."
+                    return 0
 
             # To get parity, test the "-" or "+" symbol, then set to +/-1
-            if "-" in agsfilelines[linenumber].split()[3]:
-                parity = -1 # Put negative parity in the band parity dict.
-            else:
-                parity = 1
+            try:
+                if "-" in agsfilelines[linenumber].split()[3]:
+                    parity = -1 # Put negative parity in the band parity dict.
+                else:
+                    parity = 1
+            except:
+                to_skip = print_debug_file_lines()
+                # If the user wants to skip this level, continue to the next iteration of the loop.
+                # Otherwise, exit with an error.
+                if to_skip:
+                    print "Skipping this level."
+                    linenumber = linenumber + 2
+                    continue
+                else:
+                    print "Quitting."
+                    return 0
 
             # To parse the spin, first we need to test whether it's integer or
             # half integer.  Note that in Python rounded floats can be tested
@@ -6488,12 +6524,24 @@ class nucleus:
             # Note that in Radford's ags file library, he sometimes puts the
             # parity symbol on the left, sometimes on the right, hence .strip
             # instead of .rstrip
-            spintext = agsfilelines[linenumber].split()[3].strip('+-')  # Strip pluses and minuses from the spin text
-            if "/" in spintext:  # half-integer spin
-                fractionformspin = spintext.partition('/')
-                spin = round(float(fractionformspin[0]) / float(fractionformspin[2]),1)
-            else:
-                spin = round(float(spintext),1)
+            try: 
+                spintext = agsfilelines[linenumber].split()[3].strip('+-')  # Strip pluses and minuses from the spin text
+                if "/" in spintext:  # half-integer spin
+                    fractionformspin = spintext.partition('/')
+                    spin = round(float(fractionformspin[0]) / float(fractionformspin[2]),1)
+                else:
+                    spin = round(float(spintext),1)
+            except:
+                to_skip = print_debug_file_lines()
+                # If the user wants to skip this level, continue to the next iteration of the loop.
+                # Otherwise, exit with an error.
+                if to_skip:
+                    print "Skipping this level."
+                    linenumber = linenumber + 2
+                    continue
+                else:
+                    print "Quitting."
+                    return 0
 
             # Now update the level data with the new level.  This has been
             # updated with the extra field for ags level number.
@@ -22331,28 +22379,28 @@ class main_gui:
         self.set_deactivation(self,self.all_button_list)
         while gtk.events_pending():
             gtk.main_iteration(False)
-        try:  
-            txt_or_ags = raw_input("Import from AGS[a] or TXT[t] file? ").lower()[0]
-            file_name = raw_input("Enter filename to read: ")
-            if txt_or_ags == "t":
-                return_code = investigated_nucleus.read_txt_level_scheme(file_name)
-                if return_code == 0:
-                    undo.save("Read txt level scheme")
-                else:
-                    undo.save("Read txt level scheme (failed)")
-            elif txt_or_ags == "a":
-                return_code = investigated_nucleus.read_ags_file_level_scheme(file_name)
-                if return_code == 0:
-                    undo.save("Read .ags file")
-                else:
-                    undo.save("Read .ags file (failed)")
+        #try:    # DEBUGGING: TURNED OFF THE TRY/EXCEPT
+        txt_or_ags = raw_input("Import from AGS[a] or TXT[t] file? ").lower()[0]
+        file_name = raw_input("Enter filename to read: ")
+        if txt_or_ags == "t":
+            return_code = investigated_nucleus.read_txt_level_scheme(file_name)
+            if return_code == 0:
+                undo.save("Read txt level scheme")
             else:
-                print "Invalid choice.  Cancelled."
-        except:
-            print "Error reading a level scheme."
+                undo.save("Read txt level scheme (failed)")
+        elif txt_or_ags == "a":
+            return_code = investigated_nucleus.read_ags_file_level_scheme(file_name)
+            if return_code == 0:
+                undo.save("Read .ags file")
+            else:
+                undo.save("Read .ags file (failed)")
+        else:
+            print "Invalid choice.  Cancelled."
+        #except:    # DEBUGGING: TURNED OFF THE TRY/EXCEPT
+            #print "Error reading a level scheme."
             # Reactivate GUI buttons.
-            self.set_activation(self)
-            return -1
+            #self.set_activation(self)
+            #return -1
 
         # Create a popup about what to do if the level scheme window is not active.
         matplotlib_dialog()
