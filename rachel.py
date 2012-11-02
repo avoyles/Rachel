@@ -24508,8 +24508,7 @@ class main_gui:
         # Show the window.
         window.show()
 
-        #if not nosplash:
-        if True:
+        if not nosplash:
             welcome()   # run the splash screen.  
             while gtk.events_pending():
                 gtk.main_iteration()
