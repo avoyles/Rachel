@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION = "1.2.1"
+VERSION = "1.3.0"
 RECOVERY_MODE = False
 DEBUGGING_MODE = False
 SCRIPT_MODE = False
