@@ -26992,12 +26992,13 @@ if __name__ == "__main__":
     # Set up tab-completion using the Completer class.
     # We want to treat '/' as part of a word, so override the delimiters.
     # (See class Completer for credit to "samplebias.")
-    raw_input("type something: ")
     readline.set_completer_delims(' \t\n;')
     readline.parse_and_bind("tab: complete")
     comp = Completer()
     readline.set_completer(comp.complete_path_only)
-    raw_input("type something else: ")
+    # It is DANGEROUS to mess around with readline; it can lock up the whole system!
+    # Eventually, we should be able to turn the tab-completion on and off, 
+    # maybe with parse_and_bind.
 
     global LAST_POPUP_TIP
     LAST_POPUP_TIP = None
