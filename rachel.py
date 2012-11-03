@@ -1347,21 +1347,14 @@ def call_rochester_srim_server(beam_Z=None, beam_mass=None, target_density=None,
 
     # Get a random request number to send to the server.  This will provide one of the checks that the returned page is from this request.
     request_number = random.randint(100000000,999999999)
-    #print "DEBUGGING: request number: ",request_number
 
     # Make the server call to get stopping powers.
     url_text = "http://www-user.pas.rochester.edu/~gosia/stoppingpowerqueue/queuecall.py/call/?beam_Z=" + str(beam_Z) + "&beam_mass=" + str(beam_mass) + "&target_density=" + str(target_density) + "&target_Z=" + str(target_Z) + "&target_mass=" + str(target_mass) + "&initial_energy=" + str(initial_energy) + "&target_thickness_or_exit_energy=" + str(target_thickness_or_exit_energy) + "&fractional_padding_on_energy_meshpoints=" + str(fractional_padding_on_energy_meshpoints) + "&number_of_meshpoints=" + str(number_of_meshpoints) + "&thickness_or_exit_energy_flag=" + str(thickness_or_exit_energy_flag) + "&request_number=" + str(request_number)
 
     response = urllib.urlopen(url_text)
-    #print "DEBUGGING: response = ",response
     full_page = response.read()
 
-    #print full_page
-    #print len(full_page),str(type(full_page))
     page_lines = full_page.split("\n")
-    #for line in page_lines:
-    #    print line
-    #print "last line: ",page_lines[-1]
 
     # Check for an error on the last line.
     if "error" in page_lines[-2]:
@@ -9717,7 +9710,6 @@ class gosia_shell:
 
             # Run the calculation
             command_line = GLOBAL_SETUP_DICT["GOSIA_EXECUTABLE"] + " < " + gosia_input_file_name + " > rachel_temp_file"
-            #command_line = GLOBAL_SETUP_DICT["GOSIA_EXECUTABLE"] + " < " + gosia_input_file_name # to send output back to the terminal.
             if DEBUGGING_MODE or function == "Fit":
                 command_line = GLOBAL_SETUP_DICT["GOSIA_EXECUTABLE"] + " < " + gosia_input_file_name 
             if not silent:
@@ -9732,18 +9724,11 @@ class gosia_shell:
                 print "Process started at ", time_stamp
             sys.stdout.flush()
 
-#            # Enable CTRL-C while Gosia runs
-#            enable_break()
-#            subprocess.call(command_line,shell=True)
-#            # Disable CTRL-C after Gosia finishes.
-#            ignore_break()
-
             # Run Gosia in a way that will allow the user to send a break signal for runaway calculations.
             # Set the signal handler to call kill_gosia in case of a break.
             signal.signal(signal.SIGINT,self.kill_gosia)
             self.current_gosia_process = subprocess.Popen(command_line,shell=True)
-            # Wait for Gosia to finish.
-            #self.current_gosia_process.wait()
+
             if function == "Fit":
                 print "=================================="
                 print "=GOSIA OUTPUT TO TERMINAL FOLLOWS="
