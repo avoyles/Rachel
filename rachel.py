@@ -14306,7 +14306,18 @@ class experimentmanager:
                     # From this, get the corresponding target angle.  Close to
                     # the critical angle, we can choose arbitrarily one solution
                     # or the other (False, in this case).
-                    theta_recoil_crit = inelastic_lab_scattering_angle_to_lab_recoil_angle(A_proj,A_targ,theta_lab_crit,False,E_mean,Q_value)
+                    # Try to get the recoil angle corresponding to the maximum scattering angle.
+
+                    # This can cause overflows, so we iterate this, changing the scattering angle slightly until we don't get an overflow.
+                    theta_iterate = theta_lab_crit
+                    while True:
+                        try:
+                            theta_recoil_crit = inelastic_lab_scattering_angle_to_lab_recoil_angle(A_proj,A_targ,theta_iterate,False,E_mean,Q_value)
+                            break # Found a value that didn't overflow.
+                        except:
+                            # Lower the angle by a tiny bit.
+                            theta_iterate = 0.99999 * theta_iterate
+                            
 
                     # Get the mean TARGET angle.
                     theta_targ_max = self.allexperiments[experiment_number].get_parameter("theta_lab_max")
@@ -25857,6 +25868,8 @@ def inelastic_lab_scattering_angle_to_com_scattering_angle(A_proj_passed,A_targ_
 
     tau = inelastic_scattering_tau(A_proj,A_targ,E_proj,Q_value)
 
+    print "DEBUGGING: A_proj: ", A_proj, " A_targ: ", A_targ, " E_proj: ", E_proj
+    print "DEBUGGING: tau: ",tau, " theta_lab: ",theta_lab
     dtheta = math.degrees(math.asin(tau * math.sin(math.radians(theta_lab))))
 
     if forward or normal_kinematics:
