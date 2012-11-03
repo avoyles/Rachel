@@ -25868,8 +25868,6 @@ def inelastic_lab_scattering_angle_to_com_scattering_angle(A_proj_passed,A_targ_
 
     tau = inelastic_scattering_tau(A_proj,A_targ,E_proj,Q_value)
 
-    print "DEBUGGING: A_proj: ", A_proj, " A_targ: ", A_targ, " E_proj: ", E_proj
-    print "DEBUGGING: tau: ",tau, " theta_lab: ",theta_lab
     dtheta = math.degrees(math.asin(tau * math.sin(math.radians(theta_lab))))
 
     if forward or normal_kinematics:
