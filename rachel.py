@@ -9602,7 +9602,7 @@ class gosia_shell:
         return 0
         
 
-    def generate(self,function,action,tf=False,silent=False,release_for_correlated_errors=True,output_options = {},evaluation_only=False,amplitudes=False):
+    def generate(self,function,action,tf=False,silent=False,release_for_correlated_errors=True,output_options = {},evaluation_only=False,amplitudes=False,dummy_cor_file_extension=None):
         """Generates a gosia input for the requested function and runs it if requested.
 
         output_options is a dictionary of extra output options, some of which
@@ -9673,7 +9673,7 @@ class gosia_shell:
         elif function == "Fit":
             full_gosia_input = self.op_mini_input()
         elif function == "Deorientation coeff.":
-            full_gosia_input = self.vacuum_depolarization_input()
+            full_gosia_input = self.vacuum_depolarization_input(dummy_cor_file_extension)
         elif function == "Calculate lifetimes":
             full_gosia_input = self.lifetimes_input()
         elif function == "Make corrected yields":
@@ -10341,7 +10341,7 @@ class gosia_shell:
         expt_header_line = "1 " + str(Z) + " " + str(A)
         # Use a forward scattering angle to avoid exceeding a maximum scattering angle.
         # Use something heavy to avoid inverse kinematics.
-        dummy_experiment = "92, 238, 100.0, 5.0, 8, 1, 0, 0.0, 360.0, 0, 1 "
+        dummy_experiment = "92, 238, 100.0, 5.0, 1, 1, 0, 0.0, 360.0, 0, 1 "
         expt_lines = [\
                       "EXPT",\
                       expt_header_line,\
@@ -10413,7 +10413,7 @@ class gosia_shell:
         return full_gosia_input
 
 
-    def vacuum_depolarization_input(self):
+    def vacuum_depolarization_input(self,dummy_cor_file_extension=None):
         """Generates an input for vacuum depolarization coefficiencts
 
         """
@@ -10425,7 +10425,10 @@ class gosia_shell:
         # for gosia.
 
         # Need an op,file header
-        op_file_lines = self.op_file_header()
+        if not dummy_cor_file_extension == None:
+            op_file_lines = self.op_file_header({4:{"extension":dummy_cor_file_extension,"status":"3","format":1}})
+        else:
+            op_file_lines = self.op_file_header()
 
         # Get the nucleus information
         level_scheme_lines = investigated_nucleus.generate_gosia_input(fix_all = True)
@@ -16584,7 +16587,7 @@ class experimentmanager:
             gosia_experiment_number = gosia_experiment_number + 1
 
 
-    def parse_gosia_integrated_yields(self,tf=False,evaluate=False):
+    def parse_gosia_integrated_yields(self,tf=False,evaluate=False,cor_file_extension=None):
         """Parses the gosia output to get the integrated yields and stores them in experiment objects.
 
         This will only read integrated yields if the last gosia operation was OP,INTG!
@@ -16620,6 +16623,10 @@ class experimentmanager:
             for j in range(numbers_of_detectors[i]):
                 sets_of_excited_states[i].append(set())  # Using set math to avoid multiple entries.
 
+        if not cor_file_extension == None:
+            # Will write a dummy corr file e.g. for a deorientation coeff calculation.
+            cor_file_lines = []
+
         # Get the gosia output file name from the gosia shell.
         gosia_output_file_name = the_gosia_shell.get_base_file_name() + "." + FILE_DEF_DICT[22]["extension"]
 
@@ -16652,6 +16659,11 @@ class experimentmanager:
                     detector_yields = []  # This is for one single detector and will be reused.
                     # Start reading where detector data start.
                     line_number = detector_data_start_line
+                    # Add a header for a dummy corrected yields file if requested.
+                    if not cor_file_extension == None:
+                        # Add  a header for one corrected yield for each detector.
+                        cor_file_lines.append("1 1 1 1 1 1 1 \n")
+                        added_one_dummy_yield = False
                     while True:
                         line_fields = gosia_output_lines[line_number].split() 
                         if len(line_fields) < 6:  
@@ -16711,6 +16723,12 @@ class experimentmanager:
                                 level_key_populated = (initial_band_name, initial_spin)
                                 sets_of_excited_states[experiment_number][detector_number].add(level_key_populated)  # add using set math (no duplicates).
 
+                            if not cor_file_extension == None and not added_one_dummy_yield:
+                                # Add these to the lines of a dummy cor file.
+                                this_cor_line = str(initial_gosia_level_number) + " " +\
+                                                str(final_gosia_level_number) + " 1.0 1.0 \n"
+                                cor_file_lines.append(this_cor_line)
+                                added_one_dummy_yield = True
 
                         # Increment the line number
                         line_number = line_number + 1
@@ -16759,6 +16777,11 @@ class experimentmanager:
                         investigated_nucleus.levels[level_key].set_calculated_lifetime(lifetime_in_ps)
                     lifetime_line += 1
 
+            if not cor_file_extension == None:
+                # Write a dummy corr file e.g. for a deorientation coeff calculation.
+                cor_file_name = "gosia." + cor_file_extension
+                with open(cor_file_name,"w") as dummy_file:
+                    dummy_file.writelines(cor_file_lines)
 
         except:
             block_print_with_line_breaks("Error parsing yields from Gosia output--processing could not continue.\nThere may be a mixture of old and new calculated yields in memory.  You can use \"Undo\" to revert to the previous successful operation.",70)
@@ -17087,8 +17110,6 @@ class experimentmanager:
 
         investigated_nucleus.notes.append_log("procedure_log","Integrated yields: Reduced chi-squared = " + str(total_reduced_chi_squared) )
         return total_chi_squared,total_data_points,total_reduced_chi_squared
-
-
 
     def write_experimental_yld_file(self,to_force=False):
         """Writes experimental yields from memory to gosia's .yld file.
@@ -21738,7 +21759,7 @@ class main_gui:
                         self.write_true_yields(self,to_force=True)
                     create_popup_tip("after_corrected_yields")
 
-                if gosia_function == "Fit" or gosia_function == "Deorientation coeff.":
+                if gosia_function == "Fit":
                     # Call for OP,MAP first, in a separate calculation.  On
                     # some systems MAP and MINI can not be run in the same
                     # call.
@@ -21748,6 +21769,14 @@ class main_gui:
                         print "Gosia killed by user or cannot run Gosia.  Check for errors above."
                         self.set_activation(self)
                         return -1
+
+                if gosia_function == "Deorientation coeff.":
+                    # Need to set up a phoney corrected yields file first,
+                    # because we can only get the deorientation calculation
+                    # after a fit (of 0 steps).
+                    the_gosia_shell.generate("Point yields","Run gosia input",False,True,False,{},True,"dummy_cor_file")   # Run silently.  Final "True" overrides settings to make NCM=1.
+                    the_gosia_shell.generate("Deorientation coeff.","Run gosia input",False,True,False,{},True,"dummy_cor_file")   # Run silently.  Final "True" overrides settings to make NCM=1.
+                    the_experiment_manager.parse_deorientation_coefficients(lifetimes = True, deorientation = True)
 
                 gosia_shell_output = the_gosia_shell.generate(gosia_function,gosia_action)
                 if gosia_shell_output == -1:
