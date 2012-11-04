@@ -9674,6 +9674,8 @@ class gosia_shell:
             full_gosia_input = self.op_mini_input()
         elif function == "Deorientation coeff.":
             full_gosia_input = self.vacuum_depolarization_input()
+        elif function == "Calculate lifetimes":
+            full_gosia_input = self.lifetimes_input()
         elif function == "Make corrected yields":
             full_gosia_input = self.op_intg_input("corr")  
         elif function == "Make Ge det file":
@@ -9841,7 +9843,10 @@ class gosia_shell:
 
             elif function == "Deorientation coeff.":
                 # Just parse the output and print a table of G-factors.
-                the_experiment_manager.parse_deorientation_coefficients()
+                the_experiment_manager.parse_deorientation_coefficients(lifetimes = True, deorientation = True)
+
+            elif function == "Calculate lifetimes":
+                the_experiment_manager.parse_deorientation_coefficients(lifetimes = True, deorientation = False)
 
             elif function == "Make simulated yields":
                 # If the function was to make simulated yields, then save yields 
@@ -9868,18 +9873,35 @@ class gosia_shell:
             return full_gosia_input
 
 
-    def op_file_header(self):
-        # Generate the text lines for OP,FILE and return as a list of strings
-        # No \n termination here.
-        # The file def dict has the appropriate file extensions, status and format numbers,
-        # keyed by file number.  See the header definitions.
+    def op_file_header(self,substitution_dict={}):
+        """Generate the text lines for OP,FILE and return as a list of strings
 
+        No \n termination here.
+        The file def dict has the appropriate file extensions, status and format numbers,
+        keyed by file number.  See the header definitions.
+
+        Each file name specified in the substitution dict will replace the
+        default file, or add the file name and number to OP,FILE, if it is not
+        in the defaults.
+
+        The dict format must be:
+            {99:{"extension":"amp","status":"3","format":1}, 89:{"extension":"jnk","status":"3","format":1}...}
+
+        """
+
+        # Copy the default dict (deepcopy so that we don't change it permanently).
+        local_file_def_dict = copy.deepcopy(FILE_DEF_DICT)
+        # Add or substitue each file number in the user's substitution dict.
+        # The file number is the file number.  See the global defs at the top of rachel.py.
+        for one_key in substitution_dict:
+            local_file_def_dict[one_key] = copy.deepcopy(substitution_dict[one_key])
+        # Check the substitution dict.
         # Begin the output string list:
         op_file_strings = ["OP,FILE"]
-        file_number_keys = FILE_DEF_DICT.keys()
+        file_number_keys = local_file_def_dict.keys()
         file_number_keys.sort()
         for file_number in file_number_keys:
-            file_def = FILE_DEF_DICT[file_number]  # This is a dict itself to look up extension, status, format
+            file_def = local_file_def_dict[file_number]  # This is a dict itself to look up extension, status, format
             full_file_name = self.base_file_name + "." + file_def["extension"]
             file_number_string = str(file_number)
             status_string = str(file_def["status"])
@@ -10293,6 +10315,103 @@ class gosia_shell:
             full_gosia_input.extend(["OP,EXIT"," "])
 
             return full_gosia_input
+
+
+    def lifetimes_input(self):
+        """Generates an input for lifetimes only.
+        
+        This uses one phoney experiment to calculate lifetimes.  It is done
+        with phoney setup so that the user does not need to complete the setup
+        to get lifetimes; it can be done as soon as the level scheme and a
+        matrix element are in memory.
+
+
+        """
+
+        # Need an op,file header
+        op_file_lines = self.op_file_header({9:{"extension":"rachel_dummy_gdt_file","status":"3","format":1}})
+
+        # Get the nucleus information
+        level_scheme_lines = investigated_nucleus.generate_gosia_input(fix_all = True)
+
+        # Get the EXPT section 
+        # One dummy experiment with the real Z,A.
+        Z = investigated_nucleus.get_value("Z")
+        A = investigated_nucleus.get_value("A")
+        expt_header_line = "1 " + str(Z) + " " + str(A)
+        # Use a forward scattering angle to avoid exceeding a maximum scattering angle.
+        # Use something heavy to avoid inverse kinematics.
+        dummy_experiment = "92, 238, 100.0, 5.0, 8, 1, 0, 0.0, 360.0, 0, 1 "
+        expt_lines = [\
+                      "EXPT",\
+                      expt_header_line,\
+                      dummy_experiment\
+                     ]
+        # Only important thing is to have the lifetime output turned on and 14 turned on.
+        cont_lines = [\
+                      "CONT",\
+                      "SPL,1.",\
+                      "PRT,",\
+                      "1,-1",\
+                      "2,0",\
+                      "4,0",\
+                      "5,1",\
+                      "11,0",\
+                      "12,0",\
+                      "14,1,",\
+                      "15,1",\
+                      "16,0",\
+                      "9,99999",\
+                      "0,0",\
+                      "NCM,1.",\
+                      "END, ",\
+                      "  "\
+                     ]
+
+
+        # Generate OP,BRIC
+        bric_lines = ["OP,BRIC",\
+                      GLOBAL_SETUP_DICT["BRICC_IDX_FILE"],\
+                      GLOBAL_SETUP_DICT["BRICC_ICC_FILE"]]
+
+
+        # Generate OP,YIEL and OP,POIN (just dummy fields, except for the bric flags.
+        yiel_lines = [\
+                      "OP,YIEL",\
+                      "1",\
+                      "-1,0",\
+                      "1.0",\
+                      "0  ",\
+                      "0  ",\
+                      "0.0  ",\
+                      "0.0  ",\
+                      "2,1",\
+                      "1",\
+                      "1",\
+                      "1",\
+                      "0   !NTAP",\
+                      "0,0",\
+                      "0,0",\
+                      "0,0",\
+                      "0,0",\
+                      "OP,POIN",\
+                      "0,0"\
+                     ]
+ 
+
+        # Put together the full input
+        full_gosia_input = op_file_lines
+        full_gosia_input.extend(level_scheme_lines)
+        full_gosia_input.extend(expt_lines)
+        full_gosia_input.extend(cont_lines)
+        full_gosia_input.extend(bric_lines)
+        full_gosia_input.extend(yiel_lines)
+
+        # Put an op,exit on the end and a blank line to finish.
+        full_gosia_input.extend(["OP,EXIT"," "])
+
+        return full_gosia_input
+
 
     def vacuum_depolarization_input(self):
         """Generates an input for vacuum depolarization coefficiencts
@@ -16646,11 +16765,13 @@ class experimentmanager:
             return -1
 
 
-    def parse_deorientation_coefficients(self):
-        """Parses the gosia output to get the vacuum deorientation parameters and print them.
+    def parse_deorientation_coefficients(self,lifetimes = True, deorientation = True):
+        """Parses the gosia output to get the vacuum deorientation parameters and lifetimes and prints them
 
         This will only get the correct values if the last gosia operation was
         to calculate them.  By default the GUI doesn't calculate them.
+
+        Now it can parse for either or both of lifetime, G#.
 
         """
 
@@ -16670,104 +16791,112 @@ class experimentmanager:
         # First, get the level keys in Gosia order.
         current_level_keys = investigated_nucleus.get_level_keys_in_gosia_order(include_inactive_bands = True)
 
-        # Since the deorientation Gk's depend strongly on the decay lifetimes
-        # and the feeding through the Bateman equations, the lifetimes are of
-        # interest as well.  We will get them first.
+        if lifetimes:
+            # Since the deorientation Gk's depend strongly on the decay lifetimes
+            # and the feeding through the Bateman equations, the lifetimes are of
+            # interest as well.  We will get them first.
 
-        # Zero the calculated lifetimes:
-        investigated_nucleus.zero_calculated_lifetimes()
+            # Zero the calculated lifetimes:
+            investigated_nucleus.zero_calculated_lifetimes()
 
-        print "Level             Lifetime (ps)          half-life (ps)"
-        #      1234567890123456__123456789012345678901__12345678901234
-        print "-------------------------------------------------------"
-        search_strings = ["LEVEL","LIFETIME(PSEC)","EXP","ERROR"]
-        lifetime_lines = find_all_in_list(gosia_output_lines,search_strings)
-        if not len(lifetime_lines) == 1:
-            print "The vacuum deorientation data were not understood in the gosia.out file."
-            print "Please report this bug."
-            return -1
-        line_number = lifetime_lines[0] + 2
-        while True:
-            this_line = gosia_output_lines[line_number]
-            line_fields = this_line.split()
-            if not len(line_fields) == 2:
-                break # Finished reading all lifetimes
-            this_gosia_level_number = int(line_fields[0])
-            this_internal_level_number = this_gosia_level_number - 1
-            this_lifetime = float(line_fields[1])
-            # If the lifetime cannot be calculated because there are no decays
-            # defined by matrix elements, then it will appear as negative in
-            # the Gosia output.
-
-            if this_lifetime > 0.0:
-                # A valid lifetime was calculated.  Store this in the nucleus.levels data.
-                # Get the level key from the Gosia level number.
-                this_level_key = current_level_keys[this_internal_level_number]
-                # Save the lifetime in ps to this level.
-                investigated_nucleus.levels[this_level_key].set_calculated_lifetime(this_lifetime)
-                this_half_life = math.log(2.) * this_lifetime
-                print str(this_level_key).strip("()").ljust(16) + "  " \
-                    + str(this_lifetime).ljust(21) + "  " + str(this_half_life).ljust(14)
-
-            line_number += 1
-
-        # Zero the calculated G2--G6, and then read & save the new ones.
-        investigated_nucleus.zero_deorientation_Gs()
-
-        G_coefficients = {}  # For temporary storage and printing.
-
-        number_of_experiments = self.getnumberofexperiments()
-        search_strings = ["LEVEL","G2","G4","G6"]
-        vacuum_lines = find_all_in_list(gosia_output_lines,search_strings)
-        if not len(vacuum_lines) == number_of_experiments:
-            print "The vacuum deorientation data were not understood in the gosia.out file."
-            print "Please report this bug."
-            return -1
-
-        print "\nVacuum deorientation coefficients calculated at mean scattering angles\n"
-        # This uses very simple error trapping if gosia threw an error.  Try to
-        # parse the yields.  If there is an exception, then just print the
-        # next-to-last line of the gosia output, which usually contains the
-        # error message.
-        # July 13 2011: reactivated this try/except block.
-        try:
-            # Loop to get all integrated yields for all experiments.
-            for internal_experiment_number in range(number_of_experiments):
-                experiment_description = self.allexperiments[internal_experiment_number].short_description()
-                print "Experiment ",internal_experiment_number + 1
-                print experiment_description
-                print ""
-                print "Level             G2          G4          G6           "
+            try:
+                print "Level             Lifetime (ps)          half-life (ps)"
+                #      1234567890123456__123456789012345678901__12345678901234
                 print "-------------------------------------------------------"
-                line_number = vacuum_lines[internal_experiment_number] + 2  # Skip to the first level entry
+                search_strings = ["LEVEL","LIFETIME(PSEC)","EXP","ERROR"]
+                lifetime_lines = find_all_in_list(gosia_output_lines,search_strings)
+                if not len(lifetime_lines) == 1:
+                    print "The vacuum deorientation data were not understood in the gosia.out file."
+                    print "Please report this bug."
+                    return -1
+                line_number = lifetime_lines[0] + 2
                 while True:
                     this_line = gosia_output_lines[line_number]
-                    this_line_fields = this_line.split()
-                    if not len(this_line_fields) == 4:
-                        # There are no more levels in the output for this experiment
-                        break  # out of the while loop
-                    # Get the gosia level index and the G2, G4, G6 coefficients
-                    gosia_level_number = int(this_line_fields[0])
-                    internal_level_number = gosia_level_number - 1
-                    G2 = float(this_line_fields[1])
-                    G4 = float(this_line_fields[2])
-                    G6 = float(this_line_fields[3])
-                    # Get the level key from the internal_level_number:
-                    this_level_key = current_level_keys[internal_level_number]
-                    this_level_lifetime = investigated_nucleus.levels[this_level_key].get_calculated_lifetime()
-                    if not this_level_lifetime == None:
-                        # Store these in the nucleus.levels data:
-                        investigated_nucleus.levels[this_level_key].set_deorientation_Gs(G2,G4,G6)
+                    line_fields = this_line.split()
+                    if not len(line_fields) == 2:
+                        break # Finished reading all lifetimes
+                    this_gosia_level_number = int(line_fields[0])
+                    this_internal_level_number = this_gosia_level_number - 1
+                    this_lifetime = float(line_fields[1])
+                    # If the lifetime cannot be calculated because there are no decays
+                    # defined by matrix elements, then it will appear as negative in
+                    # the Gosia output.
 
-                        # Change to the band name and spin, and print
-                        band_name, spin = investigated_nucleus.get_band_and_spin_from_gosia_level_number(gosia_level_number)
-                        print band_name.ljust(10) + "  " +  str(spin).ljust(4) + "  " + str(G2).ljust(10) + "  " + str(G4).ljust(10) + "  " + str(G6).ljust(10)
+                    if this_lifetime > 0.0:
+                        # A valid lifetime was calculated.  Store this in the nucleus.levels data.
+                        # Get the level key from the Gosia level number.
+                        this_level_key = current_level_keys[this_internal_level_number]
+                        # Save the lifetime in ps to this level.
+                        investigated_nucleus.levels[this_level_key].set_calculated_lifetime(this_lifetime)
+                        this_half_life = math.log(2.) * this_lifetime
+                        print str(this_level_key).strip("()").ljust(16) + "  " \
+                            + str(this_lifetime).ljust(21) + "  " + str(this_half_life).ljust(14)
+
                     line_number += 1
-                print ""
+                print "\nLifetimes calculated and saved.\n"
 
-        except:
-            block_print_with_line_breaks("Error parsing vacuum deorientation coefficients from Gosia output--processing could not continue.",70)
-            return -1
+            except:
+                block_print_with_line_breaks("Error parsing lifetimes from Gosia output--processing could not continue.",70)
+                return -1
+
+        if deorientation:
+
+            # Zero the calculated G2--G6, and then read & save the new ones.
+            investigated_nucleus.zero_deorientation_Gs()
+
+            G_coefficients = {}  # For temporary storage and printing.
+
+            number_of_experiments = self.getnumberofexperiments()
+            search_strings = ["LEVEL","G2","G4","G6"]
+            vacuum_lines = find_all_in_list(gosia_output_lines,search_strings)
+            if not len(vacuum_lines) == number_of_experiments:
+                print "The vacuum deorientation data were not found in the gosia.out file."
+                print "Please report this bug."
+                return -1
+
+            print "\nVacuum deorientation coefficients calculated at mean scattering angles and stored.\n"
+            # This uses very simple error trapping if gosia threw an error.  Try to
+            # parse the yields.  If there is an exception, then just print the
+            # next-to-last line of the gosia output, which usually contains the
+            # error message.
+            try:
+                # Loop to get all integrated yields for all experiments.
+                for internal_experiment_number in range(number_of_experiments):
+                    experiment_description = self.allexperiments[internal_experiment_number].short_description()
+                    print "Experiment ",internal_experiment_number + 1
+                    print experiment_description
+                    print ""
+                    print "Level             G2          G4          G6           "
+                    print "-------------------------------------------------------"
+                    line_number = vacuum_lines[internal_experiment_number] + 2  # Skip to the first level entry
+                    while True:
+                        this_line = gosia_output_lines[line_number]
+                        this_line_fields = this_line.split()
+                        if not len(this_line_fields) == 4:
+                            # There are no more levels in the output for this experiment
+                            break  # out of the while loop
+                        # Get the gosia level index and the G2, G4, G6 coefficients
+                        gosia_level_number = int(this_line_fields[0])
+                        internal_level_number = gosia_level_number - 1
+                        G2 = float(this_line_fields[1])
+                        G4 = float(this_line_fields[2])
+                        G6 = float(this_line_fields[3])
+                        # Get the level key from the internal_level_number:
+                        this_level_key = current_level_keys[internal_level_number]
+                        this_level_lifetime = investigated_nucleus.levels[this_level_key].get_calculated_lifetime()
+                        if not this_level_lifetime == None:
+                            # Store these in the nucleus.levels data:
+                            investigated_nucleus.levels[this_level_key].set_deorientation_Gs(G2,G4,G6)
+
+                            # Change to the band name and spin, and print
+                            band_name, spin = investigated_nucleus.get_band_and_spin_from_gosia_level_number(gosia_level_number)
+                            print band_name.ljust(10) + "  " +  str(spin).ljust(4) + "  " + str(G2).ljust(10) + "  " + str(G4).ljust(10) + "  " + str(G6).ljust(10)
+                        line_number += 1
+                    print ""
+
+            except:
+                block_print_with_line_breaks("Error parsing vacuum deorientation coefficients from Gosia output--processing could not continue.",70)
+                return -1
 
         return 0
 
@@ -21551,8 +21680,42 @@ class main_gui:
                 self.set_activation(self)
                 return -1
 
-#        elif gosia_function == "Deorientation coeff.":
-#            gosia_shell_output = the_gosia_shell.generate(gosia_function,gosia_action)
+        elif gosia_function == "Calculate lifetimes":
+            # Write a dummy gdt file.
+            if gosia_action == "Run gosia input":
+                with open("gosia.rachel_dummy_gdt_file","w") as dummy_gdt_file:
+                    dummy_gdt_file.writelines([\
+                                               "1\n",\
+                                               "25.250000000000000     \n",\
+                                                "5.00000007450580597E-002\n",\
+                                                "0.  0.  0.99515161576556677 \n",\
+                                                "0.  0.  0.98550186179144739 \n",\
+                                                "0.  0.  0.97114419718610112 \n",\
+                                                "0.  0.  0.95221739364644353 \n",\
+                                                "0.  0.  0.93799457708902401 \n",\
+                                                "0.  0.  0.90142742262269437 \n",\
+                                                "0.  0.  0.87005066192570901 \n",\
+                                                "0.  0.  0.83507172411160402 \n"\
+                                               ])
+
+            gosia_shell_output = the_gosia_shell.generate(gosia_function,gosia_action)
+            if gosia_shell_output == -1:
+                print "Gosia killed by user or cannot run Gosia.  Check for errors above."
+                self.set_activation(self)
+                return -1
+            if gosia_action == "View gosia input":
+                for line in gosia_shell_output:
+                    line = line + "\n"         # newlines are needed for a list without newlines in the strings
+                    self.insertnewtext(line)
+            elif gosia_action == "Run gosia input":
+                # Not displaying full output for normalization calculation,
+                # since this uses a dummy level scheme that might be
+                # confusing to the user.
+                for line in gosia_shell_output:
+                    self.insertnewtext(line)
+            self.set_activation(self)
+            print "Done."
+            return 0
             
 
         elif gosia_function == "Integrated yields" or gosia_function == "Fit" or \
@@ -24551,6 +24714,7 @@ class main_gui:
         self.gosiafunctioncombobox.append_text("Correlated errors") 
         #self.gosiafunctioncombobox.append_text("Quick point yields")
         self.gosiafunctioncombobox.append_text("Make simulated yields")
+        self.gosiafunctioncombobox.append_text("Calculate lifetimes")
         self.gosiafunctioncombobox.append_text("Deorientation coeff.")
 
         hbox.pack_start(self.gosiafunctioncombobox,False,False)
