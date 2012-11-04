@@ -9797,7 +9797,7 @@ class gosia_shell:
                 the_detector_manager.retouch_gdt_file()
 
 
-            # Pass back the standard output from rachel_temp_file to the textview
+            # Pass back the standard output from rachel_temp_file to the textview.
             with open("rachel_temp_file",'r') as std_out:
                 std_output = std_out.readlines()
 
@@ -10341,7 +10341,7 @@ class gosia_shell:
         expt_header_line = "1 " + str(Z) + " " + str(A)
         # Use a forward scattering angle to avoid exceeding a maximum scattering angle.
         # Use something heavy to avoid inverse kinematics.
-        dummy_experiment = "92, 238, 100.0, 5.0, 8, 1, 0, 0.0, 360.0, 0, 1 "
+        dummy_experiment = "92, 238, 100.0, 5.0, 1, 1, 0, 0.0, 360.0, 0, 1 "
         expt_lines = [\
                       "EXPT",\
                       expt_header_line,\
