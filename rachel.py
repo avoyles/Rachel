@@ -21873,7 +21873,7 @@ class main_gui:
                 the_gosia_shell.generate(function="Deorientation coeff.",action="Run gosia input",tf=False,silent=False,release_for_correlated_errors=False,file_extension_substitution_dict = DEORIENTATION_FILE_DEF_DICT)
 
             else:
-                print "\nYou need to define the nucleus, matrix and experimental setup first.\n
+                print "\nYou need to define the nucleus, matrix and experimental setup first.\n"
 
             # Reactivate GUI buttons.
             self.set_activation(self)
