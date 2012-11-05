@@ -9697,7 +9697,8 @@ class gosia_shell:
         if function == "Integrated yields" or function == "Make simulated yields":
             full_gosia_input = self.op_intg_input() 
         elif function == "Map":
-            full_gosia_input = self.op_mini_input(do_map_instead=True,file_name_substitution_dict=DEORIENTATION_FILE_DEF_DICT)
+            # The file name substitution dict is used when op,map is called for the deorientation calculation.
+            full_gosia_input = self.op_mini_input(do_map_instead=True,file_name_substitution_dict=file_extension_substitution_dict)
         elif function == "Fit":
             full_gosia_input = self.op_mini_input()
         elif function == "Deorientation coeff.":
