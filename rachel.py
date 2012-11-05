@@ -21258,6 +21258,7 @@ def setup_globals(action=None,pickle_file_name=None,force=False):
                     except:
                         if not force:
                             print "Nuclear data not found in pickle jar."
+                            print "Was this file sent via email with the wrong encoding?"
                         else:
                             print "UNDO: Could not restore nuclear data."
                     try:
@@ -21267,6 +21268,7 @@ def setup_globals(action=None,pickle_file_name=None,force=False):
                     except:
                         if not force:
                             print "Experimental parameters not found in pickle jar."
+                            print "Was this file sent via email with the wrong encoding?"
                         else:
                             print "UNDO: Could not restore experimental parameters."
                     try:
@@ -21276,6 +21278,7 @@ def setup_globals(action=None,pickle_file_name=None,force=False):
                     except:
                         if not force:
                             print "Detector definitions not found in pickle jar."
+                            print "Was this file sent via email with the wrong encoding?"
                         else:
                             print "UNDO: Could not restore detector definitions."
                     try:
@@ -21285,6 +21288,7 @@ def setup_globals(action=None,pickle_file_name=None,force=False):
                     except:
                         if not force:
                             print "Gosia shell not found in pickle jar."
+                            print "Was this file sent via email with the wrong encoding?"
                         else:
                             print "UNDO: Could not restore the Gosia shell."
                     try:
@@ -21297,7 +21301,7 @@ def setup_globals(action=None,pickle_file_name=None,force=False):
                             print version_text 
                     except:
                         if not force:
-                            version_string = "\nNO VERSION NUMBER FOUND IN SESSION FILE."
+                            version_string = "\nNO VERSION NUMBER FOUND IN SESSION FILE.\nEither the session file is corrupted, or pre-dates the release version.  If you cannot repair the file, then you will have to start a new session."
                             block_print_with_line_breaks(version_string,60)
             except:
                 # Couldn't open pickle file
