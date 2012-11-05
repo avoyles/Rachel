@@ -3003,29 +3003,30 @@ class nucleus:
             print "Too many levels are defined.  Only 99 are allowed."
             return False
 
-        try:
-            self.get_normalization_transition_keys()
-        except:
-            # The normalization transition has not been properly defined.  Call
-            # the method to set up the normalization states.
-            self.set_normalization_transition()
-            try:
-                self.get_normalization_transition_keys()
-            except:
-                print "Setting the normalization transition was unsuccessful.  The nucleus is not fully defined to run Gosia."
-                final_status = False
-                return final_status
+        if self.number_of_levels() == 0:
+            print "No levels in memory."
+            return False
 
         if self.matrix_data == {}:
             # Then no matrix elements are in memory.  This cannot be fixed in
             # this method, so set the final_status to False.
             print "There are no matrix elements in memory.  Define matrix elements using the GUI before attempting to run Gosia."
-            final_status = False
-            return final_status
+            return False
 
-        # If setup was complete, or if setup was completed above, then flow
-        # goes here.  Return the final status, which should be True.
-        return final_status
+        try:
+            self.get_normalization_transition_keys()
+        except:
+            # The normalization transition has not been properly defined.  Call
+            # the method to set up the normalization states.
+            print "The normalization transition is not properly defined."
+            self.set_normalization_transition()
+            try:
+                self.get_normalization_transition_keys()
+            except:
+                print "Setting the normalization transition was unsuccessful.  This must be done before running Gosia."
+                return False
+
+        return True
 
 
     def export_level_scheme(self):
@@ -4772,8 +4773,11 @@ class nucleus:
         """
 
         # Unzip the band name and settings dictionary.
-        band_names, settings_dictionary = zip(*self.band_settings_list)
-        return band_names
+        try:
+            band_names, settings_dictionary = zip(*self.band_settings_list)
+            return band_names
+        except:
+            return None
 
     def generate_gosia_input(self,fix_all=False):
         """Generates the lines for OP,GOSI's LEVE and ME
@@ -21628,6 +21632,7 @@ class main_gui:
         # information required to run gosia.  Same for experimentmanager.
         nucleus_ready = investigated_nucleus.is_ready()
         experiments_ready = the_experiment_manager.is_ready()
+        detectors_ready = the_detector_manager.is_ready()
 
         try:
             gosia_function_display_text = "Gosia function: " + gosia_function + "\n"
@@ -21656,7 +21661,7 @@ class main_gui:
 
         if gosia_function == "Make Ge det file":
             create_popup_tip("make_ge_det_file")
-            if the_detector_manager.is_ready():
+            if detectors_ready:
                 gosia_shell_output = the_gosia_shell.generate(gosia_function,gosia_action)
                 if gosia_shell_output == -1:
                     print "Gosia killed by user or cannot run Gosia.  Check for errors above."
@@ -21681,6 +21686,11 @@ class main_gui:
                 return -1
 
         elif gosia_function == "Calculate lifetimes":
+            if not nucleus_ready:
+                print_error_block("You need a level scheme and matrix to calculate lifetimes.")
+                self.set_activation(self)
+                return -1
+                
             # Write a dummy gdt file.
             if gosia_action == "Run gosia input":
                 with open("gosia.rachel_dummy_gdt_file","w") as dummy_gdt_file:
