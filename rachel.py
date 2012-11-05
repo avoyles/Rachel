@@ -2844,6 +2844,73 @@ class level:
 
         return self.level_can_be_excited
 
+class nucleus_manager:
+    """This class will store multiple nucleus instances.
+
+    The primary purpose is to store a new nucleus for normalization in Gosia 2,
+    but it is being generalized for expansion.
+
+    It could be used to keep a catalog of nuclei to change between in Gosia 1.
+
+    A reference to the "investigated_nucleus" instance of class nucleus may be
+    added to this class, although "investigated_nucleus" is a static name that
+    can always be called.
+
+    Each instance of class nucleus will have a "notes" instance, which could be
+    confusing, so these other notes objects will not be referenced.  The notes
+    should be stored in the "investigated_nucleus" object.
+
+    This object MUST be created after investigated_nucleus.
+
+    It would be nice to save the nucleusname value in class nucleus.  This was
+    overlooked.  Compatibility with old sessions--need to add it to the upgrade
+    methods, possibly choosing a random name that is not present in the nucleus
+    manager.  This would be redundant, but it may come into use.  It is
+    possible (by comparing pointers) for a nucleus to find its own name, but
+    this would be easier if the nucleus just held its name internally too.
+
+    """
+
+    def __init__(self):
+        """Set up a dictionary of nuclei.  
+
+
+        """
+        
+        # Add the investigated nucleus to this dictionary.
+        self.all_nuclei = {"investigated":investigated_nucleus}  # This is intentionally left as a pointer, not a deep copy.
+
+        return 0
+
+    def add_nucleus(self,Z=None, A=None, name = None):
+        """
+
+        """
+
+        if None in (Z,A,name):
+            # Can't create the nucleus without all three basic parameters.
+            print "Z, A and a unique name are required to create a new nucleus."
+            return -1
+        elif name in self.all_nuclei.keys():
+            # Name is not unique.
+            print "A unique name is required to create a new nucleus."
+            print "Names in use are:"
+            for one_name in self.all_nuclei.keys():
+                print "  " + one_name
+            return -1
+        
+        self.all_nuclei[name] = nucleus(Z, A, name)
+
+    def return_nucleus_names(self):
+        """
+
+        """
+
+        return self.all_nuclei.keys()
+
+
+
+
 class nucleus:
     """The central nuclear data and methods for defining matrix elements.
 
@@ -21299,6 +21366,17 @@ def setup_globals(action=None,pickle_file_name=None,force=False):
                         if not force:
                             version_string = "\nNO VERSION NUMBER FOUND IN SESSION FILE."
                             block_print_with_line_breaks(version_string,60)
+                    # Adding a manager for all "other" nuclei, which may reference the investigated nucleus in some ways.
+                    try:
+                        the_nucleus_manager = pickle.load(picklefile)
+                        if not force:
+                            print "Collision-partner nuclei restored."
+                    except:
+                        if not force:
+                            print "Collision-partner nuclei not found in pickle jar."
+                        else:
+                            print "UNDO: Could not restore the collision-partner nuclei."
+
             except:
                 # Couldn't open pickle file
                 return_text = "No session file named " + pickle_file_name + " was found in the working directory."
