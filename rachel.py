@@ -16883,8 +16883,8 @@ class experimentmanager:
                         # Save the lifetime in ps to this level.
                         investigated_nucleus.levels[this_level_key].set_calculated_lifetime(this_lifetime)
                         this_half_life = math.log(2.) * this_lifetime
-                        print str(this_level_key).strip("()").ljust(16) + "  " \
-                            + str(this_lifetime).ljust(21) + "  " + str(this_half_life).ljust(14)
+                        band_name, spin = investigated_nucleus.get_band_and_spin_from_gosia_level_number(this_gosia_level_number)
+                        print band_name.ljust(10) + "  " +  str(spin).ljust(4) + "  " + str(this_lifetime).ljust(21) + "  " + str(this_half_life).ljust(14)
 
                     line_number += 1
                 print "\nLifetimes calculated and stored in level data.\n"
