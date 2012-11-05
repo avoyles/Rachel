@@ -299,6 +299,35 @@ FILE_DEF_DICT = {\
                  99:{"extension":"amp","status":"3","format":1}
                  }
 
+# Default file names when making or using dummy files to avoid overwriting real data.
+DUMMY_FILE_DEF_DICT = {\
+                 22:{"extension":"dummy_out","status":"3","format":1},\
+                 25:{"extension":"dummy_inp","status":"3","format":1},\
+                 9:{"extension":"dummy_gdt","status":"3","format":1},\
+                 3:{"extension":"dummy_yld","status":"3","format":1},\
+                 4:{"extension":"dummy_cor","status":"3","format":1},\
+                 7:{"extension":"dummy_map","status":"3","format":1},\
+                 12:{"extension":"dummy_bst","status":"3","format":1},\
+                 15:{"extension":"dummy_err","status":"3","format":1},\
+                 29:{"extension":"dummy_icc","status":"3","format":1},\
+                 99:{"extension":"dummy_amp","status":"3","format":1}
+                 }
+
+# The DEORIENTATION_FILE_DEF_DICT uses temporary files for the .cor and .map
+# calculations, so that we don't overwrite real data.
+DEORIENTATION_FILE_DEF_DICT = {\
+                 22:{"extension":"out","status":"3","format":1},\
+                 25:{"extension":"inp","status":"3","format":1},\
+                 9:{"extension":"gdt","status":"3","format":1},\
+                 3:{"extension":"yld","status":"3","format":1},\
+                 4:{"extension":"temporary_cor","status":"3","format":1},\
+                 7:{"extension":"temporary_map","status":"3","format":1},\
+                 12:{"extension":"bst","status":"3","format":1},\
+                 15:{"extension":"err","status":"3","format":1},\
+                 29:{"extension":"icc","status":"3","format":1},\
+                 99:{"extension":"amp","status":"3","format":1}
+                 }
+
 # The default file name for all nuclear data tagged by symbols in beta v. 2.0.0
 # and ff.
 NUCLEAR_DATA_FILE_NAME = "rachel_nuclear_data.txt"   
@@ -9602,7 +9631,7 @@ class gosia_shell:
         return 0
         
 
-    def generate(self,function,action,tf=False,silent=False,release_for_correlated_errors=True,output_options = {},evaluation_only=False,amplitudes=False,dummy_cor_file_extension=None):
+    def generate(self,function,action,tf=False,silent=False,release_for_correlated_errors=True,output_options = {},evaluation_only=False,amplitudes=False,file_extension_substitution_dict = {},make_dummy_cor_file=True):
         """Generates a gosia input for the requested function and runs it if requested.
 
         output_options is a dictionary of extra output options, some of which
@@ -9665,15 +9694,14 @@ class gosia_shell:
                 self.get_excited_state_data()
 
 
-
         if function == "Integrated yields" or function == "Make simulated yields":
             full_gosia_input = self.op_intg_input() 
         elif function == "Map":
-            full_gosia_input = self.op_mini_input(do_map_instead=True)
+            full_gosia_input = self.op_mini_input(do_map_instead=True,file_name_substitution_dict=DEORIENTATION_FILE_DEF_DICT)
         elif function == "Fit":
             full_gosia_input = self.op_mini_input()
         elif function == "Deorientation coeff.":
-            full_gosia_input = self.vacuum_depolarization_input(dummy_cor_file_extension)
+            full_gosia_input = self.vacuum_depolarization_input(DEORIENTATION_FILE_DEF_DICT)
         elif function == "Calculate lifetimes":
             full_gosia_input = self.lifetimes_input()
         elif function == "Make corrected yields":
@@ -9686,6 +9714,10 @@ class gosia_shell:
                 # numbering) so that crashes can be avoided in inverse
                 # kinematics when only the couplings are being evaluated.
                 full_gosia_input = self.op_poin_input(ncm_override=True)
+            elif make_dummy_cor_file:
+                # Use op,poin to put yields into a dummy cor file, not the
+                # default file.  (Don't want to overwrite real data.)
+                full_gosia_input = self.op_poin_input(ncm_override=True,IFL=1,file_extension_substitution_dict=file_extension_substitution_dict,YLIM=1.e-6)
             else:
                 # Pass on whether or not to write out the a(w) amplitude data.
                 full_gosia_input = self.op_poin_input(amplitudes=amplitudes)
@@ -10093,7 +10125,7 @@ class gosia_shell:
 
             return full_gosia_input
             
-    def op_poin_input(self,ncm_override=False,amplitudes=False):
+    def op_poin_input(self,ncm_override=False,amplitudes=False,IFL=0,file_extension_substitution_dict={},YLIM=0):
             """Generate an OP,POIN input
             
             Poll the nucleus for level scheme information, the experiment
@@ -10106,7 +10138,7 @@ class gosia_shell:
             """
 
             # Need an op,file header
-            op_file_lines = self.op_file_header()
+            op_file_lines = self.op_file_header(file_extension_substitution_dict)
 
             # Get the nucleus information
             level_scheme_lines = investigated_nucleus.generate_gosia_input()
@@ -10146,8 +10178,12 @@ class gosia_shell:
             full_gosia_input.extend(bric_lines)
             full_gosia_input.extend(yiel_lines)
 
-            # Put on the op,poin command.
-            op_poin_lines = ["OP,POIN","0,0"]
+            # Put on the op,poin command.  Normally, the second argument would
+            # be zero, and the lower yield limit would be irrelevant.  If we
+            # are making a .cor file, we need to tell Gosia to write it.  See
+            # IFL and YLIM in the OP,POIN section of the manual.
+            arguments_line = str(IFL) + ", " + str(YLIM)
+            op_poin_lines = ["OP,POIN",arguments_line]
             full_gosia_input.extend(op_poin_lines)
 
             # Put an op,exit on the end and a blank line to finish.
@@ -10216,7 +10252,7 @@ class gosia_shell:
 
             return full_gosia_input
             
-    def op_mini_input(self,do_map_instead=False):
+    def op_mini_input(self,do_map_instead=False,file_name_substitution_dict={}):
             """Generates OP,MINI *or* OP,MAP input.
 
             If do_map_instead is set to True, then an OP,MAP input is generated
@@ -10229,7 +10265,7 @@ class gosia_shell:
             # for gosia.
 
             # Need an op,file header
-            op_file_lines = self.op_file_header()
+            op_file_lines = self.op_file_header(file_name_substitution_dict)
 
             # Get the nucleus information
             level_scheme_lines = investigated_nucleus.generate_gosia_input()
@@ -10413,22 +10449,16 @@ class gosia_shell:
         return full_gosia_input
 
 
-    def vacuum_depolarization_input(self,dummy_cor_file_extension=None):
+    def vacuum_depolarization_input(self,file_extension_substitution_dict = {}):
         """Generates an input for vacuum depolarization coefficiencts
 
         """
 
-        block_print_with_line_breaks("This function uses a fit of 0 steps with no experimental data to force Gosia to output the vacuum depolarization coefficients.")
+        block_print_with_line_breaks("This function uses a fit of 0 steps to force Gosia to output the vacuum depolarization coefficients.")
 
-        # Poll the nucleus for level scheme information, the experiment
-        # manager for experiment info, etc., and generate an OP,MINI input
-        # for gosia.
-
-        # Need an op,file header
-        if not dummy_cor_file_extension == None:
-            op_file_lines = self.op_file_header({4:{"extension":dummy_cor_file_extension,"status":"3","format":1}})
-        else:
-            op_file_lines = self.op_file_header()
+        # Make a substitution of file names, since we are faking some files for
+        # this calculation and we don't want to overwrite a real file.
+        op_file_lines = self.op_file_header(file_extension_substitution_dict)
 
         # Get the nucleus information
         level_scheme_lines = investigated_nucleus.generate_gosia_input(fix_all = True)
@@ -16856,7 +16886,7 @@ class experimentmanager:
                             + str(this_lifetime).ljust(21) + "  " + str(this_half_life).ljust(14)
 
                     line_number += 1
-                print "\nLifetimes calculated and saved.\n"
+                print "\nLifetimes calculated and stored in level data.\n"
 
             except:
                 block_print_with_line_breaks("Error parsing lifetimes from Gosia output--processing could not continue.",70)
@@ -21740,7 +21770,7 @@ class main_gui:
             
 
         elif gosia_function == "Integrated yields" or gosia_function == "Fit" or \
-          gosia_function == "Make corrected yields" or gosia_function == "Deorientation coeff.":
+          gosia_function == "Make corrected yields":
             if nucleus_ready and experiments_ready:
                 # Tell the gosia shell what type of output to generate (gdet,op intg, op mini, etc.)
                 # and what do do with it (return the text here, save it, or run gosia with it).
@@ -21769,14 +21799,6 @@ class main_gui:
                         print "Gosia killed by user or cannot run Gosia.  Check for errors above."
                         self.set_activation(self)
                         return -1
-
-                if gosia_function == "Deorientation coeff.":
-                    # Need to set up a phoney corrected yields file first,
-                    # because we can only get the deorientation calculation
-                    # after a fit (of 0 steps).
-                    the_gosia_shell.generate("Point yields","Run gosia input",False,True,False,{},True,"dummy_cor_file")   # Run silently.  Final "True" overrides settings to make NCM=1.
-                    the_gosia_shell.generate("Deorientation coeff.","Run gosia input",False,True,False,{},True,"dummy_cor_file")   # Run silently.  Final "True" overrides settings to make NCM=1.
-                    the_experiment_manager.parse_deorientation_coefficients(lifetimes = True, deorientation = True)
 
                 gosia_shell_output = the_gosia_shell.generate(gosia_function,gosia_action)
                 if gosia_shell_output == -1:
@@ -21836,6 +21858,27 @@ class main_gui:
             # Reactivate GUI buttons.
             self.set_activation(self)
             print "Done."
+
+        elif gosia_function == "Deorientation coeff.":
+            if nucleus_ready and experiments_ready:
+                # Need to set up a phoney corrected yields file first,
+                # because we can only get the deorientation calculation
+                # after a fit (of 0 steps).
+                print "Generating point-yield data for the deorientation calculation..."
+                the_gosia_shell.generate(function="Point yields",action="Run gosia input",tf=False,silent=True,release_for_correlated_errors=False,file_extension_substitution_dict = DEORIENTATION_FILE_DEF_DICT,make_dummy_cor_file=True)   
+                print "Generating a q-parameter map for the deorientation calculation..."
+                # Make a dummy map file.
+                the_gosia_shell.generate(function="Map",action="Run gosia input",tf=False,silent=True,release_for_correlated_errors=False,file_extension_substitution_dict = DEORIENTATION_FILE_DEF_DICT)
+                print "Calculating the deorientation coefficients..."
+                the_gosia_shell.generate(function="Deorientation coeff.",action="Run gosia input",tf=False,silent=False,release_for_correlated_errors=False,file_extension_substitution_dict = DEORIENTATION_FILE_DEF_DICT)
+
+            else:
+                print "\nYou need to define the nucleus, matrix and experimental setup first.\n
+
+            # Reactivate GUI buttons.
+            self.set_activation(self)
+            print "Done."
+
 
         elif gosia_function == "Make simulated yields":
             if nucleus_ready and experiments_ready:
