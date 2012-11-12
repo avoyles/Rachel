@@ -2928,6 +2928,15 @@ class nucleus:
             #total_errors += 1
             #return_text.extend(textwrap.wrap("ipsum lorem blah blah blah",TEXTVIEW_COLUMNS))
 
+        elif restored_version.startswith("pre-release"):
+            # Upgrades for any pre-release post-beta version.  These are not supported, but we used them internally.
+            try:
+                # Need to create a notes (logs) object.
+                self.notes = notes()
+            except:
+                total_errors += 1
+                return_text.extend(textwrap.wrap("Could not create a notes object in class nucleus.",TEXTVIEW_COLUMNS) )
+            
         elif restored_version <= "1.2.0":
             # Upgrades for any version 1.1.5 or older.
             try:
