@@ -365,6 +365,113 @@ DEFAULT_EFFICIENCY_PARAMETERS = [5.7021, 4.83491, 0., 6.20016, -6.06E-01, -5.36E
 # The parameters A--G are those used by Radware.  [See def absolute_efficiency()]   
 # N is the overall factor for the absolute efficiency.
 
+
+class Completer(object):
+    # This is just a modified version of the snippet here:
+    # http://stackoverflow.com/questions/5637124/tab-completion-in-pythons-raw-input
+    # The original author is http://stackoverflow.com/users/538718/samplebias
+
+    def _listdir(self, root):
+        "List directory 'root' appending the path separator to subdirs."
+        res = []
+        for name in os.listdir(root):
+            path = os.path.join(root, name)
+            if os.path.isdir(path):
+                name += os.sep
+            res.append(name)
+        return res
+
+    def _complete_path(self, path=None):
+        "Perform completion of filesystem path."
+        if not path:
+            listing = self._listdir('./')
+            return listing
+        # Added by ABH: If the user typed "~", expand to the user's home directory.
+        # (Then continue to return choices.
+        elif "~" in path:
+            expanded_home_dir = os.path.expanduser("~")
+            path = path.replace("~",expanded_home_dir)
+            return [path]
+        dirname, rest = os.path.split(path)
+        tmp = dirname if dirname else '.'
+        res = [os.path.join(dirname, p)
+            for p in self._listdir(tmp) if p.startswith(rest)]
+        # more than one match, or single match which does not exist (typo)
+        if len(res) > 1 or not os.path.exists(path):
+            return res
+        # resolved to a single directory, so return list of files below it
+        if os.path.isdir(path):
+            return [os.path.join(path, p) for p in self._listdir(path)]
+        # exact file match terminates this completion
+        return [path]  # was return [path + ' '], but we don't want to put a space after the file name, or it will start repeating the path.
+
+    def complete_file(self, args=None):
+        "Completions for the 'extra' command."
+        if not args:
+            return self._complete_path('./')
+        # treat the last arg as a path and complete it
+        return self._complete_path(args[-1])
+
+    def complete(self, text, state):
+        "Generic readline completion entry point."
+        buffer = readline.get_line_buffer()
+        line = readline.get_line_buffer().split()
+        impl = getattr(self, 'complete_file')
+        if line == []:
+            args = ["./"]  # Default to the working directory.
+        else:
+            cmd = line[0].strip()
+            args = line # was line[1:]
+        if args:
+            return (impl(args) + [None])[state]
+        return [cmd ][state]
+
+
+    def nullcomplete(self, text, state):
+        return None
+
+
+
+def prompt_for_file_name(prompt_string = ""):
+    """Uses tab-completion to prompt for file names.
+
+    This is done in a separate def so that tab-completion does not suggest file
+    paths at prompts that do not expect a file name.
+
+    """
+
+
+
+    # Set up tab-completion using the Completer class.
+    # We want to treat '/' as part of a word, so override the delimiters.
+    # (See class Completer for credit to "samplebias.")
+    readline.set_completer_delims(' \t\n;')
+    readline.parse_and_bind("tab: complete")
+    # Create a completer object if none exists
+    try:
+        comp
+    except:
+        comp = Completer()
+
+    readline.set_completer(comp.complete)
+    # It is DANGEROUS to mess around with readline; it can lock up the whole system!
+    # Eventually, we should be able to turn the tab-completion on and off, 
+    # maybe with parse_and_bind.
+
+    print "mark"
+    print dir(comp)
+
+    try:
+        file_name = raw_input(prompt_string)
+    except:
+        file_name = None
+
+    # Now unset the readline file name completer.
+    print readline.get_completer()
+    readline.set_completer(comp.nullcomplete)  
+
+    return file_name 
+
 def ignore_break():
     """Uses the signal module to prevent the user from aborting the GUI with CTRL-C.
 
@@ -464,11 +571,17 @@ def top_level_testing():
 
     """
 
+    file_name = prompt_for_file_name("Enter file name (comp): ")
+    print file_name 
+    file_name = raw_input("Enter file name (NO COMP): ")
+    print file_name 
+
+
     # Load the session
     #setup_globals("reset") # to make sure we don't have old data hanging around in the original objects
     #unpickle_return_code,textview_summary = setup_globals("unpickle")
 
-    call_rochester_srim_server(beam_Z=54, beam_mass=136, target_density=10., target_Z=72, target_name="hf", target_mass=178, initial_energy=650., target_thickness_or_exit_energy=50., fractional_padding_on_energy_meshpoints=0.01, number_of_meshpoints=10, thickness_or_exit_energy_flag="-t-")
+    #call_rochester_srim_server(beam_Z=54, beam_mass=136, target_density=10., target_Z=72, target_name="hf", target_mass=178, initial_energy=650., target_thickness_or_exit_energy=50., fractional_padding_on_energy_meshpoints=0.01, number_of_meshpoints=10, thickness_or_exit_energy_flag="-t-")
 
 def largest_float_on_this_machine():
     """Returns approximately the largest machine-size number on this machine.
@@ -1471,104 +1584,6 @@ def call_rochester_srim_server(beam_Z=None, beam_mass=None, target_density=None,
         # Could not process output, or server error was fatal.
         return {"error_strings":error_strings, "calculated_exit_energy":calculated_exit_energy, "calculated_range":calculated_range, "calculated_target_thickness":calculated_target_thickness, "energies":energies,"stopping_powers":stopping_powers}
  
-class Completer(object):
-    """Used to set up command completion and filename completion.
-
-    This was written in answer to a question on stackoverflow by
-    http://stackoverflow.com/users/538718/samplebias
-    The code was found here:
-    http://stackoverflow.com/questions/5637124/tab-completion-in-pythons-raw-input
-
-    There are examples below for customizing the completion choices for
-    different commands.  I made modifications marked below (Adam)
-
-    """
-
-    def _listdir(self, base_dir):
-        "List directory 'base_dir' appending the path separator to subdirs."
-        res = []
-        for name in os.listdir(base_dir):
-            path = os.path.join(base_dir, name)
-            if os.path.isdir(path):
-                name += os.sep
-            res.append(name)
-        return res
-
-    def _complete_path(self, path=None):
-        "Perform completion of filesystem path."
-        if not path:
-            return self._listdir('.')
-        dirname, rest = os.path.split(path)
-        tmp = dirname if dirname else '.'
-        res = [os.path.join(dirname, p)
-            for p in self._listdir(tmp) if p.startswith(rest)]
-        # more than one match, or single match which does not exist (typo)
-        if len(res) > 1 or not os.path.exists(path):
-            return res
-        # resolved to a single directory, so return list of files below it
-        if os.path.isdir(path):
-            return [os.path.join(path, p) for p in self._listdir(path)]
-        # exact file match terminates this completion
-        return [path + ' ']
-
-    def complete_extra(self, args):
-        "Completions for the 'extra' command."
-        if not args:
-            return self._complete_path('.')
-        # treat the last arg as a path and complete it
-        return self._complete_path(args[-1])
-
-    def complete_path_only(self,text,state):
-        """Tab-complete for file paths only.
-            (Modified)
-        """
-
-        path_list = os.listdir(".")
-        buffer = readline.get_line_buffer()
-        line = readline.get_line_buffer().split()
-        # show all file/path matches.
-        if not line:
-            return [c + ' ' for c in path_list][state]
-        # account for last argument ending in a space
-        if RE_SPACE.match(buffer):
-            line.append('')
-        # resolve command to the implementation function
-        cmd = line[0].strip()
-        if cmd in path_list:
-            impl = getattr(self, 'complete_%s' % cmd)
-            args = line[1:]
-            if args:
-                return (impl(args) + [None])[state]
-            return [cmd][state]
-        results = [c + ' ' for c in path_list if c.startswith(cmd)] + [None]
-
-        # Adam added a strip to this, so that filenames are not returned with a trailing whitespace, which is not handled well.
-        return results[state].strip()
-
-        
-    def complete(self, text, state):
-        """Generic readline completion entry point.
-            Do not modify; keep this as a template.
-        """
-
-        buffer = readline.get_line_buffer()
-        line = readline.get_line_buffer().split()
-        # show all commands
-        if not line:
-            return [c + ' ' for c in COMMANDS][state]
-        # account for last argument ending in a space
-        if RE_SPACE.match(buffer):
-            line.append('')
-        # resolve command to the implementation function
-        cmd = line[0].strip()
-        if cmd in COMMANDS:
-            impl = getattr(self, 'complete_%s' % cmd)
-            args = line[1:]
-            if args:
-                return (impl(args) + [None])[state]
-            return [cmd + ' '][state]
-        results = [c + ' ' for c in COMMANDS if c.startswith(cmd)] + [None]
-        return results[state]
 
 
 class notes:
@@ -26949,17 +26964,6 @@ def main():
 
 if __name__ == "__main__":
 
-
-    # Set up tab-completion using the Completer class.
-    # We want to treat '/' as part of a word, so override the delimiters.
-    # (See class Completer for credit to "samplebias.")
-    readline.set_completer_delims(' \t\n;')
-    readline.parse_and_bind("tab: complete")
-    comp = Completer()
-    readline.set_completer(comp.complete_path_only)
-    # It is DANGEROUS to mess around with readline; it can lock up the whole system!
-    # Eventually, we should be able to turn the tab-completion on and off, 
-    # maybe with parse_and_bind.
 
     global LAST_POPUP_TIP
     LAST_POPUP_TIP = None
