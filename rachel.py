@@ -177,6 +177,13 @@ except:
     import_error_count += 1
 
 
+try:
+    from termios import tcflush, TCIOFLUSH  # Right now, just for clearing the input buffer.
+
+except:
+    import_error("termios")
+    import_error_count += 1
+
 # See if there were import errors.  If there were vital ones (all are vital at
 # this point), then quit.
 
@@ -21622,6 +21629,10 @@ class main_gui:
     # Callbacks for the main_gui buttons follow.
     
     def set_deactivation(self,widget,button_pointers):
+
+        # Flush the input buffer, so that accidental keystrokes don't go into the next prompt.
+        tcflush(sys.stdin, TCIOFLUSH)
+
         # Deactivate all GUI buttons
         for one_button in button_pointers:
             one_button.set_sensitive(False)
