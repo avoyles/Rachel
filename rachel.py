@@ -454,12 +454,6 @@ def prompt_for_file_name(prompt_string = ""):
         comp = Completer()
 
     readline.set_completer(comp.complete)
-    # It is DANGEROUS to mess around with readline; it can lock up the whole system!
-    # Eventually, we should be able to turn the tab-completion on and off, 
-    # maybe with parse_and_bind.
-
-    print "mark"
-    print dir(comp)
 
     try:
         file_name = raw_input(prompt_string)
@@ -467,7 +461,6 @@ def prompt_for_file_name(prompt_string = ""):
         file_name = None
 
     # Now unset the readline file name completer.
-    print readline.get_completer()
     readline.set_completer(comp.nullcomplete)  
 
     return file_name 
@@ -3081,7 +3074,7 @@ class nucleus:
         text_columns = 20
         energy_columns = 10
         spin_columns = 6
-        level_scheme_file_name = raw_input("Enter file name to export level scheme: ")
+        level_scheme_file_name = prompt_for_file_name(prompt_string = "Enter file name to export level scheme: ")
         if level_scheme_file_name == "":
             print "Cancelled."
             return 0
@@ -3155,7 +3148,7 @@ class nucleus:
         # The column width for spin fields
         spin_column_width = 6
         # Get the file name to write the matrix data to.
-        matrix_file_name = raw_input("File name to write to (will be overwritten): ")
+        matrix_file_name = prompt_for_file_name(prompt_string = "File name to write to (will be overwritten): ")
         if matrix_file_name == "":
             print "Cancelled."
             return 0
@@ -3264,7 +3257,7 @@ class nucleus:
             print "Deleted the matrix in memory!"
 
         # Get the file name.
-        matrix_file_name = raw_input("File name to read: ")
+        matrix_file_name = prompt_for_file_name(prompt_string = "File name to read: ")
         if matrix_file_name == "":
             print "Cancelled."
             return 0
@@ -7108,7 +7101,6 @@ class nucleus:
         # We need to cycle through user (display) band numbers 1--n, not 0--n for the add-matrix methods.
         for initial_band_number in range(1,number_of_bands+1):
             for final_band_number in range(initial_band_number,number_of_bands+1):
-                #raw_input("Press enter: ")
                 # If the initial band is the final band, then call methods to add in-band matrix elements.
                 if initial_band_number == final_band_number:
                     # Add E2 matrix elements in-band.
@@ -12444,12 +12436,9 @@ class experimentmanager:
             while True:
                 # Step through all lines for this experiment to get the level indices.
                 line = gosia_output_lines[level_line]
-#               raw_input(line)
                 line_fields = line.split()
-#               raw_input(line_fields)
                 if len(line_fields) < 2:
                     # No more data for this experiment
-#                   raw_input("no more data for this expt")
                     break  # out of nearest while loop to read substate data.
                 level_string, spin_string, M_string, real_string, imaginary_string = line_fields
                 # Not keeping the final amplitudes.
@@ -12457,25 +12446,20 @@ class experimentmanager:
                 spin = round(float(spin_string),1)   # rounded to the nearest half integer
                 Mf   = round(float(M_string),1)      #    "
 
-#               text_temp = str(spin) + " " + str(Mf)
-#               raw_input(temp_text)
                 final_real_amplitude = float(real_string)
                 final_imaginary_amplitude = float(imaginary_string)
                 final_probability = final_real_amplitude**2 + final_imaginary_amplitude**2
                 final_probability_string = str(final_probability)
-#               raw_input(final_probability_string)
                 # Add this substate to the dictionary for this experiment
                 reverse_substate_dictionary[gosia_substate_number] = [internal_level_number,Mf]
                 substate_dictionary[(internal_level_number,Mf)] = gosia_substate_number  # reverse lookup
                 r_s = str(reverse_substate_dictionary[gosia_substate_number]) + str(substate_dictionary[(internal_level_number,Mf)])
-#               raw_input(r_s)
 
                 # Increment the gosia substate number. 
                 gosia_substate_number += 1
 
                 level_line += 1
                 l_s = str(gosia_substate_number) + str(level_line)
-#               raw_input(l_s)
 
             break  # For now, trusting that all experiments have (possibly zero) population data for all levels.
             #del gosia_output_lines[:level_line]  # Delete the lines parsed from the list 
@@ -13760,7 +13744,7 @@ class experimentmanager:
         self.print_experiment_catalog()
         internal_experiment_number = prompt_number("Enter experiment number: ",'i') - 1 # Subtract one to convert to internal numbering.
 
-        output_file_name = str(raw_input("Enter file name to save to (will be overwritten): "))
+        output_file_name = prompt_for_file_name(prompt_string = "Enter file name to save to (will be overwritten): ")
 
         crystal_count = 0
         cluster_count = 0
@@ -13842,7 +13826,7 @@ class experimentmanager:
             print "Incorrect file format on line ", line_number + 1, "."  # Add one to give line number base 1.
             return 
 
-        file_name = str(raw_input("Enter Rachel detector file name: "))
+        file_name = prompt_for_file_name(prompt_string = "Enter Rachel detector file name: ")
 
         with open(file_name, 'r') as detector_array_file:
             array_file_lines = detector_array_file.readlines()
@@ -14116,7 +14100,7 @@ class experimentmanager:
                         yield_data_file_type = "txt"
                     elif txt_or_ags == "a":
                         yield_data_file_type = "ags"
-                    yield_data_file_name = raw_input("Enter data file name for this detector in this experiment: ")
+                    yield_data_file_name = prompt_for_file_name(prompt_string = "Enter data file name for this detector in this experiment: ")
                     ge_detector_parameters["yield_data_file_name"] = yield_data_file_name
                     ge_detector_parameters["yield_data_file_type"] = yield_data_file_type
                 self.allexperiments[experiment_number].add_ge_detector(ge_detector_parameters)
@@ -14233,7 +14217,7 @@ class experimentmanager:
                         yield_data_file_type = "txt"
                     elif txt_or_ags == "a":
                         yield_data_file_type = "ags"
-                    yield_data_file_name = raw_input("Enter data file name for this cluster in this experiment: ")
+                    yield_data_file_name = prompt_for_file_name(prompt_string = "Enter data file name for this cluster in this experiment: ")
                     ge_cluster_parameters["yield_data_file_name"] = yield_data_file_name
                     ge_cluster_parameters["yield_data_file_type"] = yield_data_file_type
                 self.allexperiments[experiment_number].add_ge_detector(ge_cluster_parameters)
@@ -14898,7 +14882,7 @@ class experimentmanager:
         number_of_yields_in_memory = len(experimental_yields_for_this_detector)
         print "This detector has ",number_of_yields_in_memory, "yields."
         # Get the requested file name and write the yields to the file.
-        file_name = raw_input("Enter file name to save yields: ")
+        file_name = prompt_for_file_name(prompt_string = "Enter file name to save yields: ")
 
         text_columns = 20
         float_columns = 20
@@ -15017,7 +15001,7 @@ class experimentmanager:
 
         if not silent:
             # Prompt for the text file name and read it.
-            txt_yield_file_name = str(raw_input("TXT file to read: "))
+            txt_yield_file_name = prompt_for_file_name(prompt_string = "TXT file to read: ")
 
             # Ask the user whether this should be set as the auto-load data
             # file for this detector.  If so, set this detector to auto-load
@@ -15148,7 +15132,7 @@ class experimentmanager:
 
         if not silent:
             # Prompt for the ags file and read it.
-            ags_file_name = str(raw_input("AGS file to read: "))
+            ags_file_name = prompt_for_file_name("AGS file to read: ")
 
             # Ask the user whether this should be set as the auto-load data
             # file for this detector.  If so, set this detector to auto-load
@@ -17022,7 +17006,6 @@ class experimentmanager:
             data_points_for_experiment.append(0)
             chi_squared_for_experiment.append(0.0)
             this_experiment = self.allexperiments[internal_experiment_number]
-#            raw_input("this expt object: " + str(this_experiment))
             this_experiment_number_of_detectors = this_experiment.get_number_of_detectors()
             # Get the weighted mean normalization of the experimental data.
             try:
@@ -19483,7 +19466,7 @@ class experiment:
                 # Get the minimum and maximum beam energy to instruct the user.
                 read_now = yes_no_prompt("Do you want to read new energies and stopping powers from a file now [Y/n]? ",True)
                 if read_now:
-                    file_name = raw_input("Enter file name: ")
+                    file_name = prompt_for_file_name(prompt_string = "Enter file name: ")
                     try:
                         with open(file_name,"r") as input_file:
                             stopping_file_lines = input_file.readlines()
@@ -20394,7 +20377,7 @@ class detectormanager:
         # only the definition in the standard library and isn't helpful in
         # defining clusters or arrays.
 
-        physical_detector_file_name = raw_input("Enter file name to read physical Ge crystal types: ")
+        physical_detector_file_name = prompt_for_file_name(prompt_string = "Enter file name to read physical Ge crystal types: ")
         try:
             with open(physical_detector_file_name,"r") as physical_detector_file:
                 detector_file_lines = physical_detector_file.readlines()
@@ -21511,20 +21494,15 @@ def generate_dot_rachel_setup_file():
         while True:
             home_path = os.path.expanduser("~")
             setup_values = []
-            temp_string = raw_input("Please enter the name of the elast executable, including the full path: ")
-            temp_string = temp_string.replace("~",home_path)
+            temp_string = prompt_for_file_name(prompt_string = "Please enter the name of the elast executable, including the full path: ")
             setup_values.append(temp_string) 
-            temp_string = raw_input("Please enter the name of the gosia executable, including the full path: ")
-            temp_string = temp_string.replace("~",home_path)
+            temp_string = prompt_for_file_name(prompt_string = "Please enter the name of the gosia executable, including the full path: ")
             setup_values.append(temp_string) 
-            temp_string = raw_input("Please enter the name of the BRICC .idx file, including the full path, if it is not in working directory: ")
-            temp_string = temp_string.replace("~",home_path)
+            temp_string = prompt_for_file_name(prompt_string = "Please enter the name of the BRICC .idx file, including the full path, if it is not in working directory: ")
             setup_values.append(temp_string) 
-            temp_string = raw_input("Please enter the name of the BRICC .icc file, including the full path, if it is not in working directory: ")
-            temp_string = temp_string.replace("~",home_path)
+            temp_string = prompt_for_file_name(prompt_string = "Please enter the name of the BRICC .icc file, including the full path, if it is not in working directory: ")
             setup_values.append(temp_string) 
-            temp_string = raw_input("Please enter the full path to the directory where the Rachel executable is stored: ")
-            temp_string = temp_string.replace("~",home_path)
+            temp_string = prompt_for_file_name(prompt_string = "Please enter the full path to the directory where the Rachel executable is stored: ")
             # Strip the final / from the rachel directory, if there is one.
             if temp_string[-1] == "/":
                 temp_string = temp_string[:-1]
@@ -22756,7 +22734,7 @@ class main_gui:
             gtk.main_iteration(False)
         try:
             txt_or_ags = raw_input("Import from AGS[a] or TXT[t] file? ").lower()[0]
-            file_name = raw_input("Enter filename to read: ")
+            file_name = prompt_for_file_name(prompt_string = "Enter filename to read: ")
             if txt_or_ags == "t":
                 return_code = investigated_nucleus.read_txt_level_scheme(file_name)
                 if return_code == 0:
@@ -24026,7 +24004,7 @@ class main_gui:
         """
 
         print "Warning: undo information is not saved during script execution!"
-        script_file_name = raw_input("Enter full script file name (including .py) [enter to quit]: ")
+        script_file_name = prompt_for_file_name(prompt_string = "Enter full script file name (including .py) [enter to quit]: ")
         if script_file_name.strip() == "":
             print "Cancelled."
             return 0
@@ -24164,34 +24142,34 @@ class main_gui:
                 elif user_expression.strip() == "chisq":
                     the_experiment_manager.properly_weighted_chi_squared_report()
 
-                elif user_expression.strip() == "script":
-                    script_file_name = raw_input("Enter script file name: ")
-                    with open(script_file_name,"r") as script_file:
-                        script_lines = script_file.readlines()
-                    for one_line in script_lines:
-                        one_line = one_line.strip()
-                        if not len(one_line) == 0:
-                            if not one_line[0] == "#":
-                                print "Rachel>" + one_line
-                                eval(one_line)
-                    print "Script finished."
+#                elif user_expression.strip() == "script":
+#                    script_file_name = prompt_for_file_name(prompt_string = "Enter script file name: ")
+#                    with open(script_file_name,"r") as script_file:
+#                        script_lines = script_file.readlines()
+#                    for one_line in script_lines:
+#                        one_line = one_line.strip()
+#                        if not len(one_line) == 0:
+#                            if not one_line[0] == "#":
+#                                print "Rachel>" + one_line
+#                                eval(one_line)
+#                    print "Script finished."
 
-                elif user_expression.strip() == "python":
-                    script_file_name = raw_input("Enter full script file name (including .py): ")
-                    print "Trying to run script \"" + script_file_name + "\"."
-                    try:
-                        with open(script_file_name,"r") as test_file:
-                            test_file.readline()
-                        print "Found file \"" + script_file_name + "\"."
-                        file_found = True
-                        print "Running..."
-                    except:
-                        print "Could not find file in the working directory.\nInclude the full path."
-                        file_found = False
-
-                    if file_found:
-                        execfile(script_file_name)
-                        print "\nScript execution ended."
+#                elif user_expression.strip() == "python":
+#                    script_file_name = prompt_for_file_name(prompt_string = "Enter script file name: ")
+#                    print "Trying to run script \"" + script_file_name + "\"."
+#                    try:
+#                        with open(script_file_name,"r") as test_file:
+#                            test_file.readline()
+#                        print "Found file \"" + script_file_name + "\"."
+#                        file_found = True
+#                        print "Running..."
+#                    except:
+#                        print "Could not find file in the working directory.\nInclude the full path."
+#                        file_found = False
+#
+#                    if file_found:
+#                        execfile(script_file_name)
+#                        print "\nScript execution ended."
 
                 elif user_expression.strip() == "exec":
                     block_print_with_line_breaks("This is similar to a python interpreter session, except that evaluation of expressions does not give any output, unless preceded by \"print \"")
