@@ -571,10 +571,14 @@ def top_level_testing():
 
     """
 
-    file_name = prompt_for_file_name("Enter file name (comp): ")
-    print file_name 
-    file_name = raw_input("Enter file name (NO COMP): ")
-    print file_name 
+    investigated_nucleus.zero_all_diagonal_errors()
+    investigated_nucleus.zero_all_correlated_errors()
+    #investigated_nucleus.draw_interband_details(1,2,"E2")
+    raw_input("change to diag err output file & hit enter.")
+    investigated_nucleus.parse_diagonal_errors(True)  # parameter is true to keep parametric
+    raw_input("change to corr err output file & hit enter.")
+    investigated_nucleus.parse_correlated_errors()  # parameter is true to release, false by default
+    investigated_nucleus.draw_interband_details(1,2,"E2")
 
 
     # Load the session
@@ -2401,10 +2405,50 @@ class matrix_element:
         self.upper_correlated_error = None
 
     def set_diagonal_errors(self,lower_error,upper_error):
+        """The "upper" and "lower" error bars are defined such that they lie
+
+        here on the number line, regardless of whether the "best value" is
+        positive or negative.
+
+                                           |<--a-->|
+                             |<-----b----->|                |
+          -x axis  <---------|=============X=======|--------0-----> +x axis
+                                                            |
+        and
+
+                                           |<--a-->|
+                       |     |<-----b----->|
+          -x axis  <---0-----|=============X=======|--------------> +x axis
+                       |
+
+        both represent the number X with error bars, written as "X +a,-b" or "X (+a, -b)".
+
+        """
+
         self.lower_diagonal_error = lower_error
         self.upper_diagonal_error = upper_error
 
     def set_correlated_errors(self,lower_error,upper_error):
+        """The "upper" and "lower" error bars are defined such that they lie
+
+        here on the number line, regardless of whether the "best value" is
+        positive or negative.
+
+                                           |<--a-->|
+                             |<-----b----->|                |
+          -x axis  <---------|=============X=======|--------0-----> +x axis
+                                                            |
+        and
+
+                                           |<--a-->|
+                       |     |<-----b----->|
+          -x axis  <---0-----|=============X=======|--------------> +x axis
+                       |
+
+        both represent the number X with error bars, written as "X +a,-b" or "X (+a, -b)".
+
+        """
+
         self.lower_correlated_error = lower_error
         self.upper_correlated_error = upper_error
 
@@ -3713,6 +3757,15 @@ class nucleus:
                                                                                             # then put the sign back on.
                         dependent_object.set_current_value(new_dependent_matrix_element_value)
 
+                        if initial_dependent_matrix_element_value > 0.0:
+                            dependent_low_abs_error  =  (low_percent_error/100.) * initial_dependent_matrix_element_value 
+                            dependent_high_abs_error =  (high_percent_error/100.) * initial_dependent_matrix_element_value 
+                        else:
+                            dependent_low_abs_error  = (high_percent_error/100.)  * initial_dependent_matrix_element_value 
+                            dependent_high_abs_error = (low_percent_error/100.) * initial_dependent_matrix_element_value 
+
+                        dependent_object.set_diagonal_errors(dependent_low_abs_error,dependent_high_abs_error)
+
             # Now print the results for this matrix element
             comment = "(" + str(low_absolute_error).strip() + ", " + str(high_absolute_error).strip() + ")" + "  (" + str(low_percent_error)\
               + "%, " + str(high_percent_error) + "%)"
@@ -3815,25 +3868,25 @@ class nucleus:
                 # fractional error on all dependents.  If the user released 
                 # couplings, then each matrix element will have its own
                 # reported error.
+                absolute_change_in_master = better_matrix_element_value - original_value_of_reported_matrix_element 
+                fractional_change_in_dependent = absolute_change_in_master / original_value_of_reported_matrix_element 
+
                 if not release:
                     for possible_dependent_key in self.matrix_data.keys():
                         possible_dependent_object = self.matrix_data[possible_dependent_key]
                         master_key = possible_dependent_object.get_master_matrix_element_key() 
-                        if self.is_dependent_on(master_key,possible_dependent_key):
+                        if matrix_key == master_key:
                             # This is a dependent on the master just read.  Set
                             # its value so that it changes in proportion to the master's
                             # change.  Set its correlated errors so that it has the same fractional
                             # error as this master.
-                            absolute_change_in_master = better_matrix_element_value - original_value_of_reported_matrix_element 
-                            fractional_change_in_dependent = absolute_change_in_master / original_value_of_reported_matrix_element 
                             original_dependent_value = possible_dependent_object.get_current_value() 
-                            absolute_change_in_dependent = original_dependent_value * (1. + fractional_change_in_dependent)
                             if original_dependent_value > 0.0:
-                                dependent_low_abs_error  =  low_percent_error/100. * original_dependent_value 
-                                dependent_high_abs_error =  high_percent_error/100. * original_dependent_value 
+                                dependent_low_abs_error  =  (low_percent_error/100.) * original_dependent_value 
+                                dependent_high_abs_error =  (high_percent_error/100.) * original_dependent_value 
                             else:
-                                dependent_low_abs_error  = high_percent_error/100.  * original_dependent_value 
-                                dependent_high_abs_error = low_percent_error/100. * original_dependent_value 
+                                dependent_low_abs_error  = (high_percent_error/100.)  * original_dependent_value 
+                                dependent_high_abs_error = (low_percent_error/100.) * original_dependent_value 
                             possible_dependent_object.set_correlated_errors(dependent_low_abs_error,dependent_high_abs_error)
 
             # Now get the value and identity of the matrix element stored in the GUI.
@@ -6266,12 +6319,14 @@ class nucleus:
                 # error bars, depending on how the errors were calculated!
                 diagonal_errors   = self.matrix_data[one_matrix_key].get_diagonal_errors()
                 correlated_errors = self.matrix_data[one_matrix_key].get_correlated_errors()
+
                 if not None in diagonal_errors:
                     diagonal_errors_string = format(-abs(100.0 * diagonal_errors[0] / reduced_matrix_element), ".1f").rjust(10)\
                                     + "  " + format(abs(100.0 * diagonal_errors[1] / reduced_matrix_element), ".1f").rjust(10)
                 else:
                     diagonal_errors_string = "".rjust(10)
                 diagonal_errors_string = diagonal_errors_string.rjust(20)
+
                 if not None in correlated_errors:
                     correlated_errors_string = format(-abs(100.0 * correlated_errors[0] / reduced_matrix_element), ".1f").rjust(10)\
                                       + "  " + format(abs(100.0 * correlated_errors[1] / reduced_matrix_element), ".1f").rjust(10)
