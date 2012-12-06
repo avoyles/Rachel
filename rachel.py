@@ -18,6 +18,13 @@ import_error_count = 0
 
 
 try:
+    from pprint import pprint # Mostly for debugging
+                    
+except:
+    import_error("pprint")
+    import_error_count += 1
+
+try:
     import readline  # Importing this makes up/down arrow, right/left, ctrl-a, ctrl-e, etc. work on the eval expression prompt.
                      # No calls to readline are necessary for up/down arrow completion; it is sufficient to import it.
 except:
@@ -571,14 +578,27 @@ def top_level_testing():
 
     """
 
-    investigated_nucleus.zero_all_diagonal_errors()
-    investigated_nucleus.zero_all_correlated_errors()
-    #investigated_nucleus.draw_interband_details(1,2,"E2")
-    raw_input("change to diag err output file & hit enter.")
-    investigated_nucleus.parse_diagonal_errors(True)  # parameter is true to keep parametric
-    raw_input("change to corr err output file & hit enter.")
-    investigated_nucleus.parse_correlated_errors()  # parameter is true to release, false by default
-    investigated_nucleus.draw_interband_details(1,2,"E2")
+    setup_globals("reset") # to make sure we don't have old data hanging around in the original objects
+    unpickle_return_code,textview_summary = setup_globals(action="unpickle",force=True)
+    #print investigated_nucleus.matrix_data
+
+    desc = the_experiment_manager.allexperiments[0].long_description()
+    pprint(desc)
+    desc = the_experiment_manager.allexperiments[1].long_description()
+    pprint(desc)
+
+    raw_input("Press enter.")
+
+    simulation_dict = { \
+                        "days_of_beam":5.0, \
+                        "beam_intensity":1.0, \
+                        "minimum_counts":10, \
+                        "estimated_additional_error":0.05, \
+                        "user_energy_threshold":50.0, \
+                        "inspect_change_efficiency":False, \
+                        "add_scatter":False, \
+                      }
+    the_experiment_manager.write_simulated_yld_file(force_write=False,all_parameters=simulation_dict)
 
 
     # Load the session
@@ -846,6 +866,18 @@ def yes_no_prompt(prompt_string,default=False):
     except:
         # User probably hit return without typing a response.
         return default
+
+
+def require_yes_no(prompt_string):
+    """Same as yes_no_prompt, but no default; an answer is required.
+
+    """
+
+    response = None
+    while response == None:
+        response = yes_no_prompt(prompt_string,None)
+
+    return response
     
 def write_lines_to_file(file_name,list_of_lines,force=False):
     """Writes to text files, primarily for the gosia input files.
@@ -11586,6 +11618,8 @@ class experimentmanager:
         while not user_satisfied:
             block_print_with_line_breaks("Define the shape and size of the rectilinear detector in its plane, by entering x and y coordinates in centimeters with the origin (0,0) at the point of intersection of a normal line from the target.  You do NOT need to enter the initial point again as the final point.  This is handled by the GUI.  Enter only enough points to define linear edges.  Enter \"q\" to end the edge definition.")
 
+            block_print_with_line_breaks("NOTE: if the detector covers a region beyond the maximum scattering angle, then you must define the detection region, not the entire detector.")
+
             boundary_xy_points = []  # a list of x and y points to be entered by the user
             while True:
                 skip = False    # will be set to true if there was an invalid input, to skip processing of that input.
@@ -11637,7 +11671,7 @@ class experimentmanager:
                 
             check_string = "Check that this is the correct shape and normal position, and that have you defined the coordinates such that the green line is the phi = " + str(round(phi_r,1)) + " degree line that you intended."
             block_print_with_line_breaks(check_string,60)
-            user_satisfied = yes_no_prompt("Are you satisfied with this definition [Y/n]? ",True)
+            user_satisfied = yes_no_prompt("Check the figure window.  Are you satisfied with this definition [Y/n]? ",True)
 
         # Once the user is satisfied, we can translate this shape and normal
         # position to polar coordinates.  
@@ -13520,7 +13554,7 @@ class experimentmanager:
                     self.print_experiment_catalog()
                     if yes_no_prompt("Do you want to change experiment normalizations [y/N]: "):
                         self.user_set_experiment_normalizations()
-                    print "You will need to rewrite the gosia yield file now."
+                    print "If you have experimental (or simulated) data, \n then you will need to rewrite the gosia yield file now."
                     print "(Button \"Write Gosia yld file\")"
                     return 0
                 else:
@@ -13657,11 +13691,12 @@ class experimentmanager:
                 if annular:
                     parameter_dict["annular"] = True
                     if parameter_dict["detected_particle"] == "b":
-                        print "Enter the polar scattering angle range in the lab frame for the beam particle."
+                        print "Enter the polar beam scattering angle range in the lab frame."
                     else:
-                        print "Enter the polar recoil angle range in the lab frame for the target recoil."
+                        print "Enter the polar target recoil angle range in the lab frame."
                     if not normal_kinematics and parameter_dict["detected_particle"] == "t":
                         print "Both kinematic solutions will be calculated, if this is consistent with the range selected."
+                    block_print_with_line_breaks("NOTE: if the detector covers a region beyond the maximum scattering angle, then you must define the detection region, not the entire detector.")
                     parameter_dict["theta_lab_min"] = float(raw_input("LAB frame MINimum polar angle: "))
                     parameter_dict["theta_lab_max"] = float(raw_input("LAB frame MAXimum polar angle: "))
                     print "Polar scattering angle meshpoint spacing will be set automatically."
@@ -14446,7 +14481,11 @@ class experimentmanager:
 
                 
 
-        weighted_mean_normalization = normalization_constant / sum_of_weight_factors
+        try:
+            weighted_mean_normalization = normalization_constant / sum_of_weight_factors
+        except:
+            print "Error--there appear to be no calculated yields in memory.\nDid you integrate the yields?"
+            return [None,None]
 
         # Return the internal experiment numbers to which this normalization
         # applies (so it doesn't need to be calculated extra times) and the
@@ -15582,6 +15621,10 @@ class experimentmanager:
             if plot_experimental_yields:
                 # Get the normalization on the calculated yields that gives the best fit to experimental data.
                 experimental_normalization_constant = self.get_overall_normalization_for_experimental_yields(internal_experiment_number)[1] 
+                if experimental_normalization_constant == None:
+                    print "No data in memory for experiment " + str(internal_experiment_number + 1) + "."
+                    raw_input ("Press enter to continue.")
+
             # Get the internal detector number that matches the polar and azimuthal angles
             # within one degree for this experiment.
             gosia_experiment_number = internal_experiment_number + 1
@@ -16990,7 +17033,8 @@ class experimentmanager:
             try:
                 # Loop to get all integrated yields for all experiments.
                 for internal_experiment_number in range(number_of_experiments):
-                    experiment_description = self.allexperiments[internal_experiment_number].short_description()
+                    #experiment_description = self.allexperiments[internal_experiment_number].short_description()
+                    experiment_description = self.allexperiments[internal_experiment_number].long_description()
                     print "Experiment ",internal_experiment_number + 1
                     print experiment_description
                     print ""
@@ -17328,7 +17372,7 @@ class experimentmanager:
 
 
 
-    def write_simulated_yld_file(self,force_write=False):
+    def write_simulated_yld_file(self,force_write=False,all_parameters={}):
         """Writes simulated yields to gosia's .yld file.
 
         Calculated (integrated) yields must be in memory, because it uses them
@@ -17338,49 +17382,114 @@ class experimentmanager:
         This prompts for information about the expected beam run to generate
         data with actual p-gamma counts and sqrt(N) errors.
 
+        If all_parameters contains the correct parameters and their values,
+        then the prompts are skipped, and the parameter dict is used instead.
+
+        Required parameters:
+            inspect_change_efficiency 
+            days_of_beam 
+            beam_intensity 
+            minimum_counts 
+            estimated_additional_error 
+            user_energy_threshold 
+            add_scatter                   
+
+        Example of all_parameters dict:
+            
+              { \
+                "days_of_beam":5.0, \
+                "beam_intensity":1.0, \
+                "minimum_counts":10, \
+                "estimated_additional_error":0.05, \
+                "user_energy_threshold":50.0, \
+                "inspect_change_efficiency":False, \
+                "add_scatter":False, \
+              }
+
         """
+
+        if not all_parameters == {}:
+            # Try to get all parameters from this dict; return an error if one or more are wrong.
+            try:
+                days_of_beam                  = float(all_parameters["days_of_beam"]) 
+                beam_intensity                = float(all_parameters["beam_intensity"]) 
+                minimum_counts                = float(all_parameters["minimum_counts"]) 
+                estimated_additional_error    = float(all_parameters["estimated_additional_error"]) 
+                user_energy_threshold         = float(all_parameters["user_energy_threshold"]) 
+                inspect_change_efficiency     = all_parameters["inspect_change_efficiency"]
+                add_scatter                   = all_parameters["add_scatter"]
+                if not type(inspect_change_efficiency) == bool:
+                    print "Invalid parameter inspect_change_efficiency in write_simulated_yld_file."
+                    return None
+                if not type(add_scatter) == bool:
+                    print "Invalid parameter add_scatter in write_simulated_yld_file."
+                    return None
+                interactive = False
+            except:
+                print "Invalid parameter dictionary in write_simulated_yld_file."
+                return None
+        else:
+            interactive = True
+
 
         default_gamma_energy_threshold = 50.0 # keV
 
 
-        block_print_with_line_breaks("This function calculates **efficiency-corrected** p-gamma counts with errors based on the actual (uncorrected) counts.  The particle-detector efficiency is assumed to be 100%, not including the angular acceptance.  The final errors include the Poisson counting errors and any additional error added by the user.")
+        if interactive:
+            block_print_with_line_breaks("This function calculates **efficiency-corrected** p-gamma counts with errors based on the actual (uncorrected) counts.  The particle-detector efficiency is assumed to be 100%, not including the angular acceptance.  The final errors include the Poisson counting errors and any additional error added by the user.")
 
-        inspect_change_efficiency = yes_no_prompt("Do you want to inspect or change the efficiency curves [y/N]? ",False)
+            inspect_change_efficiency = require_yes_no("Do you want to inspect or change the efficiency curves [y/n]? ")
+
         if inspect_change_efficiency:
             the_detector_manager.change_efficiency_parameters()
 
-        days_of_beam = prompt_number("Expected days of beam on target: ","f")
-        if days_of_beam == "quit":
-            print "Quitting."
-            return -1
-        beam_intensity = prompt_number("Estimated beam current [pnA]: ","f")
-        if beam_intensity == "quit":
-            print "Quitting."
-            return -1
+        if interactive:
+            days_of_beam = prompt_number("Expected days of beam on target: ","f")
+            if days_of_beam == "quit":
+                print "Quitting."
+                return -1
 
-        minimum_counts = prompt_number("Measurement threshold in counts ( >= 1.): ","f")
-        if minimum_counts == "quit":
-            print "Quitting."
-            return -1
+        if interactive:
+            beam_intensity = prompt_number("Estimated beam current [pnA]: ","f")
+            if beam_intensity == "quit":
+                print "Quitting."
+                return -1
+
+        if interactive:
+            minimum_counts = prompt_number("Measurement threshold in counts ( >= 1.): ","f")
+            if minimum_counts == "quit":
+                print "Quitting."
+                return -1
+
         minimum_counts = max(1., minimum_counts)
-        print "Minimum counts taken as ",minimum_counts
-        estimated_additional_error = prompt_number("Estimated additional fractional random error (0. <= error < 1.)\ne.g. efficiency correction, background subtraction, etc.: ","f")
-        if estimated_additional_error == "quit":
-            print "Quitting."
-            return -1
-        estimated_additional_error = min(max(estimated_additional_error, 0.),0.99)
-        print "Added fractional error taken as ", estimated_additional_error
+        if interactive:
+            print "Minimum counts taken as ",minimum_counts
 
-        block_print_with_line_breaks("Define the low-energy threshold of the detectors.  Gammas below this energy will be excluded from the simulated data.",60)
-        user_energy_threshold = raw_input("Enter the low gamma energy threshold in keV [minimum 50.0]: ")
+        if interactive:
+            estimated_additional_error = prompt_number("Specify an additional fractional random error (0. <= error < 1.)\ne.g. efficiency correction, background subtraction.  You may get strange fits if you make the error bars too small, because of delta-functions in the chi-squared surface.  \nAdditional fractional error: ","f")
+            if estimated_additional_error == "quit":
+                print "Quitting."
+                return -1
+
+        estimated_additional_error = min(max(estimated_additional_error, 0.),0.99)
+
+        if interactive:
+            print "Added fractional error taken as ", estimated_additional_error
+
+        if interactive:
+            block_print_with_line_breaks("Define the low-energy threshold of the detectors.  Gammas below this energy will be excluded from the simulated data.",60)
+            user_energy_threshold = raw_input("Enter the low gamma energy threshold in keV [minimum 50.0]: ")
         try:
             gamma_energy_threshold = max(abs(float(user_energy_threshold)),default_gamma_energy_threshold)
         except:
             gamma_energy_threshold = default_gamma_energy_threshold
-        print "Gamma energy threshold = ",gamma_energy_threshold, " keV."
+        if interactive:
+            print "Gamma energy threshold = ",gamma_energy_threshold, " keV."
 
-        block_print_with_line_breaks("You can choose to add Gaussian random scatter to data to better simulate actual data scatter, and more realistic expected errors in the fit parameters.")
-        add_scatter = yes_no_prompt("Add Gaussian random scatter to data [Y/n]? ",True)
+        if interactive:
+            block_print_with_line_breaks("You can choose to add Gaussian random scatter to data to better simulate actual data scatter, and more realistic expected errors in the fit parameters.")
+
+            add_scatter = require_yes_no("Add Gaussian random scatter to data [y/n]? ")
 
         if add_scatter:
             random.seed()  
@@ -17390,6 +17499,7 @@ class experimentmanager:
             header_lines =  ["THIS SIMULATION INCLUDES RANDOM GAUSSIAN SCATTER.                                                                        "]
         else:
             header_lines =  ["This simulation does not include random gaussian scatter.  Counts represent the cross sections calculated by Gosia.      "]
+
         # September 9 2011: Better column headings.
         header_lines.extend(["       Transition             |  Gammas incident      |                     Fraction of |         Observed Counts        ",\
                              "                              |  on Ge detectors      | Gamma               Incident    |                                ",\
@@ -17417,13 +17527,24 @@ class experimentmanager:
             for detector_number in range(numbers_of_detectors[experiment_number]):
                 # Get a description of this experiment and Ge detector for output.
                 experiment_line = "\nExperiment " + str(experiment_number + 1)
-                experiment_description = self.allexperiments[experiment_number].short_description()
+                #experiment_description = self.allexperiments[experiment_number].short_description()
+                experiment_description = self.allexperiments[experiment_number].long_description()
                 detector_line   = "Detector " + str(detector_number + 1)
                 detector_description   = self.allexperiments[experiment_number].Ge_detectors[detector_number].short_description() # summed DOmega for clusters; single-crystal DOmega for individual crystals
                 # Add this description to the output and text file lines.
-                for line in [experiment_line,experiment_description,detector_line,detector_description]:
+                
+                lines_to_write.append(experiment_line + "\n")
+                all_table_lines.append(experiment_line)
+
+                for line in experiment_description:
                     lines_to_write.append(line + "\n")
                     all_table_lines.append(line)
+
+                lines_to_write.append(detector_line + "\n")
+                all_table_lines.append(detector_line)
+
+                lines_to_write.append(detector_description + "\n")
+                all_table_lines.append(detector_description)
 
                 total_detector_solid_angle = self.allexperiments[experiment_number].Ge_detectors[detector_number].return_solid_angle() # summed DOmega for clusters; single-crystal DOmega for individual crystals
 
@@ -18606,6 +18727,65 @@ class experiment:
 
         return description
 
+    def long_description(self):
+        """Returns a list of lines describing the experiment.
+
+        """
+
+        lines = []
+
+        # Name & number of detectors.
+        n_det = self.get_number_of_detectors()
+        n_det_string = str(n_det) + " Ge detector"
+        if not n_det == 1:
+            n_det_string += "s"
+            
+        n_det_string += " (A cluster of crystals is counted as one detector.)"
+        experiment_name_line = "Experiment \"" + self.get_name() + "\" with " + n_det_string
+        lines.append(experiment_name_line)
+
+        # Beam and target data
+        thickness_string = str(self.parameter_dict["target_thickness"]) 
+
+        investigated_string = "Z,A = " + str(investigated_nucleus.Z) + "," + str(investigated_nucleus.A)
+        if self.get_parameter("excited_target"):
+            A_projectile = str(self.A_projectile())
+            Z_projectile = str(self.Z_projectile())
+            kinematics_string = "The " + thickness_string + " mg/cm^2 " + investigated_string + " TARGET is excited by a Z,A = " + Z_projectile + "," + A_projectile + " BEAM"
+        else:
+            A_target = str(self.A_target())
+            Z_target = str(self.Z_target())
+            kinematics_string = "The " + investigated_string + " BEAM is excited by a " + thickness_string + " mg/cm^2 Z,A = " + Z_target + "," + A_target + " TARGET."
+
+        E_beam = self.get_parameter("E_beam") 
+        E_exit = self.get_parameter("E_exit") 
+        E_loss = E_beam - E_exit
+        energy_string = " at an initial beam energy of " + str(int(round(E_beam))) + " MeV.  The energy loss in the target is " + str(round(E_loss,1)) + " MeV."
+        lines.append(kinematics_string)
+        lines.append(energy_string)
+        if self.is_inverse_kinematics():
+            lines.append("Inverse kinematics.")
+        else:
+            lines.append("Normal kinematics.")
+
+        theta_mean = "Mean scattering angle = " + format(self.mean_scattering_angle(),".1f") + " deg."
+
+        # Particle detection angle limits.
+        theta_min_string = str(round(self.get_parameter("theta_lab_min"),1))
+        theta_max_string = str(round(self.get_parameter("theta_lab_max"),1))
+        phi_min_string   = str(round(self.get_parameter("phi_1"),1))
+        phi_max_string   = str(round(self.get_parameter("phi_2"),1))
+        # Which particle is detected?
+        detected_particle      = self.get_parameter("detected_particle")
+        detected_particle_string = {"b":"Beam", "t":"Target"}[detected_particle]
+        scattering_angle_limits = detected_particle_string + " particle detection from " + theta_min_string + " deg to " + \
+                                  theta_max_string + " deg polar\n  and from " + phi_min_string + " deg to " + \
+                                  phi_max_string + " deg azimuthal."
+
+        lines.append(scattering_angle_limits)
+
+        return lines
+
     def any_raw_detectors(self):
         """Returns True if any raw Ge clusters are in use; otherwise False.
 
@@ -18745,8 +18925,14 @@ class experiment:
 
         """
 
-        if (self.parameter_dict["excited_target"] and (self.parameter_dict["A_1"] < self.parameter_dict["A_n"])) \
-          or (not self.parameter_dict["excited_target"] and (self.parameter_dict["A_n"] < self.parameter_dict["A_1"])):
+        if self.parameter_dict["excited_target"]:
+            target_mass = self.parameter_dict["A_1"]           # "investigated" nucleus
+            beam_mass   = self.parameter_dict["A_n"]           # "investigated" nucleus
+        else:
+            target_mass = self.parameter_dict["A_n"]           # "uninvestigated" nucleus
+            beam_mass   = self.parameter_dict["A_1"]           # "investigated" nucleus
+
+        if beam_mass >= target_mass:
             return True
         else:
             return False
