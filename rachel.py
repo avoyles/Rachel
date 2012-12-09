@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION = "1.3.0"
+VERSION = "1.3.1"
 RECOVERY_MODE = False
 DEBUGGING_MODE = False
 SCRIPT_MODE = False
@@ -410,25 +410,50 @@ class updater:
         try:
             response  = urllib2.urlopen(url=url_text,timeout = 5)
             full_page = response.read()
-        except:
-            text = "The Rochester server did not return version and update information.\nIf this error persists, check\nhttp://www-user.pas.rochester.edu/~gosia/mediawiki\nfor the current Rachel version."
-            lines = block_print_with_line_breaks(text,line_length=60,silent=True,paragraphs=True)
-            create_dialog_popup({"text_lines":lines, "title":"Updater Failed"})
             print "Done."
+        except:
             return False
 
-        print "Done."
         self.version_dict = eval(full_page.strip())
-        current_release_version = self.version_dict["version"]
+        self.message = self.version_dict["message"]
+        self.message = self.message.replace("LINEBREAK","\n")
 
-        # Return True if there is a newer version, False otherwise.
-        if current_release_version == VERSION:
-            # There is not an upgrade available.
-            return False
-        else:
-            # There is an upgrade available.
-            return True
+        return True
 
+    def report_all(self):
+        """Gives the user all of the information from the web server.
+
+        """
+
+        try:
+            received = self.check_server()
+            if not received:
+                text = "The Rochester server did not return version and update information.\nIf this error persists, check\nhttp://www-user.pas.rochester.edu/~gosia/mediawiki\nfor the current Rachel version."
+                lines = block_print_with_line_breaks(text,line_length=60,silent=True,paragraphs=True)
+                create_dialog_popup({"text_lines":lines, "title":"Updater Failed"})
+                return False
+
+            
+            if not self.version_dict["version"] == VERSION:
+
+                text = "A new version of Rachel is available.\nYou can download version " + self.version_dict["version"] + " from the Gosia Wiki:\n\nhttp://www-user.pas.rochester.edu/~gosia/mediawiki\n\n" + self.message
+
+                lines = block_print_with_line_breaks(text,line_length=60,silent=True,paragraphs=True)
+                create_dialog_popup({"text_lines":lines, "title":"Update from Rochester"})
+
+            elif "special message" in self.version_dict.keys():
+                if not self.version_dict["special message"] == "":
+
+                    self.special_message = self.version_dict["special message"]
+                    self.special_message = self.special_message.replace("LINEBREAK","\n")
+                    text = self.special_message
+
+                    lines = block_print_with_line_breaks(text,line_length=60,silent=True,paragraphs=True)
+                    create_dialog_popup({"text_lines":lines, "title":"Update from Rochester"})
+
+        except:
+            pass
+            # Notify Rochester of the bug.
 
 
 class Completer(object):
@@ -631,7 +656,7 @@ def top_level_testing():
 
     # Check the version updater.
     up = updater()
-    up.check_server()
+    up.report_all()
 
     return 
 
