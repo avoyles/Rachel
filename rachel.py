@@ -183,6 +183,11 @@ except:
     import_error("urllib")
     import_error_count += 1
 
+try:
+    import urllib2
+except:
+    import_error("urllib2")
+    import_error_count += 1
 
 try:
     from termios import tcflush, TCIOFLUSH  # Right now, just for clearing the input buffer.
@@ -378,6 +383,52 @@ DEFAULT_EFFICIENCY_PARAMETERS = [5.7021, 4.83491, 0., 6.20016, -6.06E-01, -5.36E
 #                                A       B        C   D        E          F          G       N 
 # The parameters A--G are those used by Radware.  [See def absolute_efficiency()]   
 # N is the overall factor for the absolute efficiency.
+
+class updater:
+
+    def __init__(self):
+
+        pass
+
+    def check_server(self):
+        """Checks the Rochester server for current version data.
+
+        We are using a dictionary so that more fields can be added without
+        major changes in rachel to parse the page.
+
+        {"version":"1.4.0", "notes":"", "message":"", etc.}
+
+        We use eval, here, but it is unlikely that the page will be spoofed.
+
+        """
+
+        print "Checking for new Rachel versions...",
+        sys.stdout.flush()
+
+        # Make the server call to get stopping powers.
+        url_text  = "http://www-user.pas.rochester.edu/~gosia/rachel_version/version.py"
+        try:
+            response  = urllib2.urlopen(url=url_text,timeout = 5)
+            full_page = response.read()
+        except:
+            text = "The Rochester server did not return version and update information.\nIf this error persists, check\nhttp://www-user.pas.rochester.edu/~gosia/mediawiki\nfor the current Rachel version."
+            lines = block_print_with_line_breaks(text,line_length=60,silent=True,paragraphs=True)
+            create_dialog_popup({"text_lines":lines, "title":"Updater Failed"})
+            print "Done."
+            return False
+
+        print "Done."
+        self.version_dict = eval(full_page.strip())
+        current_release_version = self.version_dict["version"]
+
+        # Return True if there is a newer version, False otherwise.
+        if current_release_version == VERSION:
+            # There is not an upgrade available.
+            return False
+        else:
+            # There is an upgrade available.
+            return True
+
 
 
 class Completer(object):
@@ -577,6 +628,12 @@ def top_level_testing():
     """A testing method to call objects and methods that are not yet implemented in the GUI buttons.
 
     """
+
+    # Check the version updater.
+    up = updater()
+    up.check_server()
+
+    return 
 
     setup_globals("reset") # to make sure we don't have old data hanging around in the original objects
     unpickle_return_code,textview_summary = setup_globals(action="unpickle",force=True)
