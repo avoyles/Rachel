@@ -410,27 +410,31 @@ class updater:
         try:
             response  = urllib2.urlopen(url=url_text,timeout = 5)
             full_page = response.read()
-            print "Done."
         except:
+            print "\b...failed."
             return False
 
         self.version_dict = eval(full_page.strip())
         self.message = self.version_dict["message"]
         self.message = self.message.replace("LINEBREAK","\n")
 
+        print "\b...succeeded."
+
         return True
 
     def report_all(self):
         """Gives the user all of the information from the web server.
+
+        Returns False in case of an error, True if the server responded.
 
         """
 
         try:
             received = self.check_server()
             if not received:
-                text = "The Rochester server did not return version and update information.\nIf this error persists, check\nhttp://www-user.pas.rochester.edu/~gosia/mediawiki\nfor the current Rachel version."
+                text = "The Rochester server did not return version and update information.\nIf this error persists, check\nhttp://www-user.pas.rochester.edu/~gosia/mediawiki\nfor the current Rachel version.  You could also notify Rochester about this problem using the Gosia Forum:\nhttp://www-user.pas.rochester.edu/~gosia/phpBB3/"
                 lines = block_print_with_line_breaks(text,line_length=60,silent=True,paragraphs=True)
-                create_dialog_popup({"text_lines":lines, "title":"Updater Failed"})
+                create_dialog_popup({"text_lines":lines, "title":"Updater Failed", "force_popup":True})
                 return False
 
             
@@ -439,7 +443,8 @@ class updater:
                 text = "A new version of Rachel is available.\nYou can download version " + self.version_dict["version"] + " from the Gosia Wiki:\n\nhttp://www-user.pas.rochester.edu/~gosia/mediawiki\n\n" + self.message
 
                 lines = block_print_with_line_breaks(text,line_length=60,silent=True,paragraphs=True)
-                create_dialog_popup({"text_lines":lines, "title":"Update from Rochester"})
+                create_dialog_popup({"text_lines":lines, "title":"Message from Rochester"})
+                return True
 
             elif "special message" in self.version_dict.keys():
                 if not self.version_dict["special message"] == "":
@@ -450,9 +455,11 @@ class updater:
 
                     lines = block_print_with_line_breaks(text,line_length=60,silent=True,paragraphs=True)
                     create_dialog_popup({"text_lines":lines, "title":"Update from Rochester"})
+                return True
 
         except:
             pass
+            return False
             # Notify Rochester of the bug.
 
 
@@ -3145,6 +3152,9 @@ class nucleus:
         pylab.show()                   
         self.draw_level_scheme()
 
+        text = block_print_with_line_breaks("\"Redraw LS window\" is used to clean up the diagram.\nUse \"Recreate LS window\" only if the level scheme window does not display after a level scheme is in memory.",line_length=50,silent=True)
+
+        create_dialog_popup({"title":"Graphics","force_popup":True,"text_lines":text })
 
 
     def wipe(self,Z,A,name):
@@ -22781,6 +22791,9 @@ class main_gui:
     # Callback for close_application.
     def close_application(self, widget):
 
+        # Flush the input buffer, so that accidental keystrokes don't go into the next prompt.
+        tcflush(sys.stdin, TCIOFLUSH)
+
         print_separator()
 
         print "QUIT: ",
@@ -24654,7 +24667,7 @@ class main_gui:
         button2.show()
         self.all_button_list.append(button2)
 
-        button3 = gtk.Button("Update LS window")
+        button3 = gtk.Button("Redraw LS window")
         self.button3_pointer = button3  # So that it can be forced active 
         button3.connect("clicked", self.update_ls_window)
         # pack the button 
@@ -24667,6 +24680,20 @@ class main_gui:
         button3.show()
         self.recovery_mode_button_list.append(button3)
         self.all_button_list.append(button3)
+
+        button27 = gtk.Button("Recreate LS window")
+        self.button27_pointer = button27  # So that it can be forced active to break out of functions.
+        button27.connect("clicked", self.activate_ls_window)
+        # pack the button27 
+        vbox.pack_start(button27, False, False)
+        # Set the default flags 
+        button27.set_flags(gtk.CAN_DEFAULT)
+        # Grab the default
+        button27.grab_default()
+        # Show the button27.
+        button27.show()
+        self.all_button_list.append(button27)
+        self.recovery_mode_button_list.append(button27)
 
         button4 = gtk.Button("Merge bands")
         self.button4_pointer = button4  # So that it can be forced active 
@@ -24800,20 +24827,6 @@ class main_gui:
         button13.show()
         self.all_button_list.append(button13)
         self.recovery_mode_button_list.append(button13)
-
-        button14 = gtk.Button("Help")
-        self.button14_pointer = button14  # So that it can be forced active 
-        button14.connect("clicked", self.interactive_help)
-        # pack the button14 
-        vbox.pack_start(button14, False, False)
-        # Set the default flags 
-        button14.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
-        button14.grab_default()
-        # Show the button14.
-        button14.show()
-        self.all_button_list.append(button14)
-        self.recovery_mode_button_list.append(button14)
 
         button15 = gtk.Button("Undo")
         self.button15_pointer = button15  # So that it can be forced active 
@@ -25032,20 +25045,6 @@ class main_gui:
         button26.show()
         self.all_button_list.append(button26)
 
-        button27 = gtk.Button("Examine fig. window.")
-        self.button27_pointer = button27  # So that it can be forced active to break out of functions.
-        button27.connect("clicked", self.activate_ls_window)
-        # pack the button27 
-        vbox.pack_start(button27, False, False)
-        # Set the default flags 
-        button27.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
-        button27.grab_default()
-        # Show the button27.
-        button27.show()
-        self.all_button_list.append(button27)
-        self.recovery_mode_button_list.append(button27)
-
         button28 = gtk.Button("Reactivate GUI")
         self.button28_pointer = button28  # So that it can be forced active at all times, in case an untrapped error leaves the GUI frozen.
         button28.connect("clicked", self.reactivate)
@@ -25072,6 +25071,20 @@ class main_gui:
         button29.show()
         self.all_button_list.append(button29)
         self.recovery_mode_button_list.append(button29)
+
+        button14 = gtk.Button("Help")
+        self.button14_pointer = button14  # So that it can be forced active 
+        button14.connect("clicked", self.interactive_help)
+        # pack the button14 
+        vbox.pack_start(button14, False, False)
+        # Set the default flags 
+        button14.set_flags(gtk.CAN_DEFAULT)
+        # Grab the default
+        button14.grab_default()
+        # Show the button14.
+        button14.show()
+        self.all_button_list.append(button14)
+        self.recovery_mode_button_list.append(button14)
 
         # create a vertical separator.
         separator = gtk.VSeparator()
@@ -25283,6 +25296,12 @@ class main_gui:
 
         # Display a getting-started tip.
         create_popup_tip("getting_started")
+
+        # Check for version updates or other messages.
+        # If result == False, then the server did not give the expected
+        # response.  Not much point in trying to notify Rochester.
+        up = updater()
+        result = up.report_all()
 
 
 #######################################################################
@@ -27321,7 +27340,6 @@ if __name__ == "__main__":
         # Set the RECOVERY_MODE global to True, so that the GUI knows to deactivate buttons that should not be used in recovery mode.
         RECOVERY_MODE = True
         investigated_nucleus.draw_level_scheme()
-        #print "Click \"Update LS window\" before resuming."
     else:
         setup_globals("new")
 
