@@ -9,7 +9,7 @@ def import_error(library_name):
 
     print "Rachel could not import the library \"" + library_name + ".\""
     print "  You can install this library by typing one of the following:"
-    print "  sudo easy_install " + library_name 
+    print "  sudo pip install " + library_name 
     print "  sudo apt-get install " + library_name + " (on linux systems)"
     print "  sudo port install " + library_name + " (on OS X systems, if you have MacPorts installed)"
     print "  (You usually need sudo privilege.)"
