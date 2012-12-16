@@ -219,6 +219,17 @@ UNDOBASEFILENAME = ".rachel_undo_information."
 global MAXIMUMUNDOSTEPS
 MAXIMUMUNDOSTEPS = 20  # Each undo step requires a maximum of about 200kB on disk.
 UNDO_STACK = []        # A stack to keep track of what operations have been added to the undo files.
+# configuration for logrotate to save several versions of the pickle file.
+ROTATE_CONFIG_FILE_NAME = "rotate_config"
+LOGROTATE_CONFIG = [\
+                    '"pickle.jar" {\n',\
+                    '    rotate 5\n',\
+                    '    nocompress\n',\
+                    '    size=1\n',\
+                    '    notifempty\n',\
+                    '    missingok\n',\
+                    '}\n',\
+                    ]
 
 
 # Constants defined 
@@ -418,7 +429,7 @@ class updater:
         self.message = self.version_dict["message"]
         self.message = self.message.replace("LINEBREAK","\n")
 
-        print "\b...succeeded."
+        print "\b...success."
 
         return True
 
@@ -21533,7 +21544,7 @@ class physical_detector:
 
 ################################################################################
 # Global objects defined here
-def setup_globals(action=None,pickle_file_name=None,force=False):
+def setup_globals(action=None,pickle_file_name=None,force=False,rotate=False):
     """Defines global objects and pickles/unpickles them.
 
     The pickle_file_name is optional.  If it is included, then force can be set
@@ -21542,7 +21553,18 @@ def setup_globals(action=None,pickle_file_name=None,force=False):
     action "reset" is to prepare for an undo/redo operation.  It keeps the undo
     object, but destroys the others (as much as Python can destroy).
 
+    if rotate==True logrotate is called to keep rotating backups.
+
     """
+
+    def write_rotate_config():
+        try:
+            with open(ROTATE_CONFIG_FILE_NAME, 'w') as config_file:
+                config_file.writelines(LOGROTATE_CONFIG)
+            return True
+        except:
+            return False
+
     if action == "new":
         # Create the global objects, including the undo object
         global undo
@@ -21725,9 +21747,26 @@ def setup_globals(action=None,pickle_file_name=None,force=False):
             go_ahead = None
             while go_ahead == None:
                 go_ahead = yes_no_prompt("Are you sure [y/n]? ",None)
+                if len(investigated_nucleus.levels) == 0:
+                    # No levels in memory--user may be saving an empty session.
+                    print "\n\nTHE NUCLEUS IS NOT DEFINED.  ARE YOU SAVING AN EMPTY SESSION???\n"
+                    go_ahead = yes_no_prompt("Are you REALLY sure [y/n]? ",None)
         if go_ahead:
             if pickle_file_name == None:
                 pickle_file_name = 'pickle.jar'
+            if rotate:
+                # Rotate the existing pickle.jar, if it exists.
+                # For now, we write the rotate config file each time.
+                success = write_rotate_config()
+                if success:
+                    rotate_command = "logrotate --state rachel_session_rotate_state " + ROTATE_CONFIG_FILE_NAME
+                    try:
+                        subprocess.call(rotate_command,shell=True)
+                    except:
+                        print "UNABLE TO ROTATE THE SESSION FILE BACKUPS."
+                else:
+                    print "UNABLE TO ROTATE THE SESSION FILE BACKUPS."
+                    # Continue to save the session anyway.
             with open(pickle_file_name,'w') as picklefile:
                 try:
                     # Remove the existing pickle file, because the pickle module doesn't completely overwrite it.
@@ -22798,7 +22837,7 @@ class main_gui:
 
         print "QUIT: ",
         if yes_no_prompt("Are you sure [y/N]? ",False):
-            setup_globals("pickle")  # This will prompt whether to save or not.
+            setup_globals("pickle",rotate=True)  # This will prompt whether to save or not.
             # Delete the Undo information files.
             undo.wipe()
             cleanup_garbage_files()
@@ -22874,7 +22913,7 @@ class main_gui:
         while gtk.events_pending():
             gtk.main_iteration(False)
         try:
-            setup_globals("pickle")
+            setup_globals("pickle",rotate=True)
             # Reactivate GUI buttons.
             self.set_activation(self)
             return 0
