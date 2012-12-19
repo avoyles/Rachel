@@ -10847,6 +10847,9 @@ class gosia_shell:
         not necessarily the final value.  It may change in the final full
         calculation.
 
+        Adding parsing of the spectroscopic data to add to a complete
+        chi-squared report.
+
         """
 
         # Clear the final chi-squared and the "reason" line from the last fit.
@@ -17176,13 +17179,22 @@ class experimentmanager:
         return 0
 
 
-    def properly_weighted_chi_squared_report(self):
+    def properly_weighted_chi_squared_report(self,include_spect = True):
         """Calculates the chi-squared for all experiments using the last integration.
 
         This is the chi-squared properly-weighted using the fractional errors
         on the experimental yields.
 
+        Adding the contribution from the nuclear data as an option.  This uses
+        the data in memory; it does not update the data from the file on disk,
+        since this contribution should match what Gosia gave in the last fit.
+
         """
+
+        # Get the contribution from the spectroscopic data, if it was
+        # requested.
+
+
 
         # The number of experiments for the chisq calculation and the report of
         # the worst discrepancies.
