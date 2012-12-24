@@ -196,6 +196,13 @@ except:
     import_error("termios")
     import_error_count += 1
 
+try:
+    import hashlib
+
+except:
+    import_error("hashlib")
+    import_error_count += 1
+
 # See if there were import errors.  If there were vital ones (all are vital at
 # this point), then quit.
 
@@ -455,9 +462,8 @@ class updater:
 
                 lines = block_print_with_line_breaks(text,line_length=60,silent=True,paragraphs=True)
                 create_dialog_popup({"text_lines":lines, "title":"Message from Rochester"})
-                return True
 
-            elif "special message" in self.version_dict.keys():
+            if "special message" in self.version_dict.keys():
                 if not self.version_dict["special message"] == "":
 
                     self.special_message = self.version_dict["special message"]
@@ -466,13 +472,74 @@ class updater:
 
                     lines = block_print_with_line_breaks(text,line_length=60,silent=True,paragraphs=True)
                     create_dialog_popup({"text_lines":lines, "title":"Update from Rochester"})
-                return True
+                    return True
+
+            # Check that this file is not modified.
+            self.SHA512 = self.version_dict["SHA512"]
+            checker = checksum()
+            identical = checker.verify(self.SHA512)
+            if not identical:
+                text = "Warning:\nThe copy of Rachel you are using was either damaged or modified.\nYou should download the most recent version from the Gosia Wiki:\n\nhttp://www-user.pas.rochester.edu/~gosia/mediawiki\n\nIf you continue to see this error, please report the problem via the Gosia forum:\n\nhttp://www-user.pas.rochester.edu/~gosia/phpBB3/\n\n"
+                lines = block_print_with_line_breaks(text,line_length=60,silent=True,paragraphs=True)
+                create_dialog_popup({"text_lines":lines, "title":"Could not verify Rachel executable"})
+
+            return True
 
         except:
             pass
             return False
-            # Notify Rochester of the bug.
+            # Should notify Rochester of the bug.
 
+class checksum:
+
+    def __init__(self):
+        """Create the hash object and read this file into it.
+
+        """
+
+
+        self.ok = True
+        this_file = GLOBAL_SETUP_DICT["RACHEL_DIRECTORY"] + "/rachel.py"
+
+        try:
+            with open(this_file, "r") as the_file:
+                lines = the_file.readlines()
+
+        except:
+            print "err here"
+            self.ok = False
+
+        string = ""
+        for line in lines:
+            string += line
+
+        try:
+            self.h = hashlib.sha512()
+            self.h.update(string)
+            self.digest = self.h.hexdigest()
+        except:
+            print "err here 2"
+            self.ok = False
+
+    def verify(self, SHA512_HEX):
+        """Compare the hash of this file with the given hash.
+
+        The hash passed in must be an SHA512 hex digest in ascii.
+
+        """
+        
+        if self.digest == SHA512_HEX:
+            return True
+        else:
+            return False
+
+    def generate(self):
+        """Generate a checksum of this file and return it.
+
+        """
+
+        return self.digest
+        
 
 class Completer(object):
     # This is just a modified version of the snippet here:
@@ -27375,7 +27442,7 @@ if __name__ == "__main__":
     # setup the global objects
     if recover:
         setup_globals("recover")
-        block_print_with_line_breaks("\nFormer session recovered!\n\nDO NOT OPERATE THE GUI NOW.\nThe last operation you performed may have been lost.\nCheck the setup of the GUI to ensure that you want to save it in its current state.  Save the session (button \"Save session\") if desired.  Then, quit and restart the GUI, reload the session and resume operations.",60)
+        block_print_with_line_breaks("\nFormer session recovered!\n\nDO NOT OPERATE THE GUI NOW.\nThe last operation you performed may have been lost.\nCheck the setup of the GUI to ensure that you want to save it in its current state.  Save the session (button \"Save session\") if desired.  Then, quit and restart the GUI, reload the session and resume operations.\nAlso, note that several previous versions of the pickle.jar session file are kept in this directory: pickle.jar.1 etc.",60)
         # Set the RECOVERY_MODE global to True, so that the GUI knows to deactivate buttons that should not be used in recovery mode.
         RECOVERY_MODE = True
         investigated_nucleus.draw_level_scheme()
