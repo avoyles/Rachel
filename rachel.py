@@ -9248,57 +9248,6 @@ class nucleus:
             # The level cannot be found.  Return None.
             return None
 
-
-
-    def get_branching_lines(self):
-        """Provides a list of branching data as text lines in the gosia format.
-
-        This also re-reads the branching ratio data from disk.
-        """
-        self.read_branching_data()
-
-        if len(self.branching_data) > 0:
-            branching_string_list = []  # the list of strings to be sent to gosia
-            # First, get the branching ratios to be included (for levels
-            # in the current level scheme only).
-            number_of_branching_ratios = 0
-            # Step through all branching data in memory, and pick out the ones that apply to this
-            # level scheme.
-            temporary_branching_string_list = []  # a temporary list to be prepended with the gosia NBRA,WBRA values
-            for i in range(len(self.branching_data)):
-                this_branching_list = self.branching_data[i]
-                # Check this branching ratio to see if all three levels are in memory.
-                initial_band_name, initial_spin, final_band_name_1,final_spin_1,final_band_name_2,final_spin_2,r,delta_r = this_branching_list
-                # Are these levels all in the level scheme currently?
-                # Look up the gosia level number.  If -1 is returned, then it doesn't exist.
-                initial_gosia_level = self.lookup_gosia_level_by_band_spin(initial_band_name,initial_spin)
-                final_gosia_level_1 = self.lookup_gosia_level_by_band_spin(final_band_name_1,final_spin_1)
-                final_gosia_level_2 = self.lookup_gosia_level_by_band_spin(final_band_name_2,final_spin_2) 
-                if initial_gosia_level > 0 and final_gosia_level_1 > 0 and final_gosia_level_2 > 0:
-                    # Then all three states are in memory.  Add this branching ratio to the
-                    # data to be passed to gosia.
-                    # Construct the line for op,yiel and increment the branching ratio
-                    # number NBRA for gosia.
-                    branching_line_for_gosia = str(initial_gosia_level) + "  " + str(final_gosia_level_1) + "  " + str(initial_gosia_level) + "  " + str(final_gosia_level_2) + "  " + str(r) + "  " + str(delta_r) 
-                    temporary_branching_string_list.append(branching_line_for_gosia)
-                    # Now increment the number of branching ratios for gosia.
-                    number_of_branching_ratios = number_of_branching_ratios + 1
-
-            # Now construct the final list for gosia.
-            if number_of_branching_ratios > 0:
-                header_line = str(number_of_branching_ratios) + "  " + str(self.branching_data_weight)
-                branching_string_list = [header_line]
-                branching_string_list.extend(temporary_branching_string_list)
-                return branching_string_list
-            else:
-                # No branching data apply to the levels in the level scheme.
-                return ["0,0"]  # This is returned as a list for compatibility with the
-
-        else:
-            # No branching data to report.  Return 0,0 for this line in gosia input.
-            return ["0,0"]  # This is returned as a list for compatibility with the
-                            # generate_yiel method of class experimentmanager.
-
     ## ***New in version -59*** ##
     def add_a_level(self,band_names = [],spin = None, parity = None, energy = None):
         """Adds a level.
