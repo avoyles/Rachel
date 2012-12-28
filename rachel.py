@@ -678,6 +678,8 @@ def top_level_testing():
 
     the_gosia_shell.read_final_chi_squared_from_gosia()
     the_gosia_shell.save_calculated_spectroscopic_data()
+    #print "reading nucl data file!"
+    #the_experiment_manager.get_nuclear_data_lines(1.,1.,1.,1.)
     print "Generating report..."
     the_experiment_manager.properly_weighted_chi_squared_report(include_spect = True)
 
@@ -10992,11 +10994,11 @@ class gosia_shell:
             ok = True
             mixing_header_line_number = mixing_header_line_numbers[0]
         else:
+            print "DEBUGGING: no mixing header ",mixing_header_line_numbers 
             ok = False
         # Read from here until a line starts with a number.  If a line starts with a letter, quit the search.
         # 12---  2                0.35              -0.50             3.5
         # 13---  2                0.45              -0.62             *****
-        ok = True
         while ok:
             mixing_header_line_number += 1
             data_line = gosia_output_lines[mixing_header_line_number]
@@ -17402,7 +17404,8 @@ class experimentmanager:
                         chisq_contribution = (ratio - calculated_value)**2 / error**2
                         chi_squared_spectroscopic += chisq_contribution 
                         number_of_spectroscopic_data_points += 1
-                        this_line = "Branching ratio " + str(the_key[0:2]) + " --> ..."
+                        print calculated_value, ratio, error
+                        this_line = "Branching ratio " + str(the_key[0:2]) + " --> ..." + str(chisq_contribution)
                         spect_lines.append(this_line)
 
                 # Similar for mixing ratios.
