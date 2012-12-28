@@ -436,7 +436,7 @@ class updater:
         self.message = self.version_dict["message"]
         self.message = self.message.replace("LINEBREAK","\n")
 
-        print "\b...success."
+        print "\bgot server response...",
 
         return True
 
@@ -483,6 +483,7 @@ class updater:
                 lines = block_print_with_line_breaks(text,line_length=60,silent=True,paragraphs=True)
                 create_dialog_popup({"text_lines":lines, "title":"Could not verify Rachel executable"})
 
+            print "\bdone."
             return True
 
         except:
