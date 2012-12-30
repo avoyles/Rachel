@@ -2675,6 +2675,12 @@ class matrix_element:
 
 
     def calculate_number_of_user_parameters(self):
+        """ This is preparation for parametric fitting.
+
+        Currently, this is done by scripting.
+
+        """
+
         number_of_parameters = 0
         while True:
             search_string = "par[" + str(number_of_parameters) + "]"
@@ -4914,9 +4920,6 @@ class nucleus:
 
     def matrix_element_exists(self,matrix_element_key):
         """Returns True if the matrix element exists.
-
-        Time is saved in this method by only getting the keys in the stored
-        order in the matrix element dictionary.
 
         """
 
@@ -10980,7 +10983,6 @@ class gosia_shell:
                     # the second initial state for easy lookup in the
                     # chi-squared calculation.
                     self.calculated_branching_data_from_last_fit[(initial_band_1, initial_spin_1, final_band_1, final_spin_1, final_band_2, final_spin_2)] = CALCRATIO
-                    print "DEBUGGING: self.calculated_branching_data_from_last_fit[(", initial_band_1, initial_spin_1, final_band_1, final_spin_1, final_band_2, final_spin_2,")] = ",CALCRATIO
 
 
             except:
@@ -10994,7 +10996,6 @@ class gosia_shell:
             ok = True
             mixing_header_line_number = mixing_header_line_numbers[0]
         else:
-            print "DEBUGGING: no mixing header ",mixing_header_line_numbers 
             ok = False
         # Read from here until a line starts with a number.  If a line starts with a letter, quit the search.
         # 12---  2                0.35              -0.50             3.5
@@ -11024,7 +11025,6 @@ class gosia_shell:
                     initial_band_1, initial_spin_1 = investigated_nucleus.get_band_and_spin_from_gosia_level_number(NS1)
                     final_band_1,   final_spin_1   = investigated_nucleus.get_band_and_spin_from_gosia_level_number(NF1)
                     self.calculated_mixing_data_from_last_fit[(initial_band_1, initial_spin_1, final_band_1, final_spin_1)] = CALCDELTA 
-                    print "DEBUGGING: self.calculated_mixing_data_from_last_fit[(", initial_band_1, initial_spin_1, final_band_1, final_spin_1,")] = ",CALCDELTA 
             except:
                 ok = False
 
@@ -11778,6 +11778,23 @@ class experimentmanager:
 
         # Now return the data lines in gosia format.
         return gosia_nuclear_data_lines
+
+    def return_measured_mixing_ratio(self,key_list):
+        """Finds the mixing ratio and error last read from rachel_nuclear_data.txt
+
+        I stored these in a list.  I should have used a dictionary for quick lookup.
+        List format is
+            [['gamma', 'gsb', 2.0, 2.0, 0.35, 0.05],...]
+        Key list should be 
+            ['gamma', 'gsb', 2.0, 2.0]
+
+        """
+
+        for one in self.mixing_data:
+            if list(key_list) == one[0:4]:
+                return key_list[4:6]
+
+        return None 
 
 
     def generate_angular_meshpoints(self, theta_lab_min, theta_lab_max, number_of_meshpoints, annular=True):
@@ -17366,12 +17383,16 @@ class experimentmanager:
 
         """
 
-        print "DEBUGGING: ",include_spect
         if include_spect:
 
             number_of_spectroscopic_data_points = 0
             chi_squared_spectroscopic           = 0.0
-            spect_lines = []
+            spect_lines = [\
+                            "-------------------------------------------------------------------------",\
+                            "",\
+                            "Spectroscopic Data                                        chi-squared    ",\
+                            "-------------------------------------------------------------------------",\
+                            ]
 
             try:
                 the_gosia_shell.calculated_branching_data
@@ -17382,16 +17403,13 @@ class experimentmanager:
                 self.measured_matrix_data
                 skip = False
             except:
-                print "DEBUGGING ERROR IN PROP"
                 skip = True
 
             if not skip:
                 # Step through the branching data, matching to the calculated values if possible.
                 # [['gamma', 8.0, 'gamma', 6.0, 'gsb', 6.0, 0.042, 0.005], ['gamma', 7.0, 'gamma', 5.0, 'gsb', 6.0, 0.092, 0.005]]
                 calculated_branching_ratios = the_gosia_shell.return_latest_calculated_branching_data()
-                print "DEBUGGING: ",self.branching_data
                 for one in self.branching_data:
-                    print "DEBUGGING ",one
                     # Get a key to match it to the dictionary read in the gosia shell.
                     the_key = tuple(one[0:6])
                     ratio = one[6]
@@ -17404,38 +17422,103 @@ class experimentmanager:
                         chisq_contribution = (ratio - calculated_value)**2 / error**2
                         chi_squared_spectroscopic += chisq_contribution 
                         number_of_spectroscopic_data_points += 1
-                        print calculated_value, ratio, error
-                        this_line = "Branching ratio " + str(the_key[0:2]) + " --> ..." + str(chisq_contribution)
+                        numerator   = "Branching " + str(the_key[0:2]) + "-->" + str(the_key[2:4]) 
+                        denominator = "          " + str(the_key[0:2]) + "-->" + str(the_key[4:6]) 
+                        max_len = max(len(numerator), len(denominator)) - 10
+                        line    = "Ratio     " + max_len * "-"
+                        this_line = numerator + "\n" + line + "\n" + denominator
+                        if len(denominator) > 55:
+                            this_line += "\n" + " ".ljust(60)
+                        this_line += (60 - len(denominator)) * " " + str(round(chisq_contribution,3))
                         spect_lines.append(this_line)
 
                 # Similar for mixing ratios.
-                # Meas: [[initial_band_name, final_band_name, initial_spin, final_spin, mixing_ratio, error],...]
-                # Calc: calculated_mixing_data[(initial_band_1, initial_spin_1, final_band_1, final_spin_1)] = CALCDELTA 
+                # Formats:
+                # Rachel>the_gosia_shell.return_latest_calculated_mixing_data()
+                # {('gamma', 3.0, 'gsb', 2.0): -0.62, ('gamma', 2.0, 'gsb', 2.0): -0.5}
+                # Rachel>the_experiment_manager.mixing_data
+                # [['gamma', 'gsb', 2.0, 2.0, 0.35, 0.05], ['gamma', 'gsb', 3.0, 2.0, 0.45, 0.05]]
+
                 calculated_mixing_ratios = the_gosia_shell.return_latest_calculated_mixing_data()
                 for one in self.mixing_data:
                     # Get a key to match it to the dictionary read in the gosia shell.
-                    the_key = tuple(one[0:4])
+                    the_key = one[0], one[2], one[1], one[3]
                     ratio = one[4]
                     error = one[5]
-                    # Add an accessor for this in the gosia shell...
-                    if the_key in calculated_mixing_ratios:
+                    try:
                         calculated_value = calculated_mixing_ratios[the_key]
-                        # Get the chisq contribution for this, and add to the number of spectroscopic data points.
-                        # Ignoring data weights.
-                        chisq_contribution = (ratio - calculated_value)**2 / error**2
+                    except:
+                        # No calculated value exists. 
+                        continue
+                    # Get the chisq contribution for this, and add to the number of spectroscopic data points.
+                    # Ignoring data weights.
+                    chisq_contribution = (ratio - calculated_value)**2 / error**2
+                    chi_squared_spectroscopic += chisq_contribution 
+                    number_of_spectroscopic_data_points += 1
+                    this_line = "Mixing ratio " + str(the_key[0:2]).strip("()") + " --> " + str(the_key[0:2]).strip("()")  
+                    if len(this_line) > 55:
+                        this_line += "\n"
+                    else:
+                        this_line = this_line.ljust(60)
+                    this_line += str(round(chisq_contribution,3))
+                    spect_lines.append(this_line)
+
+                # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                # Matrix data
+                #  
+                # Cycle through the measured matrix elements, and match them to ones in
+                # memory.  We should include only the ones for transitions that are
+                # possible with the given matrix and levels.
+                # Storage of measured m.e. is currently in this format: 
+                # self.measured_matrix_data.append([initial_band_name, final_band_name, initial_spin, final_spin, multipole_code, reduced_matrix_element, error])
+                # while the actual matrix is stored with tuple keys:
+                # (7, 'gamma', 12.0, 'gamma', 13.0)
+
+                for one in self.measured_matrix_data:
+                    matrix_key = one[4], one[0], one[2], one[1], one[3]
+                    initial_level_key = one[0], one[2]
+                    final_level_key = one[1], one[3]
+                    measured = one[5]
+                    error    = one[6]
+                    if self.is_populated(initial_level_key) and self.is_populated(final_level_key) and \
+                        matrix_key in investigated_nucleus.matrix_data.keys():
+                        current_value = investigated_nucleus.matrix_data[matrix_key].get_current_value()
+                        chisq_contribution = (measured - current_value)**2 / error**2
                         chi_squared_spectroscopic += chisq_contribution 
                         number_of_spectroscopic_data_points += 1
-                        this_line = "Mixing ratio " + str(the_key[0:2]) + " --> ..."
+                        formatted_matrix_element = investigated_nucleus.format_one_matrix_element(initial_band_name=matrix_key[3],\
+                          initial_spin=matrix_key[4],final_band_name=matrix_key[1],final_spin=matrix_key[2],\
+                          multipole_text=REVERSE_MULTIPOLE[matrix_key[0]],value=current_value)
+                        formatted_matrix_element = formatted_matrix_element.rsplit("=",1)[0]
+                        formatted_matrix_element = formatted_matrix_element.replace(" ","")
+                        this_line = formatted_matrix_element.replace(">=","> = ")
+                        if len(this_line) > 55:
+                            this_line += "\n" + " ".ljust(60)
+                        else:
+                            this_line = this_line.ljust(60)
+                        this_line += str(round(chisq_contribution,3))
                         spect_lines.append(this_line)
 
-        # Need to put in...
-        # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-        # Matrix data
-        raw_input("Matrix data not in chisq yet.")
-        # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-        # lifetime data
-        raw_input("Lifetime data not in chisq yet.")
-        # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                # lifetime data
+                # self.lifetime_data has format [[initial_band_name, initial_spin, tau, delta_tau],...]
+                for one in self.lifetime_data:
+                    level_key = tuple(one[0:2])
+                    measured = one[2]
+                    error    = one[3]
+                    calculated = investigated_nucleus.get_level_information(level_key,"calculated lifetime")
+                    if not calculated == None:
+                        chisq_contribution = (measured - calculated)**2 / error**2
+                        chi_squared_spectroscopic += chisq_contribution 
+                        number_of_spectroscopic_data_points += 1
+                        this_line = "Lifetime " + str(level_key) 
+                        if len(this_line) > 55:
+                            this_line += "\n" + " ".ljust(60)
+                        else:
+                            this_line = this_line.ljust(60)
+                        this_line += str(round(chisq_contribution,3))
+                        spect_lines.append(this_line)
+                        
 
         # The number of experiments for the chisq calculation and the report of
         # the worst discrepancies.
@@ -17589,8 +17672,9 @@ class experimentmanager:
             total_data_points += number_of_spectroscopic_data_points
             total_chi_squared += chi_squared_spectroscopic
             spect_lines.extend([\
-                                "The contribution from spectroscopic data was calculated from the last gosia FIT.",\
+                                "-------------------------------------------------------------------------",\
                                 "",\
+                                "                            chi-squared  data points  reduced chi-squared",\
                               ])
 
             lines_to_display.extend(spect_lines)
