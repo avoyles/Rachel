@@ -740,12 +740,26 @@ def top_level_testing():
 
     """
 
+    # Load the session.
+    setup_globals("reset") # to make sure we don't have old data hanging around in the original objects
+    unpickle_return_code,textview_summary = setup_globals(action="unpickle",force=True)
+
+    the_gosia_shell.read_final_chi_squared_from_gosia()
+    the_gosia_shell.save_calculated_spectroscopic_data()
+    #print "reading nucl data file!"
+    #the_experiment_manager.get_nuclear_data_lines(1.,1.,1.,1.)
+    print "Generating report..."
+    the_experiment_manager.properly_weighted_chi_squared_report(include_spect = True)
+
+    return
+
     # Check the version updater.
     up = updater()
     up.report_all()
 
     return 
 
+    # Load the session.
     setup_globals("reset") # to make sure we don't have old data hanging around in the original objects
     unpickle_return_code,textview_summary = setup_globals(action="unpickle",force=True)
     #print investigated_nucleus.matrix_data
@@ -2246,6 +2260,35 @@ def line_is_whitespace(text_line):
     else:
         return False
 
+def strings_to_numbers(list_of_strings):
+    """Convert each string in the list to an int or float.
+
+    None is returned as a place holder in the list, if there was a non-numeric
+    character.
+
+    """
+
+    number_list = []
+    try:
+        for string in list_of_strings:
+            try:
+                integer_value = int(string)
+                number_list.append(integer_value)
+            except:
+                # Not an integer.  Could be a float.
+                try:
+                    float_value = float(string)
+                    number_list.append(float_value)
+                except:
+                    # Not a float either.
+                    number_list.append(None)
+
+        return number_list
+
+    except:
+
+        return None
+
 def find_all_in_list(listtosearch,stringstomatch):
     """Finds the index of all instances matching stringstomatch
     
@@ -2700,6 +2743,12 @@ class matrix_element:
 
 
     def calculate_number_of_user_parameters(self):
+        """ This is preparation for parametric fitting.
+
+        Currently, this is done by scripting.
+
+        """
+
         number_of_parameters = 0
         while True:
             search_string = "par[" + str(number_of_parameters) + "]"
@@ -4939,9 +4988,6 @@ class nucleus:
 
     def matrix_element_exists(self,matrix_element_key):
         """Returns True if the matrix element exists.
-
-        Time is saved in this method by only getting the keys in the stored
-        order in the matrix element dictionary.
 
         """
 
@@ -10864,6 +10910,9 @@ class gosia_shell:
         not necessarily the final value.  It may change in the final full
         calculation.
 
+        Adding parsing of the spectroscopic data to add to a complete
+        chi-squared report.
+
         """
 
         # Clear the final chi-squared and the "reason" line from the last fit.
@@ -10899,6 +10948,131 @@ class gosia_shell:
         except:
             self.reason_reported = "(no reason returned from gosia.)"
             
+        # Zero the CALCULATED spectroscopic data.  If none are in the output,
+        # then we don't want to include them in chi-squared anyway.  This is
+        # for temporary storage.  If the user wants to keep the fit results,
+        # then they will be stored "permanently."
+        self.calculated_branching_data_from_last_fit       = {}
+        #self.calculated_lifetime_data_from_last_fit         = {}  # This is stored in the nucleus object every time Gosia is called.
+        self.calculated_mixing_data_from_last_fit          = {}
+        #self.calculated_matrix_data_from_last_fit     = {}  # This is stored in memory anyway, and it is BETTER to use the stored values, in case the user does not want to read the best set.
+
+        # Read the calculated branching ratios from the fit output, and store them.
+        #line = "EXP. AND CALCULATED BRANCHING RATIOS"
+        line = "NS1     NF1     NS2     NF2     RATIO(1:2)         ERROR       CALC.RATIO     (EXP-CAL)/ERROR"
+        fields = line.split()
+        branching_header_line_numbers = find_all_in_list(gosia_output_lines,fields)
+        if len(branching_header_line_numbers) == 1:
+            ok = True
+            branching_header_line_number = branching_header_line_numbers[0]
+        else:
+            ok = False
+            
+        # Read from here until a line starts with a number.  If a line starts with a letter, quit the search.
+        while ok:
+            branching_header_line_number += 1
+            data_line = gosia_output_lines[branching_header_line_number]
+            line_fields = data_line.split()
+            if len(line_fields) == 0:
+                # Just a blank line.
+                continue
+            elif not len(line_fields) == 8:
+                # Can't be a branching data line, so quit the search.  We have
+                # passed the branching data section.
+                break
+            # At least the first 6 fields must be numbers:
+            # 18      16      18       4        0.04200        0.00500        0.22234          ****
+            # There could be over/underflows.
+            try:
+                number_list = strings_to_numbers(line_fields)
+                # There will be None values in the list if there was an overflow or format problem.
+                NS1, NF1, NS2, NF2, RATIO, ERROR, CALCRATIO, sigma = number_list
+                # The calculated values are stored in the same format as the
+                # measured branching data, but without the error bar.
+                # [[initial_band_name, initial_spin, final_band_name_1,final_spin_1,final_band_name_2,final_spin_2,r],...]
+                if not CALCRATIO == None:
+                    initial_band_1, initial_spin_1 = investigated_nucleus.get_band_and_spin_from_gosia_level_number(NS1)
+                    initial_band_2, initial_spin_2 = investigated_nucleus.get_band_and_spin_from_gosia_level_number(NS2)
+                    final_band_1,   final_spin_1   = investigated_nucleus.get_band_and_spin_from_gosia_level_number(NF1)
+                    final_band_2,   final_spin_2   = investigated_nucleus.get_band_and_spin_from_gosia_level_number(NF2)
+                    # The rest of Rachel does not allow branching ratios with
+                    # two different initial states (yet), so we are tossing out
+                    # the second initial state for easy lookup in the
+                    # chi-squared calculation.
+                    self.calculated_branching_data_from_last_fit[(initial_band_1, initial_spin_1, final_band_1, final_spin_1, final_band_2, final_spin_2)] = CALCRATIO
+
+
+            except:
+                ok = False
+
+        # Read the calculated mixing ratios from the fit output, and store them.
+        line = "TRANSITION          EXP.DELTA          CALC.DELTA          SIGMA"
+        fields = line.split()
+        mixing_header_line_numbers = find_all_in_list(gosia_output_lines,fields)
+        if len(mixing_header_line_numbers) == 1:
+            ok = True
+            mixing_header_line_number = mixing_header_line_numbers[0]
+        else:
+            ok = False
+        # Read from here until a line starts with a number.  If a line starts with a letter, quit the search.
+        # 12---  2                0.35              -0.50             3.5
+        # 13---  2                0.45              -0.62             *****
+        while ok:
+            mixing_header_line_number += 1
+            data_line = gosia_output_lines[mixing_header_line_number]
+            # Take out the "---".
+            data_line = data_line.replace("---","")
+            line_fields = data_line.split()
+            if len(line_fields) == 0:
+                # Just a blank line.
+                continue
+            elif not len(line_fields) == 5:
+                # Can't be a mixing data line, so quit the search.  We have
+                # passed the mixing data section.
+                break
+
+            try:
+                number_list = strings_to_numbers(line_fields)
+                # There will be None values in the list if there was an overflow or format problem.
+                NS1, NF1, EXPDELTA, CALCDELTA, SIGMA = number_list # Gosia does not report the experimental uncertainty.
+                # The calculated values are stored in the same format as the
+                # measured branching data, but without the error bar.
+                # [[initial_band_name, initial_spin, final_band_name_1,final_spin_1,final_band_name_2,final_spin_2,r],...]
+                if not CALCDELTA == None:
+                    initial_band_1, initial_spin_1 = investigated_nucleus.get_band_and_spin_from_gosia_level_number(NS1)
+                    final_band_1,   final_spin_1   = investigated_nucleus.get_band_and_spin_from_gosia_level_number(NF1)
+                    self.calculated_mixing_data_from_last_fit[(initial_band_1, initial_spin_1, final_band_1, final_spin_1)] = CALCDELTA 
+            except:
+                ok = False
+
+    def save_calculated_spectroscopic_data(self):
+        """Saves the data that were in temporary storage after the last fit.
+
+        """
+
+        self.calculated_branching_data = copy.deepcopy(self.calculated_branching_data_from_last_fit)
+        self.calculated_mixing_data    = copy.deepcopy(self.calculated_mixing_data_from_last_fit)
+
+        #self.calculated_lifetime_data_from_last_fit         = {}  # This is stored in the nucleus object every time Gosia is called.
+        #self.calculated_matrix_data_from_last_fit     = {}  # This is stored in memory anyway, and it is BETTER to use the stored values, in case the user does not want to read the best set.
+
+    def return_latest_calculated_branching_data(self):
+
+        try:
+            data = copy.deepcopy(self.calculated_branching_data)
+        except:
+            data = {}
+
+        return data
+
+    def return_latest_calculated_mixing_data(self):
+
+        try:
+            data = copy.deepcopy(self.calculated_mixing_data)
+        except:
+            data = {}
+
+        return data
 
     def return_final_chi_squared(self):
         """Returns the final chi-squared from the last fit, if it exists and the preceding line that may describe the reason the fit stopped.
@@ -11621,6 +11795,23 @@ class experimentmanager:
 
         # Now return the data lines in gosia format.
         return gosia_nuclear_data_lines
+
+    def return_measured_mixing_ratio(self,key_list):
+        """Finds the mixing ratio and error last read from rachel_nuclear_data.txt
+
+        I stored these in a list.  I should have used a dictionary for quick lookup.
+        List format is
+            [['gamma', 'gsb', 2.0, 2.0, 0.35, 0.05],...]
+        Key list should be 
+            ['gamma', 'gsb', 2.0, 2.0]
+
+        """
+
+        for one in self.mixing_data:
+            if list(key_list) == one[0:4]:
+                return key_list[4:6]
+
+        return None 
 
 
     def generate_angular_meshpoints(self, theta_lab_min, theta_lab_max, number_of_meshpoints, annular=True):
@@ -17193,13 +17384,184 @@ class experimentmanager:
         return 0
 
 
-    def properly_weighted_chi_squared_report(self):
+    def properly_weighted_chi_squared_report(self,include_spect = True):
         """Calculates the chi-squared for all experiments using the last integration.
 
         This is the chi-squared properly-weighted using the fractional errors
         on the experimental yields.
 
+        Adding the contribution from the nuclear data as an option.  This uses
+        the data in memory; it does not update the data from the file on disk,
+        since this contribution should match what Gosia gave in the last fit.
+
+        The "data weights" are going to be removed from Rachel soon.  There is
+        no meaning to the weights aside from changing the error bars, which the user
+        should do directly.
+
         """
+
+        if include_spect:
+
+            number_of_spectroscopic_data_points = 0
+            chi_squared_spectroscopic           = 0.0
+            spect_lines = [\
+                            "-------------------------------------------------------------------------",\
+                            "",\
+                            "Spectroscopic Data                                        chi-squared    ",\
+                            "-------------------------------------------------------------------------",\
+                            ]
+
+            try:
+                the_gosia_shell.calculated_branching_data
+                self.branching_data
+                include_branching = True
+            except:
+                include_branching = False
+
+            try:
+                self.lifetime_data
+                include_lifetime = True
+            except:
+                include_lifetime = False
+
+            try:
+                the_gosia_shell.calculated_mixing_data
+                self.mixing_data
+                include_mixing = True
+            except:
+                include_mixing = False
+                
+            try:
+                self.measured_matrix_data
+                include_matrix = True
+            except:
+                include_matrix = False
+
+            if include_branching:
+                # Step through the branching data, matching to the calculated values if possible.
+                # [['gamma', 8.0, 'gamma', 6.0, 'gsb', 6.0, 0.042, 0.005], ['gamma', 7.0, 'gamma', 5.0, 'gsb', 6.0, 0.092, 0.005]]
+                calculated_branching_ratios = the_gosia_shell.return_latest_calculated_branching_data()
+                for one in self.branching_data:
+                    # Get a key to match it to the dictionary read in the gosia shell.
+                    the_key = tuple(one[0:6])
+                    ratio = one[6]
+                    error = one[7]
+                    # Add an accessor for this in the gosia shell...
+                    if the_key in calculated_branching_ratios:
+                        calculated_value = calculated_branching_ratios[the_key]
+                        # Get the chisq contribution for this, and add to the number of spectroscopic data points.
+                        # Ignoring data weights.
+                        chisq_contribution = (ratio - calculated_value)**2 / error**2
+                        if DEBUGGING_MODE:
+                            print the_key, calculated_value, ratio, error, chisq_contribution
+                        chi_squared_spectroscopic += chisq_contribution 
+                        number_of_spectroscopic_data_points += 1
+                        numerator   = "Branching " + str(the_key[0:2]) + "-->" + str(the_key[2:4]) 
+                        denominator = "          " + str(the_key[0:2]) + "-->" + str(the_key[4:6]) 
+                        max_len = max(len(numerator), len(denominator)) - 10
+                        line    = "Ratio     " + max_len * "-"
+                        this_line = numerator + "\n" + line + "\n" + denominator
+                        if len(denominator) > 55:
+                            this_line += "\n" + " ".ljust(60)
+                        this_line += (60 - len(denominator)) * " " + str(round(chisq_contribution,3))
+                        spect_lines.append(this_line)
+
+                # Similar for mixing ratios.
+                # Formats:
+                # Rachel>the_gosia_shell.return_latest_calculated_mixing_data()
+                # {('gamma', 3.0, 'gsb', 2.0): -0.62, ('gamma', 2.0, 'gsb', 2.0): -0.5}
+                # Rachel>the_experiment_manager.mixing_data
+                # [['gamma', 'gsb', 2.0, 2.0, 0.35, 0.05], ['gamma', 'gsb', 3.0, 2.0, 0.45, 0.05]]
+
+            if include_mixing:
+                calculated_mixing_ratios = the_gosia_shell.return_latest_calculated_mixing_data()
+                for one in self.mixing_data:
+                    # Get a key to match it to the dictionary read in the gosia shell.
+                    the_key = one[0], one[2], one[1], one[3]
+                    ratio = one[4]
+                    error = one[5]
+                    try:
+                        calculated_value = calculated_mixing_ratios[the_key]
+                    except:
+                        # No calculated value exists. 
+                        continue
+                    # Get the chisq contribution for this, and add to the number of spectroscopic data points.
+                    # Ignoring data weights.
+                    chisq_contribution = (ratio - calculated_value)**2 / error**2
+                    if DEBUGGING_MODE:
+                        print the_key, calculated_value, ratio, error, chisq_contribution
+                    chi_squared_spectroscopic += chisq_contribution 
+                    number_of_spectroscopic_data_points += 1
+                    this_line = "Mixing ratio " + str(the_key[0:2]).strip("()") + " --> " + str(the_key[0:2]).strip("()")  
+                    if len(this_line) > 55:
+                        this_line += "\n"
+                    else:
+                        this_line = this_line.ljust(60)
+                    this_line += str(round(chisq_contribution,3))
+                    spect_lines.append(this_line)
+
+            if include_matrix:
+                # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                # Matrix data
+                #  
+                # Cycle through the measured matrix elements, and match them to ones in
+                # memory.  We should include only the ones for transitions that are
+                # possible with the given matrix and levels.
+                # Storage of measured m.e. is currently in this format: 
+                # self.measured_matrix_data.append([initial_band_name, final_band_name, initial_spin, final_spin, multipole_code, reduced_matrix_element, error])
+                # while the actual matrix is stored with tuple keys:
+                # (7, 'gamma', 12.0, 'gamma', 13.0)
+
+                for one in self.measured_matrix_data:
+                    matrix_key = one[4], one[0], one[2], one[1], one[3]
+                    initial_level_key = one[0], one[2]
+                    final_level_key = one[1], one[3]
+                    measured = one[5]
+                    error    = one[6]
+                    if self.is_populated(initial_level_key) and self.is_populated(final_level_key) and \
+                        matrix_key in investigated_nucleus.matrix_data.keys():
+                        current_value = investigated_nucleus.matrix_data[matrix_key].get_current_value()
+                        chisq_contribution = (measured - current_value)**2 / error**2
+                        if DEBUGGING_MODE:
+                            print matrix_key, current_value, measured, error, chisq_contribution
+                        chi_squared_spectroscopic += chisq_contribution 
+                        number_of_spectroscopic_data_points += 1
+                        formatted_matrix_element = investigated_nucleus.format_one_matrix_element(initial_band_name=matrix_key[3],\
+                          initial_spin=matrix_key[4],final_band_name=matrix_key[1],final_spin=matrix_key[2],\
+                          multipole_text=REVERSE_MULTIPOLE[matrix_key[0]],value=current_value)
+                        formatted_matrix_element = formatted_matrix_element.rsplit("=",1)[0]
+                        formatted_matrix_element = formatted_matrix_element.replace(" ","")
+                        this_line = formatted_matrix_element.replace(">=","> = ")
+                        if len(this_line) > 55:
+                            this_line += "\n" + " ".ljust(60)
+                        else:
+                            this_line = this_line.ljust(60)
+                        this_line += str(round(chisq_contribution,3))
+                        spect_lines.append(this_line)
+
+            if include_lifetime:
+                # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                # lifetime data
+                # self.lifetime_data has format [[initial_band_name, initial_spin, tau, delta_tau],...]
+                for one in self.lifetime_data:
+                    level_key = tuple(one[0:2])
+                    measured = one[2]
+                    error    = one[3]
+                    calculated = investigated_nucleus.get_level_information(level_key,"calculated lifetime")
+                    if not calculated == None:
+                        chisq_contribution = (measured - calculated)**2 / error**2
+                        if DEBUGGING_MODE:
+                            print level_key, calculated, measured, error, chisq_contribution
+                        chi_squared_spectroscopic += chisq_contribution 
+                        number_of_spectroscopic_data_points += 1
+                        this_line = "Lifetime " + str(level_key) 
+                        if len(this_line) > 55:
+                            this_line += "\n" + " ".ljust(60)
+                        else:
+                            this_line = this_line.ljust(60)
+                        this_line += str(round(chisq_contribution,3))
+                        spect_lines.append(this_line)
+                        
 
         # The number of experiments for the chisq calculation and the report of
         # the worst discrepancies.
@@ -17220,14 +17582,14 @@ class experimentmanager:
         chi_squared_for_experiment = []
 
         lines_to_display = ["Chi-squared and yield report for integrated yields",\
-                            "  See the bottom for the yields ordered from highest chi-squared contribution",\
-                            "  to lowest.                                                                 ",\
-                            "Chi-squared from the last integration:",\
                             "  This value may be more accurate than that reported in the Gosia *fit* output.",\
                             "  because it represents a full integration, whereas the Gosia fit uses a",\
                             "  point calculation.",\
-                            "However, the value below includes only yield data.  Optional spectroscopic",\
-                            "  data are not included in the value below (planned improvement).",\
+                            "  See the bottom for the yields ordered from highest chi-squared contribution",\
+                            "  to lowest.                                                                 ",\
+                            "Chi-squared of the yield data is calculated from the last integration,",\
+                            "  while the contribution from spectroscopic data is calculated from ",\
+                            "  the most recent fit.",\
                             "",\
                             "Experiment  norm. to calc.  chi-squared  data points  reduced chi-squared",\
                             "-------------------------------------------------------------------------"]
@@ -17348,6 +17710,19 @@ class experimentmanager:
                             str(data_points).rjust(11) + 2 * " " + format(reduced_chi_squared,".3f").rjust(11)
                 lines_to_display.append(this_line)
 
+        if include_spect:
+            # Add in the contribution from mixing, branching...
+            total_data_points += number_of_spectroscopic_data_points
+            total_chi_squared += chi_squared_spectroscopic
+            spect_lines.extend([\
+                                "-------------------------------------------------------------------------",\
+                                "",\
+                                "                            chi-squared  data points  reduced chi-squared",\
+                              ])
+
+            lines_to_display.extend(spect_lines)
+
+
         # Get reduced chi-squared for all data sets.
         if not total_data_points == 0:
             total_reduced_chi_squared = total_chi_squared / total_data_points
@@ -17378,6 +17753,10 @@ class experimentmanager:
 
         investigated_nucleus.notes.append_log("procedure_log","Integrated yields: Reduced chi-squared = " + str(total_reduced_chi_squared) )
         return total_chi_squared,total_data_points,total_reduced_chi_squared
+
+
+
+
 
     def write_experimental_yld_file(self,to_force=False):
         """Writes experimental yields from memory to gosia's .yld file.
@@ -22238,6 +22617,10 @@ class main_gui:
                         # Call the nucleus method to read the best matrix elements from the .bst file.
                         bst_file_name = the_gosia_shell.base_file_name + ".bst"
                         investigated_nucleus.read_best_fit_matrix_elements(bst_file_name)
+                        # Store the calculated spectroscopic data from the fit.
+                        # It has already been read by
+                        # read_final_chi_squared_from_gosia().
+                        the_gosia_shell.save_calculated_spectroscopic_data()
                         print "Choose option \"p\" from the \"Examine setup\" button menu to see the new matrix elements."
                     print "--------------------------------------------------------------------------------"
                     # Display the fitted Ge(Li) efficiencies for the user to evaluate.
@@ -23076,6 +23459,29 @@ class main_gui:
             # Reactivate GUI buttons.
             undo.save("Edit user log (failed)")
             self.set_activation(self)
+            print "Done."
+            return -1
+            
+
+
+    def chisq(self,widget):
+
+        print_separator()
+
+        #deactivate all button presses while this runs.
+        self.set_deactivation(self,self.all_button_list)
+        while gtk.events_pending():
+            gtk.main_iteration(False)
+        try:
+            the_experiment_manager.properly_weighted_chi_squared_report()
+            # Reactivate GUI buttons.
+            self.set_activation(self)
+            print "Done."
+            return None
+
+        except:
+            # Reactivate GUI buttons.
+            print "Could not generate the report."
             print "Done."
             return -1
             
@@ -25305,6 +25711,20 @@ class main_gui:
         # Show the button35.
         button35.show()
         self.all_button_list.append(button35)
+        
+        # Create a new button to view/edit logs
+        button36 = gtk.Button("X^2")
+        # Not sure this will work the way I expect...
+        button36.connect("clicked", self.chisq)
+        # pack the button36 
+        hbox.pack_start(button36, False, False)
+        # Set the default flags 
+        button36.set_flags(gtk.CAN_DEFAULT)
+        # Grab the default
+        button36.grab_default()
+        # Show the button36.
+        button36.show()
+        self.all_button_list.append(button36)
         
         if DEBUGGING_MODE:
             debugging_button = gtk.Button("DEBUG")
