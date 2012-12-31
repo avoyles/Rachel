@@ -17420,6 +17420,8 @@ class experimentmanager:
                         # Get the chisq contribution for this, and add to the number of spectroscopic data points.
                         # Ignoring data weights.
                         chisq_contribution = (ratio - calculated_value)**2 / error**2
+                        if DEBUGGING_MODE:
+                            print the_key, calculated_value, ratio, error, chisq_contribution
                         chi_squared_spectroscopic += chisq_contribution 
                         number_of_spectroscopic_data_points += 1
                         numerator   = "Branching " + str(the_key[0:2]) + "-->" + str(the_key[2:4]) 
@@ -17453,6 +17455,8 @@ class experimentmanager:
                     # Get the chisq contribution for this, and add to the number of spectroscopic data points.
                     # Ignoring data weights.
                     chisq_contribution = (ratio - calculated_value)**2 / error**2
+                    if DEBUGGING_MODE:
+                        print the_key, calculated_value, ratio, error, chisq_contribution
                     chi_squared_spectroscopic += chisq_contribution 
                     number_of_spectroscopic_data_points += 1
                     this_line = "Mixing ratio " + str(the_key[0:2]).strip("()") + " --> " + str(the_key[0:2]).strip("()")  
@@ -17484,6 +17488,8 @@ class experimentmanager:
                         matrix_key in investigated_nucleus.matrix_data.keys():
                         current_value = investigated_nucleus.matrix_data[matrix_key].get_current_value()
                         chisq_contribution = (measured - current_value)**2 / error**2
+                        if DEBUGGING_MODE:
+                            print matrix_key, current_value, measured, error, chisq_contribution
                         chi_squared_spectroscopic += chisq_contribution 
                         number_of_spectroscopic_data_points += 1
                         formatted_matrix_element = investigated_nucleus.format_one_matrix_element(initial_band_name=matrix_key[3],\
@@ -17509,6 +17515,8 @@ class experimentmanager:
                     calculated = investigated_nucleus.get_level_information(level_key,"calculated lifetime")
                     if not calculated == None:
                         chisq_contribution = (measured - calculated)**2 / error**2
+                        if DEBUGGING_MODE:
+                            print level_key, calculated, measured, error, chisq_contribution
                         chi_squared_spectroscopic += chisq_contribution 
                         number_of_spectroscopic_data_points += 1
                         this_line = "Lifetime " + str(level_key) 
