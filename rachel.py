@@ -17396,16 +17396,31 @@ class experimentmanager:
 
             try:
                 the_gosia_shell.calculated_branching_data
-                the_gosia_shell.calculated_mixing_data
                 self.branching_data
-                self.lifetime_data
-                self.mixing_data
-                self.measured_matrix_data
-                skip = False
+                include_branching = True
             except:
-                skip = True
+                include_branching = False
 
-            if not skip:
+            try:
+                self.lifetime_data
+                include_lifetime = True
+            except:
+                include_lifetime = False
+
+            try:
+                the_gosia_shell.calculated_mixing_data
+                self.mixing_data
+                include_mixing = True
+            except:
+                include_mixing = False
+                
+            try:
+                self.measured_matrix_data
+                include_matrix = True
+            except:
+                include_matrix = False
+
+            if include_branching:
                 # Step through the branching data, matching to the calculated values if possible.
                 # [['gamma', 8.0, 'gamma', 6.0, 'gsb', 6.0, 0.042, 0.005], ['gamma', 7.0, 'gamma', 5.0, 'gsb', 6.0, 0.092, 0.005]]
                 calculated_branching_ratios = the_gosia_shell.return_latest_calculated_branching_data()
@@ -17441,6 +17456,7 @@ class experimentmanager:
                 # Rachel>the_experiment_manager.mixing_data
                 # [['gamma', 'gsb', 2.0, 2.0, 0.35, 0.05], ['gamma', 'gsb', 3.0, 2.0, 0.45, 0.05]]
 
+            if include_mixing:
                 calculated_mixing_ratios = the_gosia_shell.return_latest_calculated_mixing_data()
                 for one in self.mixing_data:
                     # Get a key to match it to the dictionary read in the gosia shell.
@@ -17467,6 +17483,7 @@ class experimentmanager:
                     this_line += str(round(chisq_contribution,3))
                     spect_lines.append(this_line)
 
+            if include_matrix:
                 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                 # Matrix data
                 #  
@@ -17505,6 +17522,7 @@ class experimentmanager:
                         this_line += str(round(chisq_contribution,3))
                         spect_lines.append(this_line)
 
+            if include_lifetime:
                 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                 # lifetime data
                 # self.lifetime_data has format [[initial_band_name, initial_spin, tau, delta_tau],...]
@@ -23428,6 +23446,29 @@ class main_gui:
             return -1
             
 
+
+    def chisq(self,widget):
+
+        print_separator()
+
+        #deactivate all button presses while this runs.
+        self.set_deactivation(self,self.all_button_list)
+        while gtk.events_pending():
+            gtk.main_iteration(False)
+        try:
+            the_experiment_manager.properly_weighted_chi_squared_report()
+            # Reactivate GUI buttons.
+            self.set_activation(self)
+            print "Done."
+            return None
+
+        except:
+            # Reactivate GUI buttons.
+            print "Could not generate the report."
+            print "Done."
+            return -1
+            
+
         
     def define_fit_parameters(self,widget):
 
@@ -25653,6 +25694,20 @@ class main_gui:
         # Show the button35.
         button35.show()
         self.all_button_list.append(button35)
+        
+        # Create a new button to view/edit logs
+        button36 = gtk.Button("X^2")
+        # Not sure this will work the way I expect...
+        button36.connect("clicked", self.chisq)
+        # pack the button36 
+        hbox.pack_start(button36, False, False)
+        # Set the default flags 
+        button36.set_flags(gtk.CAN_DEFAULT)
+        # Grab the default
+        button36.grab_default()
+        # Show the button36.
+        button36.show()
+        self.all_button_list.append(button36)
         
         if DEBUGGING_MODE:
             debugging_button = gtk.Button("DEBUG")
