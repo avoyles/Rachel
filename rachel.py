@@ -437,6 +437,7 @@ class updater:
         self.message = self.message.replace("LINEBREAK","\n")
 
         print "\bgot server response...",
+        sys.stdout.flush()
 
         return True
 
@@ -475,9 +476,19 @@ class updater:
                     return True
 
             # Check that this file is not modified.
-            self.SHA512 = self.version_dict["SHA512"]
+            list_text = self.version_dict["SHA512"]
+
+            # The server should return a string representation of a list.
+            try:
+                #print list_text
+                self.SHA512_list = eval(list_text)
+            except:
+                return False
+
+                
             checker = checksum()
-            identical = checker.verify(self.SHA512)
+            identical = checker.verify_list(self.SHA512_list)
+
             if not identical:
                 text = "Warning:\nThe copy of Rachel you are using was either damaged or modified.\nYou should download the most recent version from the Gosia Wiki:\n\nhttp://www-user.pas.rochester.edu/~gosia/mediawiki\n\nIf you continue to see this error, please report the problem via the Gosia forum:\n\nhttp://www-user.pas.rochester.edu/~gosia/phpBB3/\n\n"
                 lines = block_print_with_line_breaks(text,line_length=60,silent=True,paragraphs=True)
@@ -487,6 +498,8 @@ class updater:
             return True
 
         except:
+            #print "exception"
+            sys.stdout.flush()
             pass
             return False
             # Should notify Rochester of the bug.
@@ -521,6 +534,31 @@ class checksum:
         except:
             print "err here 2"
             self.ok = False
+
+    def verify_list(self, SHA512_HEX_list):
+        """Compare the hash of this file with the given list of hashes.
+
+        The hashes passed in the list must be SHA512 hex digests in ascii.
+
+        """
+
+        if DEBUGGING_MODE:
+            print "Checksum of this executable: ",self.digest
+        for one_hash in SHA512_HEX_list:
+            if DEBUGGING_MODE:
+                print "Comparing to checksum " + one_hash,
+            if self.digest == one_hash:
+                if DEBUGGING_MODE:
+                    print " matches this version."
+                return True
+            else:
+                if DEBUGGING_MODE:
+                    print " does not match."
+
+        if DEBUGGING_MODE:
+            print " No match found for this version."
+
+        return False
 
     def verify(self, SHA512_HEX):
         """Compare the hash of this file with the given hash.
@@ -22143,7 +22181,7 @@ def setup_globals(action=None,pickle_file_name=None,force=False,rotate=False):
             go_ahead = None
             while go_ahead == None:
                 go_ahead = yes_no_prompt("Are you sure [y/n]? ",None)
-                if len(investigated_nucleus.levels) == 0:
+                if go_ahead and len(investigated_nucleus.levels) == 0:
                     # No levels in memory--user may be saving an empty session.
                     print "\n\nTHE NUCLEUS IS NOT DEFINED.  ARE YOU SAVING AN EMPTY SESSION???\n"
                     go_ahead = yes_no_prompt("Are you REALLY sure [y/n]? ",None)
