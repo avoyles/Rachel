@@ -1,11 +1,19 @@
 Rachel
 ======
 
+Authors:
+  A.B. Hayes and D. Cline, University of Rochester
+
 GUI for Gosia
 
-Authors:
-  A.B. Hayes
-  D. Cline
+Rachel is an interface to the Coulomb excitation fit code Gosia.  Gosia itself
+is maintained by a collaboration between Warsaw University, Koeln and
+Rochester.  More information is on the Gosia wiki:
+
+    Gosia
+        http://www-user.pas.rochester.edu/~gosia/mediawiki/index.php/What_is_Gosia
+    Rachel itself
+        http://www-user.pas.rochester.edu/~gosia/mediawiki/index.php/Rachel,_a_GUI_for_Gosia
 
 Borrowed Code:
     Modified the filename completion class from user "samplebias."
