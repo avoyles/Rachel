@@ -7,6 +7,7 @@ Authors
 ------
 
   Code and Physics:  A.B. Hayes, University of Rochester
+
   Physics:           D. Cline, University of Rochester
 
 About
