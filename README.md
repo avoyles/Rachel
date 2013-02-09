@@ -1,7 +1,10 @@
 Rachel, GUI for Gosia
 ======
 
+[Mind-blowing demo video](http://www.pas.rochester.edu/~hayes/beta_rachel/main_ad.html)
+
 ![Rachel snapshot](http://www-user.pas.rochester.edu/~gosia/mediawiki/images/4/41/Guisnapshot.png)
+
 
 Authors
 ------
