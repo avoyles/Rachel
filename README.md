@@ -17,7 +17,7 @@ About
 ------
 
 Rachel is an interface to the Coulomb excitation fit code Gosia.  More
-information is on the [Gosia wiki](http://www-user.pas.rochester.edu/~gosia/mediawiki/index.php/Rachel,_a_GUI_for_Gosia)
+information is on the [Gosia wiki](http://www-user.pas.rochester.edu/~gosia/mediawiki/index.php/Rachel_GUI)
 
 Gosia itself is maintained by a collaboration between Warsaw University, Koeln
 and Rochester.  [Gosia Wiki: What is Gosia?](http://www-user.pas.rochester.edu/~gosia/mediawiki/index.php/What_is_Gosia)
