@@ -19,7 +19,7 @@ import_error_count = 0
 
 try:
     from pprint import pprint # Mostly for debugging
-                    
+
 except:
     import_error("pprint")
     import_error_count += 1
@@ -80,7 +80,7 @@ except:
     import_error_count += 1
 
 try:
-    import matplotlib     
+    import matplotlib
 except:
     import_error("matplotlib")
     import_error_count += 1
@@ -258,13 +258,13 @@ MAX2DARRAYSIZE = 200*200         # This is the maximum number of elements in the
 
 NOCOUPLING = "Fixed"             # This is the marker in nucleus.matrix_data that indicates
                                  # that the matrix element is not a slave to another.  Using
-                                 # this constant to ensure consistency.  
+                                 # this constant to ensure consistency.
 
 DEFAULT_MAGNETIC_SUBSTATES = 8   # The default number of magnetic substates for the full
                                  # Coulex calculations
 
-MAXENERGYMESHPOINTS = 100   
-DEFAULT_ENERGY_MESHPOINTS = 20   
+MAXENERGYMESHPOINTS = 100
+DEFAULT_ENERGY_MESHPOINTS = 20
 MINENERGYMESHPOINTS = 5
 MAXTHETAMESHPOINTS = 100
 MINIMUM_THETA_MESHPOINTS        = 5  # The minimum acceptable number (should be at least 3 to allow the use of spline interpolation).
@@ -309,14 +309,14 @@ VAC_PARAMETER_NUMBER_DICT = {1:"J1",2:"Gamma",3:"Lambda",4:"tau_c",5:"g",6:"K",7
 
 # All allowed multipole codes in a dict that points to lambda.
 MULTIPOLE_LAMBDA = {'E1':1,'E2':2,'E3':3,'E4':4,'E5':5,'E6':6,'M1':1,'M2':2,\
-                   'e1':1,'e2':2,'e3':3,'e4':4,'e5':5,'e6':6,'m1':1,'m2':2}  
-                                                                               
+                   'e1':1,'e2':2,'e3':3,'e4':4,'e5':5,'e6':6,'m1':1,'m2':2}
+
 UNITS_DICT = {'E1':"eb^(1/2)",'E2':"eb",'E3':"eb^(3/2)",'E4':"eb^2",'E5':"eb^(5/2)",'E6':"eb^3",'M1':"n.m.",'M2':"n.m.^2",\
               'e1':"eb^(1/2)",'e2':"eb",'e3':"eb^(3/2)",'e4':"eb^2",'e5':"eb^(5/2)",'e6':"eb^3",'m1':"n.m.",'m2':"n.m.^2"}
 
-# The dictionary to translate E2, M1, etc. to the codes stored in matrixdata.  
+# The dictionary to translate E2, M1, etc. to the codes stored in matrixdata.
 MULTIPOLE = {'e1':1,'e2':2,'e3':3,'e4':4,'e5':5,'e6':6,'m1':7,'m2':8,\
-             'E1':1,'E2':2,'E3':3,'E4':4,'E5':5,'E6':6,'M1':7,'M2':8} 
+             'E1':1,'E2':2,'E3':3,'E4':4,'E5':5,'E6':6,'M1':7,'M2':8}
 
 # Use multipole code (number) where possible.  When translating from the user,
 # printing output, use text code.
@@ -367,7 +367,7 @@ DEORIENTATION_FILE_DEF_DICT = {\
 
 # The default file name for all nuclear data tagged by symbols in beta v. 2.0.0
 # and ff.
-NUCLEAR_DATA_FILE_NAME = "rachel_nuclear_data.txt"   
+NUCLEAR_DATA_FILE_NAME = "rachel_nuclear_data.txt"
 
 PROMPTSTRING = "~ "
 
@@ -392,14 +392,14 @@ CALCULATED_YIELD_LOWER_LIMIT = 1.0E-10  # Calculated yields lower than this limi
                                         # yields), will not be read from Gosia
                                         # calculations.  This also applies to
                                         # simulated yield data.
-    
+
 HELP_DICTIONARY = {}     # A globally accessible dictionary of help strings. This will be read from a file.
 TIPS_DICTIONARY = {}     # A globally accessible dictionary of tips strings for popup help. This will be read from a file.
 DEFAULT_EDITOR_COMMAND = "vim"  # The text editor to be called from the GUI.
 
 DEFAULT_EFFICIENCY_PARAMETERS = [5.7021, 4.83491, 0., 6.20016, -6.06E-01, -5.36E-03, 4.5934, 0.000219]
-#                                A       B        C   D        E          F          G       N 
-# The parameters A--G are those used by Radware.  [See def absolute_efficiency()]   
+#                                A       B        C   D        E          F          G       N
+# The parameters A--G are those used by Radware.  [See def absolute_efficiency()]
 # N is the overall factor for the absolute efficiency.
 
 class updater:
@@ -456,7 +456,7 @@ class updater:
                 create_dialog_popup({"text_lines":lines, "title":"Updater Failed", "force_popup":True})
                 return False
 
-            
+
             if not self.version_dict["version"] == VERSION:
 
                 text = "A new version of Rachel is available.\nYou can download version " + self.version_dict["version"] + " from the Gosia Wiki:\n\nhttp://www-user.pas.rochester.edu/~gosia/mediawiki\n\n" + self.message
@@ -485,7 +485,7 @@ class updater:
             except:
                 return False
 
-                
+
             checker = checksum()
             identical = checker.verify_list(self.SHA512_list)
 
@@ -566,7 +566,7 @@ class checksum:
         The hash passed in must be an SHA512 hex digest in ascii.
 
         """
-        
+
         if self.digest == SHA512_HEX:
             return True
         else:
@@ -578,7 +578,7 @@ class checksum:
         """
 
         return self.digest
-        
+
 
 class Completer(object):
     # This is just a modified version of the snippet here:
@@ -675,9 +675,9 @@ def prompt_for_file_name(prompt_string = ""):
         file_name = None
 
     # Now unset the readline file name completer.
-    readline.set_completer(comp.nullcomplete)  
+    readline.set_completer(comp.nullcomplete)
 
-    return file_name 
+    return file_name
 
 def ignore_break():
     """Uses the signal module to prevent the user from aborting the GUI with CTRL-C.
@@ -696,7 +696,7 @@ def ignore_break():
     else:
         # Debugging mode only:
         signal.signal(signal.SIGINT, signal.SIG_DFL)
-        
+
 
 def enable_break():
     """Uses the signal module to enable keyboard interrupts (CTRL-C)
@@ -834,7 +834,7 @@ def largest_float_on_this_machine():
     previous calculations were on another machine.
 
     """
-    
+
     f = 1.0e10
     while True:
         last_f = f
@@ -883,7 +883,7 @@ def block_print_with_line_breaks(text,line_length=60,silent=False,paragraphs=Tru
 
     paragraphs_to_block = text.split("\n")
     for one_paragraph in paragraphs_to_block:
-        wrapped_lines = textwrap.wrap(one_paragraph,line_length) 
+        wrapped_lines = textwrap.wrap(one_paragraph,line_length)
         for one_line in wrapped_lines:
             if silent:
                 separate_lines.append(one_line)
@@ -960,7 +960,7 @@ def check_for_gosia_error(gosia_output_lines):
         return 0
 
 def print_error_block(error_text):
-    
+
     full_text = "\n---------------------------Error----------------------------\n" + error_text + "\n------------------------------------------------------------\nDone."
     block_print_with_line_breaks(full_text)
 
