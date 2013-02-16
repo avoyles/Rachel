@@ -63,11 +63,6 @@ except:
     import_error_count += 1
 
 try:
-    import bisect
-except:
-    import_error("bisect")
-    import_error_count += 1
-try:
     import numpy
 except:
     import_error("numpy")
@@ -81,6 +76,7 @@ except:
 
 try:
     import matplotlib
+    matplotlib                # prevents complaints in syntax checker.
 except:
     import_error("matplotlib")
     import_error_count += 1
@@ -109,12 +105,6 @@ try:
     import gtk
 except:
     import_error("gtk")
-    import_error_count += 1
-
-try:
-    import gobject
-except:
-    import_error("gobject")
     import_error_count += 1
 
 try:
@@ -222,12 +212,14 @@ COMMANDS = [] # e.g. ['extra', 'extension', 'stuff', 'errors', 'email', 'foobar'
 RE_SPACE = re.compile('.*\s+$', re.M)
 
 # Undo settings.
-UNDOBASEFILENAME = ".rachel_undo_information."
+UNDOBASEFILENAME        = ".rachel_undo_information."
 global MAXIMUMUNDOSTEPS
-MAXIMUMUNDOSTEPS = 20  # Each undo step requires a maximum of about 200kB on disk.
-UNDO_STACK = []        # A stack to keep track of what operations have been added to the undo files.
+MAXIMUMUNDOSTEPS        = 20  # Each undo step requires a maximum of about 200kB on disk.
+UNDO_STACK              = []        # A stack to keep track of what operations have been added to the undo files.
+
 # configuration for logrotate to save several versions of the pickle file.
 ROTATE_CONFIG_FILE_NAME = "rotate_config"
+
 LOGROTATE_CONFIG = [\
                     '"pickle.jar" {\n',\
                     '    rotate 5\n',\
@@ -239,7 +231,7 @@ LOGROTATE_CONFIG = [\
                     ]
 
 
-# Constants defined 
+# Constants defined
 ASMIDGE = 0.1                    # a small number to use for >,< comparisons where rounding
                                  # to base 2 could be a problem.  0.1 is fine
                                  # for comparing spins This is only used now
@@ -523,13 +515,13 @@ class checksum:
             print "err here"
             self.ok = False
 
-        string = ""
+        concat_lines = ""
         for line in lines:
-            string += line
+            concat_lines += line
 
         try:
             self.h = hashlib.sha512()
-            self.h.update(string)
+            self.h.update(concat_lines)
             self.digest = self.h.hexdigest()
         except:
             print "err here 2"
@@ -795,7 +787,7 @@ def top_level_testing():
     up = updater()
     up.report_all()
 
-    return 
+    return
 
     # Load the session.
     setup_globals("reset") # to make sure we don't have old data hanging around in the original objects
@@ -983,9 +975,9 @@ def load_tips_data():
         if not len(one_line) == 0 and not one_line.isspace():
             # Split the line on "&".  The former element is the keyword, and the latter is the help string.
             keyword     = one_line.split("&")[0].strip()
-            tips_string = one_line.split("&")[1].strip().replace("\\n","\n")  # Replace \n with newlines.  
+            tips_string = one_line.split("&")[1].strip().replace("\\n","\n")  # Replace \n with newlines.
             TIPS_DICTIONARY[keyword] = tips_string
-        
+
 def load_help_data():
     """Loads help data from disk.
 
@@ -1005,9 +997,9 @@ def load_help_data():
         if not len(one_line) == 0 and not one_line.isspace():
             # Split the line on "&".  The former element is the keyword, and the latter is the help string.
             keyword     = one_line.split("&")[0].strip()
-            help_string = one_line.split("&")[1].strip().replace("\\n","\n")  # Replace \n with newlines.  
+            help_string = one_line.split("&")[1].strip().replace("\\n","\n")  # Replace \n with newlines.
             HELP_DICTIONARY[keyword] = help_string
-        
+
 def prompt_default(prompt_string,default_value,type_to_return):
     """Returns the number entered or the default value if only return is pressed.
 
@@ -1032,8 +1024,8 @@ def prompt_default(prompt_string,default_value,type_to_return):
             satisfied = True
         except:
             print "Try again."
-            
-    return return_number 
+
+    return return_number
 
 
 def prompt_number(prompt_string,type_to_return):
@@ -1066,8 +1058,8 @@ def prompt_number(prompt_string,type_to_return):
                 except:
                     print "Enter a number or \"q\" to quit."
 
-    return return_number 
-                    
+    return return_number
+
 
 
 def yes_no_prompt(prompt_string,default=False):
@@ -1098,7 +1090,7 @@ def require_yes_no(prompt_string):
         response = yes_no_prompt(prompt_string,None)
 
     return response
-    
+
 def write_lines_to_file(file_name,list_of_lines,force=False):
     """Writes to text files, primarily for the gosia input files.
 
@@ -1154,7 +1146,6 @@ def write_lines_to_file(file_name,list_of_lines,force=False):
         return 0
 
 
-        
 def get_system_time_stamp():
     """Makes a call to the o.s. to get the date.
 
@@ -1198,7 +1189,7 @@ def quick_plot_n_sets(dict_of_lists):
         lines_to_write.extend(temporary_lines_to_write)
         lines_to_write.append("\n\n")  # two blank lines to separate sets
 
-    with open(plot_data_file_name,"w") as plot_data_file: 
+    with open(plot_data_file_name,"w") as plot_data_file:
         plot_data_file.writelines(lines_to_write)
 
     # Call a routine to launch gnuplot
@@ -1237,12 +1228,10 @@ def quick_plot(x_list,y_list):
             this_text_line = str(x) + "     " + " ? " + "\n"
 
     lines_to_write.append("\n\n")  # two blank lines to separate sets
-            
 
-    with open(plot_data_file_name,"w") as plot_data_file: 
+    with open(plot_data_file_name,"w") as plot_data_file:
         plot_data_file.writelines(lines_to_write)
 
-    title_string = ""
     x_label = "x"
     y_label = "y"
     calculated_legend = ["y"]
@@ -1291,13 +1280,11 @@ def plot_efficiency_curve(energies,efficiencies):
             this_text_line = str(gamma_energy) + "     " + " ? " + "\n"
 
     lines_to_write.append("\n\n")  # two blank lines to separate sets
-            
 
-    with open(plot_data_file_name,"w") as plot_data_file: 
+    with open(plot_data_file_name,"w") as plot_data_file:
         plot_data_file.writelines(lines_to_write)
     print "Data for this plot were written to the file \"" + plot_data_file_name + "\"."
 
-    title_string = "Absolute efficiency for simulations"
     x_label = "E_gamma [keV]"
     y_label = "Efficiency (1 for 4pi blackbody)"
     calculated_legend = ["efficiency"]
@@ -1326,7 +1313,7 @@ def gnuplot_draw(plot_data_file_name,calculated_legend,x_label,y_label,title_str
     """Launch gnuplot to draw shapes
 
     For now, just x,y plotting
-    
+
     The legend lists must have the same number of entries as the number of data
     sets in the corresponding file.
 
@@ -1443,7 +1430,7 @@ def better_gnu_plot_launch(plot_data_file_name,calculated_legend,x_label,y_label
     because it deletes negative points on the default log scale used below.
 
     For now, just x,y plotting
-    
+
     The legend lists must have the same number of entries as the number of data
     sets in the corresponding file.
 
@@ -1591,9 +1578,9 @@ def welcome(hide=False):
     if hide:
         splash.hide()
         return
-        
+
     # Create a window called splash.
-    splash = gtk.Window(gtk.WINDOW_TOPLEVEL) 
+    splash = gtk.Window(gtk.WINDOW_TOPLEVEL)
     splash.set_decorated(False)
     splash.set_position(gtk.WIN_POS_CENTER)
 
@@ -1620,9 +1607,9 @@ def call_rochester_srim_server(beam_Z=None, beam_mass=None, target_density=None,
 
     def internal_find_all_in_list(listtosearch,stringstomatch):
         """Finds the index of all instances matching stringstomatch
-        
+
         Finds the index in the list 'listtosearch' that contains all of the items
-        in 'stringstomatch'.  
+        in 'stringstomatch'.
 
         Both arguments should be lists of strings.
         It separates at whitespaces.
@@ -1633,7 +1620,7 @@ def call_rochester_srim_server(beam_Z=None, beam_mass=None, target_density=None,
         matching_lines = []
         i = 0
         while i < len(listtosearch):
-            linematchessofar = False   # Added this 2010/06/04 because the variable was 
+            linematchessofar = False   # Added this 2010/06/04 because the variable was
                                        # undefined if early lines were too short.
             wordsinline = listtosearch[i].split()
             if len(wordsinline) >= len(stringstomatch):
@@ -1646,7 +1633,7 @@ def call_rochester_srim_server(beam_Z=None, beam_mass=None, target_density=None,
 
                 # Now that all words are tested, if linematchessofar is True
                 # then the line is found
-            if linematchessofar: 
+            if linematchessofar:
                 matching_lines.append(i)
 
             i = i + 1
@@ -1725,7 +1712,7 @@ def call_rochester_srim_server(beam_Z=None, beam_mass=None, target_density=None,
             # Assumes that only one line contains the tags in search_terms.
             line_fields = page_lines[matching_line_numbers[0]].split()
             calculated_exit_energy = float(line_fields[2])
-            return calculated_exit_energy 
+            return calculated_exit_energy
 
     # Check that all quantities were defined.
     if None in [beam_Z, beam_mass, target_density, target_Z, target_mass, initial_energy, target_thickness_or_exit_energy, fractional_padding_on_energy_meshpoints, number_of_meshpoints, thickness_or_exit_energy_flag]:
@@ -1753,13 +1740,6 @@ def call_rochester_srim_server(beam_Z=None, beam_mass=None, target_density=None,
     full_page = response.read()
 
     page_lines = full_page.split("\n")
-
-    # Check for an error on the last line.
-    if "error" in page_lines[-2]:
-        # An error was returned from the server.
-        error_occurred = True
-    else:
-        error_occurred = False
 
     # Get all error messages from server.
     error_strings = get_errors(page_lines)
@@ -1839,7 +1819,7 @@ def call_rochester_srim_server(beam_Z=None, beam_mass=None, target_density=None,
     except:
         # Could not process output, or server error was fatal.
         return {"error_strings":error_strings, "calculated_exit_energy":calculated_exit_energy, "calculated_range":calculated_range, "calculated_target_thickness":calculated_target_thickness, "energies":energies,"stopping_powers":stopping_powers}
- 
+
 
 
 class notes:
@@ -1863,7 +1843,7 @@ class notes:
                  "procedure_log" - Will include time-stamped actions, errors, etc.  Also record results, e.g. chi-squared.
 
         """
-        
+
         self.temporary_editor_file_name = ".rachel_temporary_editor_file"
 
         creation_time_stamp = "Log created " + get_system_time_stamp()
@@ -1929,21 +1909,21 @@ class notes:
             self.all_logs[log_name] = temp_file.readlines()
 
         return None
-            
+
 
     def return_log(self,log_name):
         """Return the list of strings in a log.
 
         If the log name is invalid (not in memory), return None.
 
-        A deep copy is made, so that modifications elsewhere do not change the log. 
+        A deep copy is made, so that modifications elsewhere do not change the log.
 
         """
 
         # Make a deep copy, so that modifications elsewhere do not change the log!
         try:
             dereferenced_log = copy.deepcopy(self.all_logs[log_name])
-            return dereferenced_log 
+            return dereferenced_log
         except:
             # Log not found.
             return None
@@ -1970,7 +1950,7 @@ class notes:
         except:
             # Log not found
             return -1
-            
+
         time_stamp = get_system_time_stamp() + "  "
         entry = time_stamp + log_entry
         self.all_logs[log_name].append(entry)
@@ -1984,14 +1964,14 @@ class popup_tips:
     init format: popup_tips(arguments_dict)
 
     where arguments_dict contains the keys:
-    
+
     "tip_text" is a single string with \n to separate lines.
     "title" is a string for the title of the window
-    "x_size" 
+    "x_size"
     "y_size"
 
     This will NOT handle control panels--only dialog types of popups.
-    
+
     If the popups are allowed by a global variable, then it will make one.
     Otherwise, it will do nothing.
 
@@ -2028,7 +2008,7 @@ class popup_tips:
             # take focus).
 
             self.window.set_default_size(600,500)
-            self.window.set_resizable(True)  
+            self.window.set_resizable(True)
             self.window.connect("destroy", self.close_window)
             self.window.set_title(title)
             self.window.set_border_width(0)
@@ -2103,19 +2083,19 @@ class popup_tips:
 
 
 class dialog_popup:
-    """A class with methods for various kinds of textview popups.  
+    """A class with methods for various kinds of textview popups.
 
     init format: dialog_popup(arguments_dict)
 
     where arguments_dict contains the keys:
-    
+
     "text_lines" is a list of lines, e.g. ["Hello","World"]
     "title" is a string for the title of the window
-    "x_size" 
+    "x_size"
     "y_size"
 
     This will NOT handle control panels--only dialog types of popups.
-    
+
     If the popups are allowed by a global variable, then it will make one.
     Otherwise, it will print to the standard output (terminal).
 
@@ -2135,13 +2115,13 @@ class dialog_popup:
         if "x_size" in arguments_dictionary:
             user_set_x_size = True
             x_size = arguments_dictionary["x_size"]
-        else:   
+        else:
             user_set_x_size = False
-        
+
         if "y_size" in arguments_dictionary:
             user_set_y_size = True
             y_size = arguments_dictionary["y_size"]
-        else:   
+        else:
             user_set_y_size = False
 
         # See if we need to force the popup against the user's settings:
@@ -2169,7 +2149,7 @@ class dialog_popup:
                 self.window.set_default_size(x_size,y_size)
             else:
                 self.window.set_default_size(600,500)
-            self.window.set_resizable(True)  
+            self.window.set_resizable(True)
             self.window.connect("destroy", self.close_window)
             self.window.set_title(title)
             self.window.set_border_width(0)
@@ -2250,10 +2230,10 @@ class dialog_popup:
 
 
 class data_storage:
-    """A temporary data dump for large amounts of data, 
-    
+    """A temporary data dump for large amounts of data,
+
     such as amplitude vs. time calculations.
-    
+
     This object is not saved, because it is too large.
 
     """
@@ -2308,14 +2288,14 @@ def strings_to_numbers(list_of_strings):
 
     number_list = []
     try:
-        for string in list_of_strings:
+        for one_string in list_of_strings:
             try:
-                integer_value = int(string)
+                integer_value = int(one_string)
                 number_list.append(integer_value)
             except:
                 # Not an integer.  Could be a float.
                 try:
-                    float_value = float(string)
+                    float_value = float(one_string)
                     number_list.append(float_value)
                 except:
                     # Not a float either.
@@ -2329,9 +2309,9 @@ def strings_to_numbers(list_of_strings):
 
 def find_all_in_list(listtosearch,stringstomatch):
     """Finds the index of all instances matching stringstomatch
-    
+
     Finds the index in the list 'listtosearch' that contains all of the items
-    in 'stringstomatch'.  
+    in 'stringstomatch'.
 
     Both arguments should be lists of strings.
     It separates at whitespaces.
@@ -2342,7 +2322,7 @@ def find_all_in_list(listtosearch,stringstomatch):
     matching_lines = []
     i = 0
     while i < len(listtosearch):
-        linematchessofar = False   # Added this 2010/06/04 because the variable was 
+        linematchessofar = False   # Added this 2010/06/04 because the variable was
                                    # undefined if early lines were too short.
         wordsinline = listtosearch[i].split()
         if len(wordsinline) >= len(stringstomatch):
@@ -2355,7 +2335,7 @@ def find_all_in_list(listtosearch,stringstomatch):
 
             # Now that all words are tested, if linematchessofar is True
             # then the line is found
-        if linematchessofar: 
+        if linematchessofar:
             matching_lines.append(i)
 
         i = i + 1
@@ -2364,9 +2344,9 @@ def find_all_in_list(listtosearch,stringstomatch):
 
 def findinlist(listtosearch,stringstomatch):
     """Finds the index of the desired string in a list strings.
-    
+
     Finds the index in the list 'listtosearch' that contains all of the items
-    in 'stringstomatch'.  
+    in 'stringstomatch'.
 
     Both arguments should be lists of strings.
     It separates at whitespaces.
@@ -2374,7 +2354,7 @@ def findinlist(listtosearch,stringstomatch):
     """
 
     found = False
-    linematchessofar = False   # Added this 2010/06/04 because the variable was 
+    linematchessofar = False   # Added this 2010/06/04 because the variable was
                                # undefined if early lines were too short.
     i = 0
     while i < len(listtosearch) and not found:
@@ -2389,7 +2369,7 @@ def findinlist(listtosearch,stringstomatch):
 
             # Now that all words are tested, if linematchessofar is True
             # then the line is found
-        if linematchessofar: 
+        if linematchessofar:
             found = True
         else:
             i = i + 1
@@ -2398,7 +2378,7 @@ def findinlist(listtosearch,stringstomatch):
         return i
     else:
         return -1  # -1 indicates that no match was found in the whole list
-            
+
 def factorial_term(I_1,K_1,n):
     """Calculates the sqrt(...) factorial term in B&M eqn. 4-95, 4-98.
 
@@ -2421,11 +2401,16 @@ def factorial_term(I_1,K_1,n):
 
 def kronecker(a,b):
     """Returns the Kronecker delta(a,b) = integer 1 or 0
-    
+
     Works with reals and ints, but rounds to the nearest tenth so that float
     spins will be matched to the nearest half-integer spin.
 
     """
+
+    # The new_a, new_b variables are not used, but don't touch this for now,
+    # because the matrix element calculations are accurate, and very hard to
+    # debug!
+
     new_a = round(a,1)
     new_b = round(b,1)
     if a == b:
@@ -2458,7 +2443,7 @@ class undo_class:
             for one_line in undo_files:
                 self.undo_numbers.append(int(one_line.split(".")[2].strip("\n")))
             self.undo_numbers.sort()
-            self.next_undo_number = self.undo_numbers[-1] 
+            self.next_undo_number = self.undo_numbers[-1]
             for one_number in self.undo_numbers:
                 self.undo_stack.append([one_number,"Recovered action"])
             try:
@@ -2496,7 +2481,7 @@ class undo_class:
                 command_line = "rm " + UNDOBASEFILENAME + str(undo_file_number)
                 subprocess.call(command_line,shell=True)
             del self.undo_stack[self.next_undo_number:]
-            self.next_undo_number = len(self.undo_stack) 
+            self.next_undo_number = len(self.undo_stack)
 
         # Add the undo information to the stack for this save operation.
         if self.next_undo_number == 0:
@@ -2521,7 +2506,7 @@ class undo_class:
         If force = True, then force re-reading the only undo file, if there is no more undo information
 
         """
-            
+
         if len(self.undo_stack) == 0:
             if not silent:
                 print "No more undo information."
@@ -2577,7 +2562,7 @@ class undo_class:
             ls_subprocess = subprocess.call(command_line,shell=True,stderr=garbage_file)
         # Clear the undo information stack
         self.undo_stack = []
-        self.next_undo_number = 0 
+        self.next_undo_number = 0
 
 
     def redo(self,silent=False):
@@ -2608,7 +2593,7 @@ class undo_class:
             # Report the operation redone.
             if not silent:
                 print ""
-                print message 
+                print message
                 print ""
 
             # Make a log entry that it was undone.
@@ -2645,7 +2630,7 @@ class matrix_element:
           master_initial_spin = None, master_final_spin = None, master_multipole_string = None):
 
         The number of parameters is calculated from the number of unique "par[0]", "par[1]",...
-        entries in the rule_string.  
+        entries in the rule_string.
 
         If the matrix element is not defined as a master or a dependent, then
         it is set as fixed (self.is_fixed = True) to start.
@@ -2654,14 +2639,14 @@ class matrix_element:
 
         # Store the values given at initialization.
         self.current_value = current_value
-        self.rule_string = rule_string 
+        self.rule_string = rule_string
         self.is_master = is_master
         self.upper_limit = upper_limit
         self.lower_limit = lower_limit
-        self.master_initial_band_name = master_initial_band_name 
+        self.master_initial_band_name = master_initial_band_name
         self.master_final_band_name = master_final_band_name
-        self.master_initial_spin = master_initial_spin 
-        self.master_final_spin = master_final_spin 
+        self.master_initial_spin = master_initial_spin
+        self.master_final_spin = master_final_spin
         if not master_multipole_string == None:
             self.master_multipole_string = master_multipole_string.upper()
             self.is_dependent = True
@@ -3068,7 +3053,7 @@ class level:
         else:
             self.level_can_be_excited = False
 
-        #================================================================================ 
+        #================================================================================
         # If processing reaches here, the level is valid.  Set the valid flag.
         self.valid = True
 
@@ -3111,9 +3096,9 @@ class level:
         return self.K
 
     def set_K(self,new_K_value):
-        """Silently sets K.  
+        """Silently sets K.
 
-        K values greater than the spin are not allowed. 
+        K values greater than the spin are not allowed.
 
         """
 
@@ -3213,45 +3198,45 @@ class nucleus:
 
         self.A = massnumber
         self.Z = atomicnumber  # This will be overwritten by the Z from the AGS file
-        self.levels = {}       # A dictionary pointing to objects of the class "level".  
-                               # The keys of self.levels will take the form
-                               # ("gsb",0.0), ("gam",3.0), ("gamod",3.0)...,
-                               # where ("gamod",3.0) is in this case a
-                               # pseudonym of the band "gam."
 
-        self.band_settings_list = [] # Bands will be displayed and passed to Gosia in the order specified here.
-                                     # These are the "primary" band names, no aliases included.
-                                     # This may also contain a short dictionary of other settings, such as 
-                                     # "active"/"inactive" status.
-                                     # [["gsb",{other settings}],["gam",{other settings}],...]
-                                     # Only keep in this dictionary the band
-                                     # names to be displayed.  If two bands are
-                                     # merged, the original band names will be
-                                     # kept as aliases in the self.levels keys.
-                                     # Whenever the aliases need to be checked,
-                                     # this is done by comparing names in the
-                                     # level keys with the band names in this
-                                     # list.
+        # self.levels is a dictionary pointing to objects of the class "level".
+        # The keys of self.levels will take the form ("gsb",0.0), ("gam",3.0),
+        # ("gamod",3.0)..., where ("gamod",3.0) is in this case a pseudonym of
+        # the band "gam."
 
-        # Matrix element data
-        self.matrix_data = {} # The matrix element objects are now stored all
-                              # in one dictionary keyed by a tuple of
-                              # (multipole_code_number, initial_band_name,
-                              # initial_spin, final_band_name, final_spin) The
-                              # band names must be PRIMARY band names, not the
-                              # names of level aliases.  
-                              # set_matrix_keys_to_primary_levels() is a
-                              # method to change matrix keys from aliases to
-                              # primary names, in case bands are merged.
-    
+        self.levels = {}
 
-        # "major couplings" (band to band or Q0 or gk-gr for a whole band)
-        # This list will be used to redraw the major couplings to the level
-        # scheme window
+        # Bands will be displayed and passed to Gosia in the order specified in
+        # band_settings_list.  These are the "primary" band names, no aliases
+        # included.  This may also contain a short dictionary of other
+        # settings, such as "active"/"inactive" status.  [["gsb",{other
+        # settings}],["gam",{other settings}],...] Only keep in this dictionary
+        # the band names to be displayed.  If two bands are merged, the
+        # original band names will be kept as aliases in the self.levels keys.
+        # Whenever the aliases need to be checked, this is done by comparing
+        # names in the level keys with the band names in this list.
+
+        self.band_settings_list = []
+
+        # The matrix element objects are now stored all in one dictionary keyed
+        # by a tuple of (multipole_code_number, initial_band_name,
+        # initial_spin, final_band_name, final_spin) The band names must be
+        # PRIMARY band names, not the names of level aliases.
+        # set_matrix_keys_to_primary_levels() is a method to change matrix keys
+        # from aliases to primary names, in case bands are merged.
+
+        self.matrix_data = {}
+
+
+        # "major couplings" (band to band or Q0 or gk-gr for a whole band) This
+        # list will be used to redraw the major couplings to the level scheme
+        # window.
+
         self.major_couplings = []
 
 
-        # Make a window for the level scheme
+        # Make a window for the level scheme.
+
         self.makewindow()  # All objects must exist to be filled with pickled data.
 
     def for_upgrade(self,restored_version):
@@ -3263,7 +3248,7 @@ class nucleus:
 
         total_errors = 0
         return_text = []
-        
+
         if restored_version in []:
             # Add to the list above to select for upgrades by session file's version number.
             pass
@@ -3282,7 +3267,7 @@ class nucleus:
             except:
                 total_errors += 1
                 return_text.extend(textwrap.wrap("Could not create a notes object in class nucleus.",TEXTVIEW_COLUMNS) )
-            
+
         elif restored_version <= "1.2.0":
             # Upgrades for any version 1.1.5 or older.
             try:
@@ -3291,13 +3276,13 @@ class nucleus:
             except:
                 total_errors += 1
                 return_text.extend(textwrap.wrap("Could not create a notes object in class nucleus.",TEXTVIEW_COLUMNS) )
-            
+
             # Examples of syntactically correct error codes are below.
             #total_errors += 1
             #return_text.extend(textwrap.wrap("ipsum lorem blah blah blah",TEXTVIEW_COLUMNS))
         else:
             pass  # no upgrade necessary
-                
+
         if total_errors  == 0:
             success_string = "Nuclear data successfully upgraded to version " + str(VERSION) + "."
             return_text.extend(textwrap.wrap(success_string,TEXTVIEW_COLUMNS))
@@ -3315,7 +3300,7 @@ class nucleus:
         print "If the GUI buttons freeze, close the level scheme window,"
         print "and a new one will be created."
 
-        pylab.show()                   
+        pylab.show()
         self.draw_level_scheme()
 
         text = block_print_with_line_breaks("\"Redraw LS window\" is used to clean up the diagram.\nUse \"Recreate LS window\" only if the level scheme window does not display after a level scheme is in memory.",line_length=50,silent=True)
@@ -3359,7 +3344,7 @@ class nucleus:
             warning_lines.extend(too_many_levels_text)
             warning_issued = True
 
-                
+
         if not warning_issued:
             warning_lines.append("No problems found in the nucleus definitions.")
 
@@ -3381,11 +3366,6 @@ class nucleus:
 
         """
 
-        # Rewritten July 2011.
-
-        # final_status is True if the setup is complete.
-        final_status = True
-
         if self.number_of_levels() > MAXIMUMLEVELS:
             print "Too many levels are defined.  Only 99 are allowed."
             return False
@@ -3396,7 +3376,7 @@ class nucleus:
 
         if self.matrix_data == {}:
             # Then no matrix elements are in memory.  This cannot be fixed in
-            # this method, so set the final_status to False.
+            # this method.
             print "There are no matrix elements in memory.  Define matrix elements using the GUI before attempting to run Gosia."
             return False
 
@@ -3428,7 +3408,7 @@ class nucleus:
         if level_scheme_file_name == "":
             print "Cancelled."
             return 0
-        
+
         # Get the level keys in Gosia order.
         sorted_level_keys = self.get_level_keys_in_gosia_order()
         # These are unique and don't contain pseudonyms.  We append pseudonyms to the file below.
@@ -3438,7 +3418,6 @@ class nucleus:
             lines_to_write = []
             lines_to_write.append(str(self.Z) + "  " + str(self.A))
             for level_key in sorted_level_keys:
-                level_object = self.levels[level_key]
                 band_name, spin = level_key
                 energy = self.get_level_information(level_key,"energy")
                 parity = self.get_level_information(level_key,"parity")
@@ -3454,12 +3433,10 @@ class nucleus:
                 # this level scheme file and then uses existing data files that
                 # reference pseudonyms.
 
-                #print "level_key", level_key
                 this_level_pseudonym_keys = self.get_all_level_pseudonym_keys(level_key)
                 for one_pseudonym in this_level_pseudonym_keys:
                     pseudonym_string = str(one_pseudonym[0])
                     new_line = new_line + " " + pseudonym_string
-                    #print "pseud.", pseudonym_string
 
                 lines_to_write.append(new_line)
         except:
@@ -3471,13 +3448,13 @@ class nucleus:
 
         return 0
 
-                
+
     def export_matrix(self):
         """Writes the matrix to a Rachel format matrix file.
 
         band_name spin band_name spin multipole_text matrix_element "fixed"
 
-        if this is a fixed matrix element, or 
+        if this is a fixed matrix element, or
 
         band_name spin band_name spin multipole_text matrix_element "coupled" master_initial_band_name master_initial_spin master_final_band_name master_final_spin master_multipole_text
 
@@ -3502,7 +3479,7 @@ class nucleus:
         if matrix_file_name == "":
             print "Cancelled."
             return 0
-        
+
         # A dictionary to sort by multipole code, then by initial and final
         # level numbers (level numbers as they would be sent to Gosia).
         matrix_sorting_dict = {}
@@ -3545,7 +3522,7 @@ class nucleus:
                 line_to_write = initial_band_name.ljust(column_width) + " " + str(initial_spin).ljust(spin_column_width) + \
                   " " + final_band_name.ljust(column_width) + " " + str(final_spin).ljust(spin_column_width) + " " + \
                   multipole_text + " " + str(matrix_element_value) +\
-                  "    " + "master" + "    " + str(lower_limit) + "    " + str(upper_limit) 
+                  "    " + "master" + "    " + str(lower_limit) + "    " + str(upper_limit)
             elif is_coupled:
                 # This is a dependent matrix element.
                 line_to_write = initial_band_name.ljust(column_width) + " " + str(initial_spin).ljust(spin_column_width) + \
@@ -3553,13 +3530,13 @@ class nucleus:
                   multipole_text + " " + str(matrix_element_value) + "    " + "coupled" + "    " + master_multipole_text + \
                   "    " + master_initial_band_name.ljust(column_width) + \
                   str(master_initial_spin).ljust(spin_column_width) + " " + master_final_band_name.ljust(column_width) +\
-                  " " + str(master_final_spin).ljust(spin_column_width) 
+                  " " + str(master_final_spin).ljust(spin_column_width)
             else:
                 # Must be fixed, if it is not a master or a dependent.
                 line_to_write = initial_band_name.ljust(column_width) + " " + str(initial_spin).ljust(spin_column_width) + \
                   " " + final_band_name.ljust(column_width) + " " + str(final_spin).ljust(spin_column_width) + " " + \
                   multipole_text + " " + str(matrix_element_value) +\
-                  "    " + "fixed" 
+                  "    " + "fixed"
 
             # Add this line to the output sorting dict.
             output_sorting_key = (multipole_code,initial_gosia_level_number,final_gosia_level_number)
@@ -3576,7 +3553,7 @@ class nucleus:
 
         # Write the lines to the file.
         write_lines_to_file(matrix_file_name,lines_to_write)
-                      
+
         print "Done."
         return
 
@@ -3642,8 +3619,12 @@ class nucleus:
         # pre-release version.  Issue a notice and add level pseudonyms for all
         # members of the bands that need pseudonyms.  This will create more
         # than necessary, but it should not cause problems.
+
         if not pseudonym_dict == {}:
-            # Add a pseudonym for every level in the bands that had pseudonyms in this matrix file.
+
+            # Add a pseudonym for every level in the bands that had pseudonyms
+            # in this matrix file.
+
             for level_key in self.levels.keys():
                 band_name, spin = level_key
                 if band_name in pseudonym_dict.keys():
@@ -3660,11 +3641,15 @@ class nucleus:
 
         print "\nFirst pass: adding fixed and master matrix elements.\n"
         for this_line in matrix_file_lines:
+
             # Reconstruct the matrix element, and add it to the matrix in
-            # memory.
-            # Process this line only if it has an entry and it's not the pseudonym_dict.
+            # memory.  Process this line only if it has an entry and it's not
+            # the pseudonym_dict.
+
             if len(this_line.split()) > 6 and not this_line.split()[0] == "pseudonym_dict":
+
                 # Construct a matrix entry from this line.
+
                 this_line_fields = this_line.split()
                 initial_band_name       = this_line_fields[0]
                 initial_spin            = round(float(this_line_fields[1]),1)
@@ -3677,16 +3662,24 @@ class nucleus:
                 initial_level_key = (initial_band_name, initial_spin)
                 final_level_key   = (final_band_name, final_spin)
                 matrix_key = (multipole_code, initial_band_name, initial_spin, final_band_name, final_spin)
+
                 # See if the initial state and final state are in memory.
+
                 if initial_level_key in self.levels.keys() and final_level_key in self.levels.keys():
                     if coupling_code == "master":
+
                         # Only the lower and upper limits are needed for a master.
+
                         lower_limit = float(this_line_fields[7])
                         upper_limit = float(this_line_fields[8])
                         if lower_limit > upper_limit:
+
                             # Swap the limits if they were in the wrong order.
+
                             lower_limit, upper_limit = upper_limit, lower_limit
+
                         # Add this matrix element.
+
                         self.add_matrix_element(multipole_string = multipole_text, initial_band_name = initial_band_name,\
                           final_band_name = final_band_name,initial_spin = initial_spin, final_spin = final_spin,\
                           value = matrix_element_value)
@@ -3695,8 +3688,10 @@ class nucleus:
                         self.matrix_data[matrix_key].set_upper_limit(upper_limit)
                         print "Added master matrix element ",initial_band_name," I = ",initial_spin,"-",multipole_text,"->",final_band_name," I = ",final_spin," = ",matrix_element_value," Limits: ",lower_limit,upper_limit
                     elif coupling_code == "fixed":
-                        # The matrix element must be fixed.
-                        # No other fields needed for a fixed matrix element.
+
+                        # The matrix element must be fixed.  No other fields
+                        # needed for a fixed matrix element.
+
                         self.add_matrix_element(multipole_string = multipole_text, initial_band_name = initial_band_name,\
                           final_band_name = final_band_name,initial_spin = initial_spin, final_spin = final_spin,\
                           value = matrix_element_value)
@@ -3707,13 +3702,18 @@ class nucleus:
                     print "Could not add matrix element from this line: \n",this_line.strip(),"\n because states are missing from the level scheme."
 
         # Second pass: add coupled matrix elements only.
+
         print "\nSecond pass: adding dependent matrix elements.\n"
         for this_line in matrix_file_lines:
+
             # Reconstruct the matrix element, and add it to the matrix in
-            # memory.
-            # Process this line only if it has an entry and it's not the pseudonym_dict.
+            # memory.  Process this line only if it has an entry and it's not
+            # the pseudonym_dict.
+
             if len(this_line.split()) > 6 and not this_line.split()[0] == "pseudonym_dict":
+
                 # Construct a matrix entry from this line.
+
                 this_line_fields = this_line.split()
                 initial_band_name       = this_line_fields[0]
                 initial_spin            = round(float(this_line_fields[1]),1)
@@ -3726,17 +3726,23 @@ class nucleus:
                 initial_level_key = (initial_band_name, initial_spin)
                 final_level_key   = (final_band_name, final_spin)
                 matrix_key = (multipole_code, initial_band_name, initial_spin, final_band_name, final_spin)
+
                 # See if the initial state and final state are in memory.
+
                 if initial_level_key in self.levels.keys() and final_level_key in self.levels.keys():
                     if coupling_code == "coupled":
+
                         # Get the indices and multipole to couple to.
+
                         master_multipole_text    = this_line_fields[7]
                         master_multipole_code  = MULTIPOLE[master_multipole_text]
                         master_initial_band_name = this_line_fields[8]
                         master_final_band_name   = this_line_fields[10]
                         master_initial_spin      = round(float(this_line_fields[9]),1)
                         master_final_spin        = round(float(this_line_fields[11]),1)
+
                         # See if this master exists and is truly a master.
+
                         master_matrix_key = (master_multipole_code, master_initial_band_name, master_initial_spin, master_final_band_name, master_final_spin)
                         if master_matrix_key in self.matrix_data.keys():
                             master_exists = True
@@ -3751,7 +3757,9 @@ class nucleus:
                             self.add_matrix_element(multipole_string = multipole_text, initial_band_name = initial_band_name,\
                               final_band_name = final_band_name,initial_spin = initial_spin, final_spin = final_spin,\
                               value = matrix_element_value)
+
                             # Set this matrix element coupled to the specified master.
+
                             matrix_element_object = self.matrix_data[matrix_key]
                             matrix_element_object.set_is_dependent()
                             matrix_element_object.set_master_initial_band_name(master_initial_band_name)
@@ -3762,7 +3770,9 @@ class nucleus:
                             print "Added coupled matrix element ",initial_band_name," I = ",initial_spin,"-",multipole_text,"->",final_band_name," I = ",final_spin," = ",matrix_element_value
                             print "  Coupled to ", master_initial_band_name, " I = ", master_initial_spin,"-",master_multipole_text,"->",master_final_band_name," I = ",master_final_spin
                         else:
+
                             # Add the coupled matrix element as a fixed one, because the master doesn't exist.
+
                             print "**The following matrix element was added as fixed, because the specified master does not exist."
                             print "  Added fixed matrix element ",initial_band_name," I = ",initial_spin,"-",multipole_text,"->",final_band_name," I = ",final_spin," = ",matrix_element_value
 
@@ -3781,6 +3791,7 @@ class nucleus:
         print "Finished reading matrix from ",matrix_file_name,"."
 
         # Issue a warning about pre-release format matrix files:
+
         if not pseudonym_dict == {}:
             block_print_with_line_breaks("\nThis matrix file is from a pre-release version and contains a beta-version pseudonym dictionary for band names.  The level scheme has been updated with pseudonyms for levels as necessary.  This should not cause any problems, but check that you get the same results with this version of the Rachel.  If there are problems, you will have to start from the beginning by reading your original level scheme file(s) and building the matrix by hand.",60)
 
@@ -3801,16 +3812,16 @@ class nucleus:
         text = "<\"" + final_band_name + "\" I = " + str(final_spin)
         if not final_K == None:
             text = text + ", K = " + str(final_K)
-        text = text + " || " + multipole_text + " || \"" + initial_band_name + "\" I = " + str(initial_spin) 
+        text = text + " || " + multipole_text + " || \"" + initial_band_name + "\" I = " + str(initial_spin)
         if not initial_K == None:
             text = text + ", K = " + str(initial_K)
         text = text + "> "
         if not value == None:
             # If the value is positive, give an extra space to line up decimals.
             if value >= 0.0:
-                text = text + "=  " + str(value) + " " +  units_string 
+                text = text + "=  " + str(value) + " " +  units_string
             else:
-                text = text + "= " + str(value) + " " +  units_string 
+                text = text + "= " + str(value) + " " +  units_string
         if not comment == None:
             text = text + " " + comment
 
@@ -3819,30 +3830,36 @@ class nucleus:
 
     def pretty_print_matrix(self):
         # This needs more work
-        print 
+        print
         print "\"CE\" is the correlated error from the last time it was calculated; "
         print "\"DE\" is the diagonal error."
         print "----------------------------------------------------------------------"
         sorted_keys = self.get_all_matrix_keys_in_gosia_order()
         for matrix_key in sorted_keys:
             matrix_object = self.matrix_data[matrix_key]
+
             # Get the variables that index the matrix element.
+
             multipole_code, initial_band_name, initial_spin, final_band_name, final_spin = matrix_key
+
             # Get the multipole_text string.
+
             multipole_text = REVERSE_MULTIPOLE[multipole_code]
             current_value = matrix_object.get_current_value()
-            
+
             formatted_matrix_element = self.format_one_matrix_element(initial_band_name=initial_band_name,\
               initial_spin=initial_spin,final_band_name=final_band_name,final_spin=final_spin,\
               multipole_text=multipole_text,value=current_value)
+
             # If the correlated error is known, print it; same for the diagonal error.
+
             diagonal_errors   = str(matrix_object.get_diagonal_errors()).replace("[","(").replace("]",")")
             correlated_errors = str(matrix_object.get_correlated_errors()).replace("[","(").replace("]",")")
             formatted_matrix_element += " DE: " + diagonal_errors + " CE: " + correlated_errors
-            print formatted_matrix_element 
+            print formatted_matrix_element
 
         return 0
-                
+
     def print_K_values(self, external_band_number):
         """Prints a list of K values for the requested band.
 
@@ -3949,7 +3966,7 @@ class nucleus:
         # Get the gosia output file name from the gosia shell.
         gosia_output_file_name = the_gosia_shell.get_base_file_name() + "." + FILE_DEF_DICT[22]["extension"]
 
-        # Read the gosia output file from disk.  
+        # Read the gosia output file from disk.
         with open(gosia_output_file_name,'r') as gosia_output_file:
             gosia_output_lines = gosia_output_file.readlines()
 
@@ -3991,12 +4008,14 @@ class nucleus:
             better_matrix_element_value    = float(fields[3])                                    # (master)
             fractional_change              = (better_matrix_element_value - initial_matrix_element_value) / initial_matrix_element_value # (master)
             # The errors can be stored in the matrix element objects and reported.
-            low_absolute_error             = float(fields[5])   
+            low_absolute_error             = float(fields[5])
             high_absolute_error            = float(fields[7].split(")")[0])
             low_percent_error              = float(fields[8])
             high_percent_error             = float(fields[10])
 
-            # Now get the value and identity of the matrix element stored in the GUI.
+            # Now get the value and identity of the matrix element stored in
+            # the GUI.
+
             multipole_code       = matrix_key[0]
             initial_band_name    = matrix_key[1]
             initial_spin         = matrix_key[2]
@@ -4005,20 +4024,26 @@ class nucleus:
             multipole_text = REVERSE_MULTIPOLE[multipole_code]
 
             # Replace the former value with the new value for the master.
+
             if read_best_set:
+
                 # Replace the master's value with the better value.
+
                 self.matrix_data[matrix_key].set_current_value(better_matrix_element_value)
 
                 # Update the matrix element's diagonal error.  This is only
                 # done for the one reported, not its dependents, since they
                 # were fitted together for parametric errors, and different
                 # errors will be obtained for all fit parameters released.
+
                 self.matrix_data[matrix_key].set_diagonal_errors(low_absolute_error, high_absolute_error)
 
                 # If a parametric diagonal error calculation was done, then the
                 # dependent matrix elements must be updated to follow the
                 # changes in the masters.
+
                 if parametric:
+
                     # For a parametric error calculation, only master matrix
                     # element errors should have been reported.  Check to make
                     # sure that this matrix element is indeed a master.  If it
@@ -4035,24 +4060,34 @@ class nucleus:
                     # same fractional change.  The best set are not stored by
                     # gosia in the case of diagonal error calculations, so this
                     # has to be done manually.
+
                     all_dependent_keys = self.get_all_dependent_matrix_keys(matrix_key)
                     for one_dependent_key in all_dependent_keys:
+
                         # Get the dependent object
+
                         dependent_object = self.matrix_data[one_dependent_key]
+
                         # Get the current value of this dependent.
+
                         initial_dependent_matrix_element_value = dependent_object.get_current_value()
+
                         # Update this matrix element with the new, possibly better, value.
+
+                        # Make the fractional change on the absolute value,
+                        # then put the sign back on.
+
                         new_dependent_matrix_element_value     = math.copysign(abs(initial_dependent_matrix_element_value) *\
-                          (1. + fractional_change),initial_dependent_matrix_element_value)  # Make the fractional change on the absolute value, 
-                                                                                            # then put the sign back on.
+                          (1. + fractional_change),initial_dependent_matrix_element_value)
+
                         dependent_object.set_current_value(new_dependent_matrix_element_value)
 
                         if initial_dependent_matrix_element_value > 0.0:
-                            dependent_low_abs_error  =  (low_percent_error/100.) * initial_dependent_matrix_element_value 
-                            dependent_high_abs_error =  (high_percent_error/100.) * initial_dependent_matrix_element_value 
+                            dependent_low_abs_error  =  (low_percent_error/100.) * initial_dependent_matrix_element_value
+                            dependent_high_abs_error =  (high_percent_error/100.) * initial_dependent_matrix_element_value
                         else:
-                            dependent_low_abs_error  = (high_percent_error/100.)  * initial_dependent_matrix_element_value 
-                            dependent_high_abs_error = (low_percent_error/100.) * initial_dependent_matrix_element_value 
+                            dependent_low_abs_error  = (high_percent_error/100.)  * initial_dependent_matrix_element_value
+                            dependent_high_abs_error = (low_percent_error/100.) * initial_dependent_matrix_element_value
 
                         dependent_object.set_diagonal_errors(dependent_low_abs_error,dependent_high_abs_error)
 
@@ -4062,9 +4097,9 @@ class nucleus:
             formatted_matrix_entry = self.format_one_matrix_element(initial_band_name=initial_band_name,\
                           initial_spin=initial_spin,final_band_name=final_band_name,final_spin=final_spin,\
                           multipole_text=multipole_text,value=better_matrix_element_value,comment=comment)
-            print formatted_matrix_entry 
+            print formatted_matrix_entry
             data_line += 1
-            
+
         print "--------------------------------------------------------------------------------"
         print ""
 
@@ -4079,9 +4114,11 @@ class nucleus:
         """
 
         # Get the gosia output file name from the gosia shell.
+
         gosia_output_file_name = the_gosia_shell.get_base_file_name() + "." + FILE_DEF_DICT[22]["extension"]
 
-        # Read the gosia output file from disk.  
+        # Read the gosia output file from disk.
+
         with open(gosia_output_file_name,'r') as gosia_output_file:
             gosia_output_lines = gosia_output_file.readlines()
 
@@ -4096,11 +4133,12 @@ class nucleus:
 #            print "Quitting."
 #            return -1
 
-        #the_gosia_shell.check_for_reset_warnings()  # NOT WRITTEN YET.
+        # the_gosia_shell.check_for_reset_warnings()  # This is a future project...
 
         # Search to see if a better minimum was found.  Search from the end to
         # the beginning to find the best chi-squared report, since "BETTER
         # POINT FOUND..." is repeated until the end of the calculation.
+
         gosia_output_lines.reverse()
         best_chi_squared_line = findinlist(gosia_output_lines,["BETTER", "POINT"])
 
@@ -4155,28 +4193,26 @@ class nucleus:
 
                 # See if this matrix element has dependents.  If it does, and
                 # the user did not release couplings, then put the same
-                # fractional error on all dependents.  If the user released 
+                # fractional error on all dependents.  If the user released
                 # couplings, then each matrix element will have its own
                 # reported error.
-                absolute_change_in_master = better_matrix_element_value - original_value_of_reported_matrix_element 
-                fractional_change_in_dependent = absolute_change_in_master / original_value_of_reported_matrix_element 
 
                 if not release:
                     for possible_dependent_key in self.matrix_data.keys():
                         possible_dependent_object = self.matrix_data[possible_dependent_key]
-                        master_key = possible_dependent_object.get_master_matrix_element_key() 
+                        master_key = possible_dependent_object.get_master_matrix_element_key()
                         if matrix_key == master_key:
                             # This is a dependent on the master just read.  Set
                             # its value so that it changes in proportion to the master's
                             # change.  Set its correlated errors so that it has the same fractional
                             # error as this master.
-                            original_dependent_value = possible_dependent_object.get_current_value() 
+                            original_dependent_value = possible_dependent_object.get_current_value()
                             if original_dependent_value > 0.0:
-                                dependent_low_abs_error  =  (low_percent_error/100.) * original_dependent_value 
-                                dependent_high_abs_error =  (high_percent_error/100.) * original_dependent_value 
+                                dependent_low_abs_error  =  (low_percent_error/100.) * original_dependent_value
+                                dependent_high_abs_error =  (high_percent_error/100.) * original_dependent_value
                             else:
-                                dependent_low_abs_error  = (high_percent_error/100.)  * original_dependent_value 
-                                dependent_high_abs_error = (low_percent_error/100.) * original_dependent_value 
+                                dependent_low_abs_error  = (high_percent_error/100.)  * original_dependent_value
+                                dependent_high_abs_error = (low_percent_error/100.) * original_dependent_value
                             possible_dependent_object.set_correlated_errors(dependent_low_abs_error,dependent_high_abs_error)
 
             # Now get the value and identity of the matrix element stored in the GUI.
@@ -4193,9 +4229,9 @@ class nucleus:
             formatted_matrix_entry = self.format_one_matrix_element(initial_band_name=initial_band_name,\
                           initial_spin=initial_spin,final_band_name=final_band_name,final_spin=final_spin,\
                           multipole_text=multipole_text,value=better_matrix_element_value,comment=comment)
-            print formatted_matrix_entry 
+            print formatted_matrix_entry
             data_line += 1
-            
+
         print "--------------------------------------------------------------------------------"
         print ""
         block_print_with_line_breaks("*Note that, in the case of correlated error calculations, correlations with matrix elements which you have fixed are not included.\n")
@@ -4246,7 +4282,7 @@ class nucleus:
             current_value = round(matrix_object.get_current_value(),4)
             is_master = matrix_object.get_is_master()
             is_dependent = matrix_object.get_is_dependent()
-            
+
             formatted_matrix_element = self.format_one_matrix_element(initial_band_name=initial_band_name,\
               initial_spin=initial_spin,final_band_name=final_band_name,final_spin=final_spin,\
               multipole_text=multipole_text,value=current_value).ljust(60)
@@ -4301,19 +4337,18 @@ class nucleus:
             primary_level_key = self.get_primary_level_key_from_pseudonym(one_key)
             if not primary_level_key == None:
                 # The level was found.
-                primary_band_name, dummy = primary_level_key 
+                primary_band_name, dummy = primary_level_key
                 band_number = self.get_band_number_for_display(primary_band_name)
                 circle_color,yield_label = object_to_plot
                 energy = self.get_level_information(primary_level_key,'energy')
                 # Make the coordinages of band number and energy into floats.
                 text_angle = 0.   # Not aligned for now.  This is a problem when expanding the window.
-                text_coordinate_y = energy 
+                text_coordinate_y = energy
                 text_coordinate_x = float(band_number)
                 plt.scatter(band_number,energy,s=25,c=circle_color,marker=(0,3,0))
                 plt.text(text_coordinate_x, text_coordinate_y, yield_label, dict(color=circle_color, multialignment="right", rotation=text_angle))
                 #plt.text(text_coordinate_x, text_coordinate_y, yield_label, dict(color=circle_color, multialignment="left", rotation=text_angle, rotation_mode = "anchor"))
 
- 
         pylab.draw()
         pylab.ion()
 
@@ -4345,15 +4380,15 @@ class nucleus:
             initial_primary_level_key = self.get_primary_level_key_from_pseudonym(initial_level_key)
             final_primary_level_key   = self.get_primary_level_key_from_pseudonym(final_level_key)
             if not initial_primary_level_key == None and not final_primary_level_key == None:
-                initial_primary_band_name, dummy = initial_primary_level_key 
-                final_primary_band_name, dummy   = final_primary_level_key 
+                initial_primary_band_name, dummy = initial_primary_level_key
+                final_primary_band_name, dummy   = final_primary_level_key
                 initial_energy = self.get_level_information(initial_primary_level_key,'energy')
                 final_energy   = self.get_level_information(final_primary_level_key,'energy')
                 # Make sure the band numbers are floats now.
                 initial_band_number = self.get_band_number_for_display(initial_primary_band_name)
                 final_band_number   = self.get_band_number_for_display(final_primary_band_name)
                 text_angle = 0.   # Not aligned for now.  This is a problem when expanding the window.
-                text_coordinate_y = (initial_energy + final_energy)/2. 
+                text_coordinate_y = (initial_energy + final_energy)/2.
                 float_initial_band_number = float(initial_band_number)
                 float_final_band_number   = float(final_band_number)
                 plt.annotate("", xy=(float_final_band_number,final_energy),  xycoords='data', xytext=(float_initial_band_number,initial_energy),\
@@ -4361,7 +4396,7 @@ class nucleus:
                 # Find a place for rotated text.
                 text_coordinate_x = (float_initial_band_number + float_final_band_number)/2.
                 plt.text(text_coordinate_x, text_coordinate_y, yield_label, dict(color=arrow_color, multialignment="center", rotation=text_angle))
- 
+
         pylab.draw()
         pylab.ion()
 
@@ -4389,28 +4424,34 @@ class nucleus:
             matrix_object = self.matrix_data[matrix_key]
             is_master = matrix_object.get_is_master()
             if is_master:
+
                 # Make a new "queue" for output.  Printing in the loop is slowing everything down.
+
                 output_lines = []
+
                 # Get the master's matrix element information.
+
                 master_multipole_number, master_initial_band_name, master_initial_spin, master_final_band_name, master_final_spin = matrix_key
                 master_multipole_text = REVERSE_MULTIPOLE[master_multipole_number]
+
                 # Get the level keys for the initial and final states of the master.
+
                 master_initial_level_key = (master_initial_band_name,master_initial_spin)
                 master_final_level_key   = (master_final_band_name,master_final_spin)
                 master_initial_energy    = self.get_level_information(master_initial_level_key,'energy')
-                master_final_energy      = self.get_level_information(master_final_level_key,'energy')
-                # Get the initial and final band numbers for display.
-                master_initial_band_number = self.get_band_number_from_primary_name(master_initial_band_name) + 1
-                master_final_band_number   = self.get_band_number_from_primary_name(master_final_band_name)   + 1
+
                 # Get matrix element information for display:
+
                 master_value = matrix_object.get_current_value()
                 master_upper_limit = matrix_object.get_upper_limit()
                 master_lower_limit = matrix_object.get_lower_limit()
 
                 # Get all of the keys of dependents on this master.
+
                 dependent_matrix_keys = self.get_all_dependent_matrix_keys(matrix_key)
 
                 # First, see if the master has hit the limits.  If it has, add a mark to the label text.
+
                 hit_upper_limit = matrix_object.hit_upper_limit()
                 hit_lower_limit = matrix_object.hit_lower_limit()
 
@@ -4424,17 +4465,21 @@ class nucleus:
                     multipole_and_limit_hit = master_multipole_text
                     limit_comment = ""
 
-                # Draw the master.
+                # Draw the master.  Use False for faster drawing.
+
                 if not master_initial_level_key == master_final_level_key:
-                    # It's not a static moment
-                    # Use False for faster drawing.
+
+                    # It's not a static moment.
+
                     self.drawonetransition(master_initial_band_name,master_final_band_name,\
                       master_initial_spin,master_final_spin,'g',multipole_and_limit_hit,False)
                 else:
-                    # Use False for faster drawing.
+
+
                     self.drawstaticmoment(master_initial_band_name, master_initial_energy, 'g', multipole_and_limit_hit, False)
 
                 # Print the master description.
+
                 master_formatted_text = self.format_one_matrix_element(initial_band_name = master_initial_band_name,\
                   initial_spin = master_initial_spin, final_band_name = master_final_band_name, final_spin = master_final_spin,\
                   multipole_text = master_multipole_text, value = master_value, comment = limit_comment)
@@ -4443,24 +4488,27 @@ class nucleus:
                 output_lines.append(limits_text)
 
                 # Now cycle through all matrix elements dependent on this master and print, display them.
+
                 number_of_dependents = 0
 
                 # Turn off interactive updating for faster drawing.
+
                 pylab.ioff()
                 for dependent_matrix_key in dependent_matrix_keys:
                     dependent_matrix_object = self.matrix_data[dependent_matrix_key]
+
                     # Get the dependent's matrix element information.
+
                     dependent_multipole_number, dependent_initial_band_name, dependent_initial_spin, \
                       dependent_final_band_name, dependent_final_spin = dependent_matrix_key
                     dependent_multipole_text = REVERSE_MULTIPOLE[dependent_multipole_number]
+
                     # Get the level keys for the initial and final states of the master.
+
                     dependent_initial_level_key = (dependent_initial_band_name,dependent_initial_spin)
                     dependent_final_level_key   = (dependent_final_band_name,dependent_final_spin)
                     dependent_initial_energy    = self.get_level_information(dependent_initial_level_key,'energy')
-                    dependent_final_energy      = self.get_level_information(dependent_final_level_key,'energy')
-                    # Get the initial and final band numbers for display.
-                    dependent_initial_band_number = self.get_band_number_from_primary_name(dependent_initial_band_name) + 1
-                    dependent_final_band_number   = self.get_band_number_from_primary_name(dependent_final_band_name)   + 1
+
                     # Get matrix element information for display:
                     dependent_value = dependent_matrix_object.get_current_value()
 
@@ -4469,7 +4517,7 @@ class nucleus:
                       initial_spin = dependent_initial_spin, final_band_name = dependent_final_band_name, final_spin = dependent_final_spin,\
                       multipole_text = dependent_multipole_text, value = dependent_value)
                     # Indent the dependents.
-                    dependent_formatted_text = "    " + dependent_formatted_text 
+                    dependent_formatted_text = "    " + dependent_formatted_text
                     output_lines.append(dependent_formatted_text)
 
                     # Increment the number of dependents for reporting.
@@ -6482,17 +6530,17 @@ class nucleus:
                         lower_limit_string = "*" + format(lower_limit,".3g").rjust(10)
                     else:
                         lower_limit_string = " " + format(lower_limit,".3g").rjust(10)
-                    both_limits_string = lower_limit_string + upper_limit_string 
-                    both_limits_string = both_limits_string.rjust(25) 
-                    comment = diagonal_errors_string + correlated_errors_string + both_limits_string 
+                    both_limits_string = lower_limit_string + upper_limit_string
+                    both_limits_string = both_limits_string.rjust(25)
+                    comment = diagonal_errors_string + correlated_errors_string + both_limits_string
                 elif is_dependent:
                     master_key = self.matrix_data[one_matrix_key].get_master_matrix_element_key()
                     master_multipole_code = REVERSE_MULTIPOLE[master_key[0]]
                     dependent_string = "dependent on <" + str(master_key[3:4+1]).strip("()").replace("'",'"') + " ||" + master_multipole_code + "|| " + str(master_key[1:2+1]).strip("()").replace("'",'"') + ">"
                     comment = diagonal_errors_string + correlated_errors_string + dependent_string.rjust(56)
                 else:
-                    comment = diagonal_errors_string + correlated_errors_string 
-                    
+                    comment = diagonal_errors_string + correlated_errors_string
+
                 # Store the matrix element text temporarily for printing a list.
                 formatted_text = self.format_one_matrix_element(initial_band_name = initial_band_name,initial_spin = initial_spin,\
                   final_band_name = final_band_name, final_spin = final_spin, multipole_text = multipole_text, \
@@ -6631,17 +6679,17 @@ class nucleus:
                         lower_limit_string = "*" + format(lower_limit,".3g").rjust(10)
                     else:
                         lower_limit_string = " " + format(lower_limit,".3g").rjust(10)
-                    both_limits_string = lower_limit_string + upper_limit_string 
-                    both_limits_string = both_limits_string.rjust(25) 
-                    comment = diagonal_errors_string + correlated_errors_string + both_limits_string 
+                    both_limits_string = lower_limit_string + upper_limit_string
+                    both_limits_string = both_limits_string.rjust(25)
+                    comment = diagonal_errors_string + correlated_errors_string + both_limits_string
                 elif is_dependent:
                     master_key = self.matrix_data[one_matrix_key].get_master_matrix_element_key()
                     master_multipole_code = REVERSE_MULTIPOLE[master_key[0]]
                     dependent_string = "dependent on <" + str(master_key[3:4+1]).strip("()").replace("'",'"') + " ||" + master_multipole_code + "|| " + str(master_key[1:2+1]).strip("()").replace("'",'"') + ">"
                     comment = diagonal_errors_string + correlated_errors_string + dependent_string.rjust(56)
                 else:
-                    comment = diagonal_errors_string + correlated_errors_string 
-                    
+                    comment = diagonal_errors_string + correlated_errors_string
+
                 # Store the matrix element text temporarily for printing a list.
                 formatted_text = self.format_one_matrix_element(initial_band_name = initial_band_name,initial_spin = initial_spin,\
                   final_band_name = final_band_name, final_spin = final_spin, multipole_text = multipole_text, \
@@ -6732,11 +6780,7 @@ class nucleus:
         old_band_names = self.get_all_band_names()
         # A list for the new band names to add.
         new_band_names = []
-        if len(old_band_names) == 0:
-            first_level_scheme = True
-        else:
-            first_level_scheme = False
-            
+
         print "Attempting to read file \"" + txt_file_name + "\"."
         print "testing"
         try:
@@ -6900,11 +6944,7 @@ class nucleus:
         old_band_names = self.get_all_band_names()
         # A list for the new band names to add.
         new_band_names = []
-        if len(old_band_names) == 0:
-            first_level_scheme = True
-        else:
-            first_level_scheme = False
-            
+
         # Define the list of ags text lines.
         agsfilelines=[] # The whole ags file is read into here, and then it can
                         # be parsed later as desired.
@@ -6958,7 +6998,7 @@ class nucleus:
 
         # 3.  READ ALL OF THE LEVELS AND ADD THEM.
         # See the add_a_level method and the add_level_pseudonym method.
-        # Assign band names to the bands.  
+        # Assign band names to the bands.
 
         # 1.  Read the band names.
         # A temporary dictionary to map the ags file band numbers to the names.
@@ -6991,7 +7031,7 @@ class nucleus:
             try:
                 ags_level_number = int(agsfilelines[linenumber].split()[0])  # Added reading of radware level number.
                 level_energy     = float(agsfilelines[linenumber].split()[1])
-                ags_band_number  = int(agsfilelines[linenumber].split()[5])  
+                ags_band_number  = int(agsfilelines[linenumber].split()[5])
                 band_name        = new_level_scheme_band_name_dictionary[ags_band_number]
             except:
                 to_skip = print_debug_file_lines()
@@ -7309,7 +7349,7 @@ class nucleus:
         Initial and final levels must exist.
         Parity must be conserved.
         Angular momentum must be conserved (I-selection with photon).
-        
+
         K does *not* need to be conserved in this test.
         """
 
@@ -7324,7 +7364,7 @@ class nucleus:
             # can't couple the photon (spin conservation)
             return False
 
-        #  Check for parity conservation  
+        #  Check for parity conservation.
         initial_parity = self.levels[initial_state].get_parity()
         final_parity   = self.levels[final_state].get_parity()
 
@@ -19608,7 +19648,6 @@ class experiment:
                 # possible.
                 for one_entry in crystal_ordering_list:
                     i = one_entry[1]  # The second field in each entry is the crystal number.
-                    name  = type_names[i]
                     theta = theta_list[i]
                     phi   = phi_list[i]
                     # Make sure phi is between 0 and 360 for the plot.
@@ -19635,10 +19674,10 @@ class experiment:
                 lines_to_write.append("\n\n")
                 # legend entry is n(m), meaning detector n with m detectors.
                 calculated_legend.append(str(internal_detector_number + 1) + "(" + str(number_of_crystals) + ")")
-                
+
         # Write the points to a file:
         plot_data_file_name = "temporary_rachel_detectors_plot_data.txt"
-        with open(plot_data_file_name,"w") as plot_data_file: 
+        with open(plot_data_file_name,"w") as plot_data_file:
             plot_data_file.writelines(lines_to_write)
         # Now send the plot data to gnuplot:
 
@@ -19836,10 +19875,6 @@ class experiment:
         # Get the nested list of detector information:
         all_detectors_list = self.Ge_detectors
 
-        # If clusters_in_use is True, then a footnote will be added.  This will
-        # be set to True if one or more clusters are attached to this
-        # experiment.
-        clusters_in_use = False
         # A flag to issue a warning about mixed types in a single cluster.
         mixed_types_in_cluster = False
 
@@ -19850,7 +19885,7 @@ class experiment:
         cluster_lines         = []
         type_lines            = []
         solid_angle_lines     = []
-        
+
         detector_number_line_header   = "#          "
         theta_line_header             = "theta      "
         phi_line_header               = "phi        "
@@ -19905,7 +19940,6 @@ class experiment:
                     # footnote.
                     type_line_entry            =  "*".ljust(column_spaces)
                     mixed_types_in_cluster = True
-                clusters_in_use = True
 
             solid_angle = this_ge_detector.return_solid_angle()
             solid_angle_line_entry     =  str(round(solid_angle,3)).ljust(column_spaces)
@@ -19928,7 +19962,7 @@ class experiment:
                 cluster_lines[row_counter]         += cluster_line_entry
                 type_lines[row_counter]            += type_line_entry
                 solid_angle_lines[row_counter]     += solid_angle_line_entry
-                
+
         if internal_experiment_number == None:
             title = "Logical Ge Detector Catalog for this experiment"
         else:
@@ -19966,7 +20000,7 @@ class experiment:
         create_dialog_popup({"text_lines":output_lines,"title":title})
 
         return 0
-            
+
 
     def get_first_detector_number_at_position(self,detector_theta,detector_phi):
         """Returns the index in the yield data of the first Ge that matches theta and phi.
@@ -20015,7 +20049,7 @@ class experiment:
 
         136 Xe beam on a 179 Hf target:
         % elast -Qa 0 lp "1(72,179)" 1.0 "(54,136)" 500. > temp.txt
-        
+
         -Q         very quiet--no table headers
         -a         all output (seems to be required to get stopping power?
         l          give energy loss in MeV
@@ -20027,14 +20061,14 @@ class experiment:
         > temp.txt redirect output to file "temp.txt"
 
         % cat temp.txt
-        31.6197   31.7229 
+        31.6197   31.7229
         % elast -Qa 0 lp "1(72,179)" 1.0 "(54,136)" 400. >> temp.txt
         Redirect output to APPEND to file "temp.txt"
         % elast -Qa 0 lp "1(72,179)" 1.0 "(54,136)" 300. >> temp.txt
         % cat temp.txt
-        31.6197   31.7229 
-        30.5852   30.8023 
-        28.4542   28.8694 
+        31.6197   31.7229
+        30.5852   30.8023
+        28.4542   28.8694
 
         """
 
@@ -20045,7 +20079,7 @@ class experiment:
         # Create the empty lists for stopping power data.
         self.stopping_power_data = [[],[]]     # [[energy points],[stopping powers]]
 
-        elast_command = GLOBAL_SETUP_DICT["ELAST_EXECUTABLE"] 
+        elast_command = GLOBAL_SETUP_DICT["ELAST_EXECUTABLE"]
         initial_command_line_options = "-Qa 0 lp"
         output_file = "rachel_elast_output.txt"
 
@@ -20071,7 +20105,7 @@ class experiment:
 
 
         def run_elast(target_atomic_number,target_mass,projectile_atomic_number,projectile_mass,beam_energy,append):
-            
+
             # Try to remove the elast output file, in case this fails and there
             # was an output file remaining from a previous call.
             remove_command = "rm " + output_file
@@ -20081,8 +20115,8 @@ class experiment:
                     subprocess.call(remove_command,shell=True,stderr=garbage_file)  # (Redirect errors to the garbage file.)
 
             target_string       = "\"1(" + str(target_atomic_number) + "," + str(target_mass) + ")\"" # Leading "1" means one component in target.
-            thickness_string    = str(self.parameter_dict["target_thickness"]) 
-            projectile_string   = "\"(" + str(projectile_atomic_number) + "," + str(projectile_mass) + ")\"" 
+            thickness_string    = str(self.parameter_dict["target_thickness"])
+            projectile_string   = "\"(" + str(projectile_atomic_number) + "," + str(projectile_mass) + ")\""
             beam_energy_string  = format(beam_energy,".3f")  # rounded to the nearest keV.
             command_line        = elast_command + " " + initial_command_line_options + " " + target_string + " " +\
                                   thickness_string + " " + projectile_string + " " + beam_energy_string
@@ -20092,7 +20126,7 @@ class experiment:
             else:
                 command_line += " > "
             command_line += output_file
-                
+
             with open(".rachel_garbage","w") as garbage_file:
                 subprocess.call(command_line,shell=True,stderr=garbage_file)  # (Redirect errors to the garbage file.)
 
@@ -20108,14 +20142,14 @@ class experiment:
             """
 
             for energy_index in range(len(beam_energies)):
-                # If this is the first call, tell the run_elast def to overwrite the output file.  
+                # If this is the first call, tell the run_elast def to overwrite the output file.
                 if energy_index == 0:
                     append = False  # overwrite
                 else:
                     append = True   # append
                 this_beam_energy = beam_energies[energy_index]
-                run_elast(target_atomic_number,target_mass,projectile_atomic_number,projectile_mass,this_beam_energy,append) 
-                
+                run_elast(target_atomic_number,target_mass,projectile_atomic_number,projectile_mass,this_beam_energy,append)
+
             return 0
 
         # For the first pass, get the total energy loss.
@@ -23320,13 +23354,13 @@ class main_gui:
                 self.textview.scroll_mark_onscreen(self.textbuffer.get_insert())
             except:
                 pass
-                                                                                                                                        
+
     def clear_textview(self,widget):
         # This will clear the textview
         start_position = self.textbuffer.get_iter_at_offset(0)
         end_position = self.textbuffer.get_end_iter()
         self.textbuffer.delete(start_position, end_position)
-                                                                                                                                        
+
 
     def about(self,widget):
         # Return credits in the textview window.
@@ -27573,8 +27607,8 @@ def user_lvsc():
     # For inverse kinematics, there is a maximum projectile scattering angle, which is less than 180 deg. for Q<>0.
     max_scat = inelastic_maximum_scattering_angle(Ap,At,E_beam,E_exc)
 
-    # The lists of x,y will be filled in the order that will connect the
-    # two solutions directly at the max. recoil angle.
+    # The lists of x,y will be filled in the order that will connect the two
+    # solutions directly at the max. recoil angle.
     plot_dict = {"proj lab vs proj com":[[],[]],"targ lab vs proj com":[[],[]]}  # [[x,x,x,...],[y,y,y,....]] for each trace.
 
     full_list = list(numpy.linspace(0.0, 180.,1000))
@@ -27591,7 +27625,7 @@ def user_lvsc():
 
 
     block_print_with_line_breaks("The plot shows lab-frame projectile scattering angle and target recoil angles (y) vs. the c.o.m. projectile angle in degrees.  The maximum scattering and recoil angles, respectively, are ")
-    
+
     print str(round(max_scat,3)) + " and  " + str(round( max_rec,3)) + " degrees.\n"
 
     # Call the quick-plot function for gnuplot.
@@ -27612,22 +27646,32 @@ def user_evsl():
     print "Excitation energy taken as " + str(round(E_exc * 1000.,1)) + " KEV."
 
     # For Q<>0, there is a maximum recoil angle.
+
     max_rec  = inelastic_maximum_recoil_angle(Ap,At,E_proj,E_exc)
 
-    # For inverse kinematics, there is a maximum projectile scattering angle, which is less than 180 deg. for Q<>0.
+    # For inverse kinematics, there is a maximum projectile scattering angle,
+    # which is less than 180 deg. for Q<>0.
+
     max_scat = inelastic_maximum_scattering_angle(Ap,At,E_proj,E_exc)
 
-    # The lists of x,y will be filled in the order that will connect the
-    # two solutions directly at the max. recoil angle.
+    # The lists of x,y will be filled in the order that will connect the two
+    # solutions directly at the max. recoil angle.
+
     plot_dict = {"proj energy vs lab angle":[[],[]],"targ lab energy vs lab angle":[[],[]]}  # [[x,x,x,...],[y,y,y,....]] for each trace.
 
-    # We have to do the recoil and projectile separately, because we will plot both projectile solutions.
-    # (The very low-energy solutions that exist only for Q<>0 will not be plotted.)
+    # We have to do the recoil and projectile separately, because we will plot
+    # both projectile solutions.  (The very low-energy solutions that exist
+    # only for Q<>0 will not be plotted.)
     full_list = list(numpy.linspace(0.0, 180.,1000))
-    # Reverse the list for this solution so that the traces connect on the plot
+
+    # Reverse the list for this solution so that the traces connect on the
+    # plot.
     reversed_list = copy.deepcopy(full_list)
     reversed_list.reverse()
-    # Put the first and second solutions in the right order for the plot traces for normal or inverse kinematics
+
+    # Put the first and second solutions in the right order for the plot traces
+    # for normal or inverse kinematics.
+
     if Ap>At:
         # Normal kinematics
         list_a_targ = full_list
@@ -27681,7 +27725,7 @@ def user_evsl():
 
 
     block_print_with_line_breaks("The plot shows lab-frame final energies (y) vs. the lab-frame projectile/recoil angle in degrees.  The maximum scattering and recoil angles, respectively, are ")
-    
+
     print str(round(max_scat,3)) + " and  " + str(round( max_rec,3)) + " degrees.\n"
 
     # Call the quick-plot function for gnuplot.
@@ -27699,7 +27743,7 @@ def user_gs():
     dE           = abs(float(raw_input("Error (tolerance) to match gamma energy [keV]: ")))
     max_dI       = round(abs(float(raw_input("Maximum change in spin (up or down in spin): "))),1) # rounded to 1/2 integer spin (0.1 really)
 
-    # Search 
+    # Search
     all_level_keys = investigated_nucleus.get_sorted_unique_level_keys()
 
     # Lists of transition descriptions
@@ -27768,39 +27812,6 @@ def user_gs():
         print one_description
     print "------------------------------------------------------------------------"
 
-
-
-#def user_():
-#    """User accessor (prompts) for the function
-#
-#    """
-
-
-#def user_():
-#    """User accessor (prompts) for the function
-#
-#    """
-
-
-#def user_():
-#    """User accessor (prompts) for the function
-#
-#    """
-
-
-#def user_():
-#    """User accessor (prompts) for the function
-#
-#    """
-
-
-#
-#def user_():
-#    """User accessor (prompts) for the function
-#
-#    """
-
-
 #  ^                                                               ^
 #  |                                                               |
 #  |                                                               |
@@ -27837,8 +27848,8 @@ if __name__ == "__main__":
             debugging_mode = True
         if argument == "-script":
             script_mode = True
-    
-    # Read and process the setup file for rachel.py 
+
+    # Read and process the setup file for rachel.py
     error_code = -1
     while error_code == -1:
         error_code = read_dot_rachel_setup_file()
@@ -27872,6 +27883,7 @@ if __name__ == "__main__":
     # SIGINT.
     # Unless we are in debugging mode, disable CTRL-C (def ignore_break checks
     # for debugging mode.
+
     ignore_break() # The def ignore_break() checks whether or not DEBUGGING_MODE is True.
 
     main_gui()   # Run the main gui menu
