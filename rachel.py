@@ -478,7 +478,6 @@ class updater:
             except:
                 return False
 
-
             checker = checksum()
             identical = checker.verify_list(self.SHA512_list)
 
@@ -638,7 +637,6 @@ class Completer(object):
         return None
 
 
-
 def prompt_for_file_name(prompt_string=""):
     """Uses tab-completion to prompt for file names.
 
@@ -646,8 +644,6 @@ def prompt_for_file_name(prompt_string=""):
     paths at prompts that do not expect a file name.
 
     """
-
-
 
     # Set up tab-completion using the Completer class.
     # We want to treat '/' as part of a word, so override the delimiters.
@@ -671,6 +667,7 @@ def prompt_for_file_name(prompt_string=""):
     readline.set_completer(comp.nullcomplete)
 
     return file_name
+
 
 def ignore_break():
     """Uses the signal module to prevent the user from aborting the GUI with CTRL-C.
@@ -702,6 +699,7 @@ def enable_break():
         # This is not vital, so if it fails on some platforms we can just
         # let the GUI run with CTRL-C enabled.
         pass
+
 
 def create_popup_tip(tip_keyword):
     """A global method to create a popup tip, so that we can close it from anywhere.
@@ -775,7 +773,7 @@ def top_level_testing():
     """
 
     # Load the session.
-    setup_globals("reset") # to make sure we don't have old data hanging around in the original objects
+    setup_globals("reset")  # to make sure we don't have old data hanging around in the original objects
     unpickle_return_code,textview_summary = setup_globals(action="unpickle",force=True)
 
     the_gosia_shell.read_final_chi_squared_from_gosia()
@@ -783,7 +781,7 @@ def top_level_testing():
     #print "reading nucl data file!"
     #the_experiment_manager.get_nuclear_data_lines(1.,1.,1.,1.)
     print "Generating report..."
-    the_experiment_manager.properly_weighted_chi_squared_report(include_spect = True)
+    the_experiment_manager.properly_weighted_chi_squared_report(include_spect=True)
 
     return
 
@@ -794,7 +792,7 @@ def top_level_testing():
     return
 
     # Load the session.
-    setup_globals("reset") # to make sure we don't have old data hanging around in the original objects
+    setup_globals("reset")  # to make sure we don't have old data hanging around in the original objects
     unpickle_return_code,textview_summary = setup_globals(action="unpickle",force=True)
     #print investigated_nucleus.matrix_data
 
@@ -846,7 +844,7 @@ def print_separator():
     print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
     print ""
 
-def eliminate_characters(character_string,text_string,replacement = ""):
+def eliminate_characters(character_string,text_string,replacement=""):
     """Removes all instances of the characters in character_string from text_string.
 
     If the optional argument "replacement" is given, then the string in
@@ -927,14 +925,14 @@ def check_for_gosia_error(gosia_output_lines):
     overflow_detected = False
     for i in range(len(gosia_output_lines) - 1):
         one_line = gosia_output_lines[i]
-        next_line = gosia_output_lines[i+1]
+        next_line = gosia_output_lines[i + 1]
         if "ERROR" in one_line:
             for one_error in errors_list:
                 if one_error[0] in one_line:
                     print "Gosia reported an error:"
                     print one_line,"\n",next_line
                     print_error_block(one_error[1])
-                    if i == len(gosia_output_lines)-2:
+                    if i == len(gosia_output_lines) - 2:
                         return -1
                     else:
                         print "Processing MAY continue after this error."
@@ -1399,7 +1397,7 @@ def gnuplot_draw(plot_data_file_name,calculated_legend,x_label,y_label,title_str
         if withpoints:
             plot_command = plot_command + "\"" + plot_data_file_name + "\" ind " + str(this_set_index) + ":" + str(this_set_index) + " title \"" + this_legend_title + "\" with linespoints linestyle "  + str(n+1)  # original
         else:
-            plot_command = plot_command + "\"" + plot_data_file_name + "\" ind " + str(this_set_index) + ":" + str(this_set_index) + " title \"" + this_legend_title + "\" with lines linestyle "  + str(n+1) 
+            plot_command = plot_command + "\"" + plot_data_file_name + "\" ind " + str(this_set_index) + ":" + str(this_set_index) + " title \"" + this_legend_title + "\" with lines linestyle "  + str(n+1)
         if not n == (len(calculated_legend) - 1):
             # more to follow.  Put on a line continuation "\"
             plot_command = plot_command + ", \\\n"
@@ -1536,7 +1534,7 @@ def better_gnu_plot_launch(plot_data_file_name,calculated_legend,x_label,y_label
         if withpoints:
             plot_command = plot_command + "\"" + plot_data_file_name + "\" ind " + str(this_set_index) + ":" + str(this_set_index) + " title \"" + this_legend_title + "\" with linespoints linestyle "  + str(n+1)  # original
         else:
-            plot_command = plot_command + "\"" + plot_data_file_name + "\" ind " + str(this_set_index) + ":" + str(this_set_index) + " title \"" + this_legend_title + "\" with lines linestyle "  + str(n+1) 
+            plot_command = plot_command + "\"" + plot_data_file_name + "\" ind " + str(this_set_index) + ":" + str(this_set_index) + " title \"" + this_legend_title + "\" with lines linestyle "  + str(n+1)
         if not n == (len(calculated_legend) - 1):
             # more to follow.  Put on a line continuation "\"
             plot_command = plot_command + ", \\\n"
@@ -2541,7 +2539,7 @@ class undo_class:
             undo_file_number = self.undo_stack[0][0]
         else:
             undo_file_number = self.undo_stack[self.next_undo_number - 2][0]
-        undo_file_name = UNDOBASEFILENAME +  str(undo_file_number)
+        undo_file_name = UNDOBASEFILENAME + str(undo_file_number)
 
         setup_globals("reset")  # Trying this.
         setup_globals("unpickle",undo_file_name,True)  # True tells the setup_globals function not to prompt yes/no.
@@ -2588,7 +2586,7 @@ class undo_class:
         else:
 
             # Compose file name for the undo operation.
-            redo_file_name = UNDOBASEFILENAME +  str(self.undo_stack[self.next_undo_number][0])
+            redo_file_name = UNDOBASEFILENAME + str(self.undo_stack[self.next_undo_number][0])
             # Redo the operation
             setup_globals("reset")  # trying to fix a bug in some undo/redo operations.
             setup_globals("unpickle",redo_file_name,True)  # True tells the setup_globals function not to prompt yes/no.
@@ -3270,7 +3268,7 @@ class nucleus:
                 self.notes = notes()
             except:
                 total_errors += 1
-                return_text.extend(textwrap.wrap("Could not create a notes object in class nucleus.",TEXTVIEW_COLUMNS) )
+                return_text.extend(textwrap.wrap("Could not create a notes object in class nucleus.",TEXTVIEW_COLUMNS))
 
         elif restored_version <= "1.2.0":
             # Upgrades for any version 1.1.5 or older.
@@ -3279,7 +3277,7 @@ class nucleus:
                 self.notes = notes()
             except:
                 total_errors += 1
-                return_text.extend(textwrap.wrap("Could not create a notes object in class nucleus.",TEXTVIEW_COLUMNS) )
+                return_text.extend(textwrap.wrap("Could not create a notes object in class nucleus.",TEXTVIEW_COLUMNS))
 
             # Examples of syntactically correct error codes are below.
             #total_errors += 1
@@ -4605,7 +4603,7 @@ class nucleus:
             print "  set as masters (variable)."
         else:
             print "  fixed at their current values."
-                    
+
         # Get a list of rules to select matrix elements
         rules_list = self.get_matrix_element_selection_rules()
 
@@ -4666,7 +4664,7 @@ class nucleus:
             fi = final_spin
             ib = initial_band_number
             fb = final_band_number
-            
+
             # Now run through all conditions to see if this matrix element meets the user's conditions.
             selected = True
             for condition in rules_list:
@@ -4797,12 +4795,12 @@ class nucleus:
             is_decay_transition = False
             block_print_with_line_breaks("The initial state energy is not greater than the final state energy.  You need to specify a *decay* transition whose yield is measured in all data sets used.",70)
             return -1
-            
+
         if self.are_coupled(initial_level_key,final_level_key) and is_decay_transition:
             self.initial_band_name_for_normalization = initial_band_name_for_normalization
             self.final_band_name_for_normalization   = final_band_name_for_normalization
             self.initial_spin_for_normalization      = initial_spin_for_normalization
-            self.final_spin_for_normalization        = final_spin_for_normalization 
+            self.final_spin_for_normalization        = final_spin_for_normalization
         else:
             block_print_with_line_breaks("The states you have chosen are not coupled.\nAdd matrix elements coupling these two states and try again.\nQuitting.")
             return -1
@@ -23640,7 +23638,7 @@ class main_gui:
         model = combobox.get_model()
         active = combobox.get_active()
         if active < 0:
-          return None
+            return None
         return model[active][0]
 
     def quick_pickle(self,widget):
@@ -25119,13 +25117,13 @@ class main_gui:
                 print "Cancelled."
                 # Reactivate GUI buttons.
                 self.set_activation(self)
-                
 
-        except:    
+        except:
             # Reactivate GUI buttons.
-            self.set_activation(self)    #  RESTORE_THIS_LINE
-            return -1    #  RESTORE_THIS_LINE
-            
+            self.set_activation(self)
+            return -1
+
+
     def run_script(self,widget):
         """Runs a script file.
 
@@ -27331,7 +27329,7 @@ def user_svsr():
     # For inverse kinematics, there is a maximum projectile scattering angle, which is less than 180 deg. for Q<>0.
     max_scat = inelastic_maximum_scattering_angle(Ap,At,E_beam,E_exc)
 
-    if E_exc <> 0.:
+    if E_exc != 0.:
         block_print_with_line_breaks("For a non-zero Q-value there are TWO solutions (two lab scattering angles for any recoil angle).  See the Gosia manual section 5.1.") 
 
     # The lists of x,y will be filled in the order that will connect the
@@ -27507,7 +27505,7 @@ def user_evsl():
 
     block_print_with_line_breaks("The plot shows lab-frame final energies (y) vs. the lab-frame projectile/recoil angle in degrees.  The maximum scattering and recoil angles, respectively, are ")
 
-    print str(round(max_scat,3)) + " and  " + str(round( max_rec,3)) + " degrees.\n"
+    print str(round(max_scat,3)) + " and  " + str(round(max_rec,3)) + " degrees.\n"
 
     # Call the quick-plot function for gnuplot.
     quick_plot_n_sets(plot_dict)
