@@ -5,11 +5,12 @@ RECOVERY_MODE = False
 DEBUGGING_MODE = False
 SCRIPT_MODE = False
 
+
 def import_error(library_name):
 
     print "Rachel could not import the library \"" + library_name + ".\""
     print "  You can install this library by typing one of the following:"
-    print "  sudo pip install " + library_name 
+    print "  sudo pip install " + library_name
     print "  sudo apt-get install " + library_name + " (on linux systems)"
     print "  sudo port install " + library_name + " (on OS X systems, if you have MacPorts installed)"
     print "  (You usually need sudo privilege.)"
@@ -18,7 +19,7 @@ import_error_count = 0
 
 
 try:
-    from pprint import pprint # Mostly for debugging
+    from pprint import pprint  # Mostly for debugging
 
 except:
     import_error("pprint")
@@ -394,11 +395,14 @@ DEFAULT_EFFICIENCY_PARAMETERS = [5.7021, 4.83491, 0., 6.20016, -6.06E-01, -5.36E
 # The parameters A--G are those used by Radware.  [See def absolute_efficiency()]
 # N is the overall factor for the absolute efficiency.
 
+
 class updater:
+
 
     def __init__(self):
 
         pass
+
 
     def check_server(self):
         """Checks the Rochester server for current version data.
@@ -767,6 +771,9 @@ def close_last_dialog_popup():
 
 def top_level_testing():
     """A testing method to call objects and methods that are not yet implemented in the GUI buttons.
+
+    This is constantly changing and should be moved to a different file for the
+    vcs.
 
     """
 
@@ -5611,7 +5618,7 @@ class nucleus:
                   and multipole_code == this_multipole_code) or (this_coupling == coupling_string \
                   and this_r1 == initial_level and this_r2 == final_level):
                     # This is either the master to be fixed or a dependent on this master.
-                    matrixelement[4] = 1  
+                    matrixelement[4] = 1
                     matrixelement[5] = 1
                     matrixelement[6] = "Fixed"
                     self.matrix_data[i] = matrixelement
@@ -10965,11 +10972,11 @@ class gosia_shell:
             diagonal_error_lines = ["OP,RE,F",\
                                 "OP,ERRO",\
                                 op_erro_arguments_line,\
-                                "OP,EXIT"] 
+                                "OP,EXIT"]
         else:
-            diagonal_error_lines = [ "OP,ERRO",\
+            diagonal_error_lines = ["OP,ERRO",\
                                 op_erro_arguments_line,\
-                                "OP,EXIT"] 
+                                "OP,EXIT"]
 
         full_gosia_input = op_file_lines
         full_gosia_input.extend(level_scheme_lines)
@@ -15094,20 +15101,22 @@ class experimentmanager:
                     thetas                = one_experiment.get_detector_information(internal_detector_number,"thetas")
                     phis                  = one_experiment.get_detector_information(internal_detector_number,"phis")
                     # Extend the type, theta and phi lines with all detectors in this cluster.
-                    detector_line = detector_line + str(gosia_type_numbers).strip('[]').replace(',',' ') + "  " 
-                    theta_line    = theta_line    + str(thetas).strip('[]').replace(',',' ')             + "  " 
-                    phi_line      = phi_line      + str(phis).strip('[]').replace(',',' ')               + "  " 
+                    detector_line = detector_line + str(gosia_type_numbers).strip('[]').replace(',',' ') + "  "
+                    theta_line    = theta_line    + str(thetas).strip('[]').replace(',',' ')             + "  "
+                    phi_line      = phi_line      + str(phis).strip('[]').replace(',',' ')               + "  "
                     this_experiment_needs_raw = True
 
             # Update the list of experiments that need an op,raw input.  If at
             # least one cluster was found in this experiment, then it needs
             # op,raw for all detectors.
+
             if this_experiment_needs_raw:
                 raw_internal_experiment_numbers.append(internal_experiment_number)
 
             # Increment the internal experiment number, since we are not
             # looping on the index, but using "one_experiment in
             # self.allexperiments" instead.
+
             internal_experiment_number += 1
 
             yiel_lines.extend([detector_line,theta_line,phi_line])
@@ -15115,6 +15124,7 @@ class experimentmanager:
 
         # Call the nucleus object to give the gosia levels for the normalizing
         # transition.
+
         try:
             normalization_initial_state_key, normalization_final_state_key = investigated_nucleus.get_normalization_transition_keys()
         except:
@@ -15131,29 +15141,38 @@ class experimentmanager:
         # Construct a string entry from the two integers that define the
         # normalization transition.  These are NS1, NS2 in the gosia manual
         # entry for OP,YIEL.
+
         normalization_line = str(NS1) + "," + str(NS2)
         yiel_lines.append(normalization_line)
 
-        # NDST, UPL, YNRM lines 
+        # NDST, UPL, YNRM lines
+
         for one_experiment in self.allexperiments:
-            ndst = one_experiment.get_number_of_detectors() # for now, just the number of germaniums 
-            ndst_line = str(ndst) 
-            # For now, all upper limits set at 1.0e10 to turn off UPL in most cases.  This will be enabled in a later version.
+            ndst = one_experiment.get_number_of_detectors() # for now, just the number of germaniums
+            ndst_line = str(ndst)
+
+            # For now, all upper limits set at 1.0e10 to turn off UPL in most
+            # cases.  This will be enabled in a later version.
+
             upl_line = ""
             for i in range(ndst):
                 upl_line = upl_line + str(1.0e10) + " "
+
             # YNRM constants:
+
             ynrm_line = ""
-            # Get the YNRM constants for this experiment.  I have tested OP,CORR
-            # and OP,MINI using Rutherford cross sections where *independent*
-            # normalizations are used in the EXPT section, and they are ignored
-            # by gosia, as they should be; the CORR and MINI results are
-            # unaffected by the YNRM values.
+
+            # Get the YNRM constants for this experiment.  I have tested
+            # OP,CORR and OP,MINI using Rutherford cross sections where
+            # *independent* normalizations are used in the EXPT section, and
+            # they are ignored by gosia, as they should be; the CORR and MINI
+            # results are unaffected by the YNRM values.
+
             ynrm_list = one_experiment.return_ge_normalizations()
             for i in range(ndst):
                 ynrm_line = ynrm_line + str(ynrm_list[i]) + " "
 
-            yiel_lines.extend([ndst_line,upl_line,ynrm_line])  # NDST, UPL, YNRM 
+            yiel_lines.extend([ndst_line,upl_line,ynrm_line])  # NDST, UPL, YNRM
 
         # Select NTAP based on type_of_input
         if type_of_input == "mini" or type_of_input == "map" or type_of_input == "diag":
@@ -15166,10 +15185,12 @@ class experimentmanager:
 
         if type_of_input == "mini" or type_of_input == "diag":
             print "Selecting nuclear data applicable to this calculation..."
+
             # Get nuclear data appropriate for this calculation from the user's
             # file on disk.  (This is updated at every call, in case the user
-            # changed something.)  The expt_mgr "get" method re-reads the file. 
+            # changed something.)  The expt_mgr "get" method re-reads the file.
             # Data set weights are passed in from the gosia shell object.
+
             branching_weight      = the_gosia_shell.get_branching_weight()
             lifetime_weight       = the_gosia_shell.get_lifetime_weight()
             mixing_ratio_weight   = the_gosia_shell.get_mixing_ratio_weight()
@@ -15181,57 +15202,84 @@ class experimentmanager:
             yiel_lines.extend(temp_lines)
 
         # Generate the OP,RAW block if at least one experiment uses clusters.
+
         if not raw_internal_experiment_numbers == []:
+
             # There is at least one experiment that uses clusters.
+
             op_raw_lines = ["OP,RAW"]
 
             for one_internal_experiment_number in raw_internal_experiment_numbers:
+
                 # Mark this experiment number as raw.
+
                 this_gosia_experiment_number = one_internal_experiment_number + 1
                 op_raw_lines.append(str(this_gosia_experiment_number))  # Add the experiment number IEXP to the OP,RAW input.
                 one_experiment = self.allexperiments[one_internal_experiment_number]
-                # Create a list to remember the detector information temporarily.
+
+                # Create a list to remember the detector information
+                # temporarily.
+
                 this_experiment_detector_list = []
                 number_of_clusters_in_this_experiment = 0
                 total_number_of_crystals_in_this_experiment = 0
                 current_logical_detector_number = 0
+
                 for internal_detector_number in range(one_experiment.get_number_of_detectors()):
 
                     if one_experiment.get_detector_information(internal_detector_number,"is_crystal"):
                         total_number_of_crystals_in_this_experiment += 1
                         current_logical_detector_number += 1
-                        # Add a line of efficiency parameters for this logical detector.
+
+                        # Add a line of efficiency parameters for this logical
+                        # detector.
+
                         op_raw_lines.append(str(default_raw_efficiency_parameters).strip('[]').replace(',',' '))  # strip out the braces and the commas
                         this_experiment_detector_list.append(["is_crystal",internal_detector_number])
                     else:
-                        # This is a cluster.  Get the list of logical detector numbers for this crystal.
+
+                        # This is a cluster.  Get the list of logical detector
+                        # numbers for this crystal.
+
                         number_of_crystals_in_this_cluster = one_experiment.get_detector_information(internal_detector_number,"number_of_crystals")
                         first_logical_detector_number = total_number_of_crystals_in_this_experiment + 1
                         for logical_detector_number in range(current_logical_detector_number,\
                           current_logical_detector_number + number_of_crystals_in_this_cluster):
+
                             # Add an efficiency line for this logical detector.
+
                             op_raw_lines.append(str(default_raw_efficiency_parameters).strip('[]').replace(',',' '))  # strip out the braces and the commas
                         this_experiment_detector_list.append(["is_cluster",number_of_crystals_in_this_cluster])
-                        total_number_of_crystals_in_this_experiment += number_of_crystals_in_this_cluster 
+                        total_number_of_crystals_in_this_experiment += number_of_crystals_in_this_cluster
                         number_of_clusters_in_this_experiment += 1
 
-                # Complete the op,raw input for this experiment.  
+                # Complete the op,raw input for this experiment.
+
                 gosia_logical_detector_number = 1  # start the count at 1 again for this experiment
                 op_raw_lines.append(str(number_of_clusters_in_this_experiment))  # Total number of clusters in this experiment.
                 for one_entry in this_experiment_detector_list:
                     if one_entry[0] == "is_cluster":
-                        # Add a line for the number of crystals in this cluster:
+
+                        # Add a line for the number of crystals in this
+                        # cluster:
+
                         number_of_crystals = one_entry[1]
                         number_of_clusters_line = str(number_of_crystals)
                         op_raw_lines.append(number_of_clusters_line)  # Total number of clusters in this experiment.
-                        # Add a line listing the logical detector numbers in this cluster:
+
+                        # Add a line listing the logical detector numbers in
+                        # this cluster:
+
                         logical_detector_numbers_in_this_cluster = range(gosia_logical_detector_number,\
                           gosia_logical_detector_number + number_of_crystals)
                         logical_detectors_string = str(logical_detector_numbers_in_this_cluster).strip('[]').replace(',',' ')
                         op_raw_lines.append(logical_detectors_string)
-                        gosia_logical_detector_number += number_of_crystals 
+                        gosia_logical_detector_number += number_of_crystals
                     else:
-                        # This is a single crystal.  Don't add to the op,raw input; only increment the logical_detector_number.
+
+                        # This is a single crystal.  Don't add to the op,raw
+                        # input; only increment the logical_detector_number.
+
                         gosia_logical_detector_number += 1
 
             # Append a terminating line "0" for op,raw block.
@@ -15255,10 +15303,12 @@ class experimentmanager:
         """
 
         # Lists for the lines generated for the gosia input.
+
         mesh_lines = []
         stopping_and_subdivision_lines = []
 
         number_of_experiments = self.getnumberofexperiments()
+
         for experiment_number in range(number_of_experiments):
             theta_min = self.allexperiments[experiment_number].get_parameter("theta_lab_min")
             theta_max = self.allexperiments[experiment_number].get_parameter("theta_lab_max")
@@ -15271,7 +15321,8 @@ class experimentmanager:
             number_of_theta_meshpoints = self.allexperiments[experiment_number].get_parameter("number_of_theta_meshpoints")
             annular =  self.allexperiments[experiment_number].get_parameter("annular")
 
-            # Generate the energy meshpoints
+            # Generate the energy meshpoints.
+
             energy_meshpoints = list(numpy.linspace(E_exit,E_beam,number_of_energy_meshpoints))
             energy_meshpoints_line = str(energy_meshpoints).strip('[]')
 
@@ -15279,19 +15330,26 @@ class experimentmanager:
             # For non-axial symmetry, we need to add one phi range for each
             # theta meshpoint.  Currently, we are treating only partitions of
             # data with boundaries of constant theta and phi.
+
             azimuthal_boundary_lines = []
             if annular:
-                # Get theta meshpoints generated by the experiment object for a smooth
-                # sampling of the Rutherford cross section.
-                #theta_meshpoints = self.allexperiments[experiment_number].angular_meshpoints()  # This has been deprecated in version 1.5.7
+
+                # Get theta meshpoints generated by the experiment object for a
+                # smooth sampling of the Rutherford cross section.
+
                 theta_meshpoints = self.generate_angular_meshpoints(theta_min,theta_max,number_of_theta_meshpoints)
                 theta_meshpoints_line = str(theta_meshpoints).strip('[]')
 
-                # The first line for this experiment is NE, +/-NT, E_exit, E_beam, theta_min, theta_max
+                # The first line for this experiment is NE, +/-NT, E_exit, E_beam, theta_min, theta_max.
+
                 experiment_header_line_list = [number_of_energy_meshpoints,number_of_theta_meshpoints,E_exit,E_beam,theta_min,theta_max]
                 experiment_header_line = str(experiment_header_line_list).strip('[]')
-                # Append the expt header line and two meshpoint lines to the input list
+
+                # Append the expt header line and two meshpoint lines to the
+                # input list.
+
                 mesh_lines.extend([experiment_header_line,energy_meshpoints_line,theta_meshpoints_line])
+
                 if I_ax == 1:  # This is always an integer, so this is a safe test.
                     for i in range(number_of_theta_meshpoints):
                         azimuthal_boundary_lines.append("1 ")
@@ -15300,10 +15358,13 @@ class experimentmanager:
 
                     # Add these to the mesh_lines, so that they will appear
                     # directly below the rest of the input for this experiment.
+
                     mesh_lines.extend(azimuthal_boundary_lines)
             else:
-                # Arbitrary shaped detector.
-                # Now add the lines for this experiment of arbitrary detector shape.
+
+                # Arbitrary shaped detector.  Now add the lines for this
+                # experiment of arbitrary detector shape.
+
                 NFI_lines = []
                 theta_lab_min = self.allexperiments[experiment_number].get_parameter("theta_lab_min")
                 theta_lab_max = self.allexperiments[experiment_number].get_parameter("theta_lab_max")
@@ -15311,10 +15372,15 @@ class experimentmanager:
                 number_of_theta_meshpoints = len(theta_meshpoints)
                 theta_meshpoints_line = str(theta_meshpoints).strip('[]')
 
-                # The first line for this experiment is NE, +/-NT, E_exit, E_beam, theta_min, theta_max
+                # The first line for this experiment is NE, +/-NT, E_exit,
+                # E_beam, theta_min, theta_max.
+
                 experiment_header_line_list = [number_of_energy_meshpoints,number_of_theta_meshpoints,E_exit,E_beam,theta_min,theta_max]
                 experiment_header_line = str(experiment_header_line_list).strip('[]')
-                # Append the expt header line and two meshpoint lines to the input list
+
+                # Append the expt header line and two meshpoint lines to the
+                # input list.
+
                 mesh_lines.extend([experiment_header_line,energy_meshpoints_line,theta_meshpoints_line])
                 NFI_list = self.allexperiments[experiment_number].get_parameter("NFI_list")
                 for i in range(len(NFI_list)):
@@ -15324,7 +15390,7 @@ class experimentmanager:
                     NFI_lines.append(NFI_string)
                     NFI_lines.append(str(phi_list).strip("[]"))
 
-                mesh_lines.extend(NFI_lines)            
+                mesh_lines.extend(NFI_lines)
 
             # Now get the stopping power data for each experiment.  Since this
             # is automated, no need to abbreviate using 0 for experiments with
@@ -15349,7 +15415,9 @@ class experimentmanager:
         """Returns a list of the number of Ge detectors in each experiment.
 
         """
+
         # Make a list of numbers of Ge detectors for each experiment to be read.
+
         numbers_of_detectors = []
         for one_experiment in self.allexperiments:
             number_of_detectors_in_this_experiment = one_experiment.get_number_of_detectors()
@@ -15380,7 +15448,9 @@ class experimentmanager:
 
         number_of_yields_in_memory = len(experimental_yields_for_this_detector)
         print "This detector has ",number_of_yields_in_memory, "yields."
+
         # Get the requested file name and write the yields to the file.
+
         file_name = prompt_for_file_name(prompt_string = "Enter file name to save yields: ")
 
         text_columns = 20
@@ -15389,19 +15459,25 @@ class experimentmanager:
         lines_to_write = []
 
         # Make a dictionary to sort the yields by band number and spin.
+
         yield_sorting_dict = {}
 
         # Get the number of bands.
+
         band_number_for_unknown_levels = investigated_nucleus.number_of_bands(include_inactive_levels = True) + 1
 
         # Add the yield entries to the sorting dict.
+
         for one_yield in experimental_yields_for_this_detector:
             initial_band_name, initial_spin, final_band_name, final_spin, experimental_yield, experimental_error = one_yield
             initial_band_number = investigated_nucleus.get_band_number_for_display(initial_band_name)
             final_band_number   = investigated_nucleus.get_band_number_for_display(final_band_name)
+
             # Need to handle yields properly if they are for bands that are not
             # currently in the level scheme.  These would return a band number
-            # of -1.  Now the data for unknown bands all get lumped at the end of the output.
+            # of -1.  Now the data for unknown bands all get lumped at the end
+            # of the output.
+
             if not -1 in [initial_band_number, final_band_number]:
                 sorting_key = (initial_band_number, initial_spin, final_band_number, final_spin)
             else:
@@ -15409,16 +15485,19 @@ class experimentmanager:
                 band_number_for_unknown_levels += 1
 
                 # Key yields for unknown bands by a large band number.
+
             line_to_write = initial_band_name.ljust(text_columns) + " " + str(initial_spin).ljust(spin_columns) + " " + final_band_name.ljust(text_columns) + " " + str(final_spin).ljust(spin_columns) + " " + str(experimental_yield).ljust(float_columns) + " " + str(experimental_error).ljust(float_columns)
             yield_sorting_dict[sorting_key] = line_to_write
 
         # Check that all yields are in the dictionary.
+
         number_of_yields_in_dictionary = len(yield_sorting_dict)
         if not number_of_yields_in_dictionary == number_of_yields_in_memory:
             print "Error writing yields to file.  Please report this bug."
             return -1
 
         # Sort the keys to order the yields nicely for the user.
+
         sorting_keys = yield_sorting_dict.keys()
         sorting_keys.sort()
         for one_key in sorting_keys:
@@ -15469,42 +15548,55 @@ class experimentmanager:
         """
 
         if not txt_yield_file_name == None:
-            # Run less verbose, and take the experiment number and detector number passed.
+
+            # Run less verbose, and take the experiment number and detector
+            # number passed.
+
             silent = True
             if internal_experiment_number == None or internal_detector_number == None:
-                print "No experiment number or detector number specified for file ", txt_yield_file_name 
+                print "No experiment number or detector number specified for file ", txt_yield_file_name
                 print "Expt. # ",internal_experiment_number + 1, ", Ge detector # ", internal_detector_number + 1
                 return -1
         else:
             silent = False
 
-        # Ask the user for the experiment and detector number (gosia indexing--starting with 1 for both).
-        # Need to make listing methods to display experiments and detectors by proper indices.
+        # Ask the user for the experiment and detector number (gosia
+        # indexing--starting with 1 for both).  Need to make listing methods to
+        # display experiments and detectors by proper indices.
+
         if not silent:
             self.print_experiment_catalog()
             gosia_experiment_number = prompt_number("Gosia experiment number or \"q\" to quit: ","i")
             if gosia_experiment_number == "quit":
                 return 0
             # Convert to the internal (base 0) numbering.
+
             internal_experiment_number = gosia_experiment_number - 1
+
             # Give a list of detector choices.
+
             self.allexperiments[internal_experiment_number].print_detector_catalog()
             gosia_detector_number = prompt_number("Ge detector number for this experiment or \"q\" to quit: ","i")
             if gosia_detector_number == "quit":
                 return 0
+
             # Convert to the internal (base 0) numbering.
+
             internal_detector_number = gosia_detector_number - 1
         else:
             gosia_experiment_number = internal_experiment_number + 1
             gosia_detector_number   = internal_detector_number   + 1
 
         if not silent:
+
             # Prompt for the text file name and read it.
+
             txt_yield_file_name = prompt_for_file_name(prompt_string = "TXT file to read: ")
 
             # Ask the user whether this should be set as the auto-load data
             # file for this detector.  If so, set this detector to auto-load
             # from this file name.
+
             set_auto_load = yes_no_prompt("Set this detector to auto-load from this file [Y/n]? ",True)
             if set_auto_load:
                 self.set_one_detector_to_auto_load(internal_experiment_number=internal_experiment_number, \
@@ -15516,15 +15608,20 @@ class experimentmanager:
         with open(txt_yield_file_name,'r') as experimental_yield_file:
             txt_yield_file_lines = experimental_yield_file.readlines()
 
-        # A temporary list to store yields before sending to the experiment object.
+        # A temporary list to store yields before sending to the experiment
+        # object.
+
         this_detector_yields = []
         for this_line in txt_yield_file_lines:
+
             # Strip off any comments following at least one "#" symbol and
             # split the earlier part into fields.
+
             this_line_fields = this_line.split("#")[0].split()
 
             # Check that there are exactly 6 fields remaining after comments
             # have been removed.
+
             if len(this_line_fields) == 6:
                 initial_band_name = this_line_fields[0]
                 final_band_name   = this_line_fields[2]
@@ -15533,38 +15630,47 @@ class experimentmanager:
                 experimental_yield = float(this_line_fields[4])
                 experimental_error = float(this_line_fields[5])
                 if experimental_yield > 0.:
+
                     # Append this yield, even if the levels are not in memory.
                     # This allows the user to read back in these levels later
                     # and have the yield data immediately.
+
                     this_yield_point = [initial_band_name, initial_spin, final_band_name, \
                       final_spin, experimental_yield, experimental_error]
-                    # Append this yield point to the list for this detector
+
+                    # Append this yield point to the list for this detector.
+
                     this_detector_yields.append(this_yield_point)
                     if not silent:
                         print "Stored yield for transition ",initial_band_name, initial_spin,"-->",\
                           final_band_name, final_spin,":", experimental_yield," +/- ",experimental_error
                 else:
-                    # Yield was 0 or negative
+
+                    # Yield was 0 or negative.
+
                     if not silent:
                         print "Skipped yield for transition ",initial_band_name, initial_spin,"-->",\
                           final_band_name, final_spin,
                         print "  because yield is not positive (Y = ",experimental_yield,")."
             else:
+
                 # There were not exactly 6 fields aside from comments.
+
                 if not silent:
                     print "Skipping line ",this_line[:20],"... because there were not 6 data fields."
-
 
         # Count the actual number of gammas read.  (Some may have been skipped,
         # if levels in the ags file were not found in memory, or if some had
         # non-positive yields.)
+
         actual_transitions_recorded = len(this_detector_yields)
 
         # Give the EXPERIMENTAL yields to the experiment object to store.
+
         self.allexperiments[internal_experiment_number].set_one_detector_experimental_yields(internal_detector_number,this_detector_yields)
 
         print actual_transitions_recorded," experimental yields read for experiment ",gosia_experiment_number,", detector ",gosia_detector_number,"."
-        
+
         return 0
 
     def read_ags_file_yields(self,ags_file_name=None,internal_experiment_number=None,internal_detector_number=None):
@@ -15600,42 +15706,55 @@ class experimentmanager:
 
 
         if not ags_file_name == None:
-            # Run less verbose, and take the experiment number and detector number passed.
+
+            # Run less verbose, and take the experiment number and detector
+            # number passed.
+
             silent = True
             if internal_experiment_number == None or internal_detector_number == None:
-                print "No experiment number or detector number specified for file ", ags_file_name 
+                print "No experiment number or detector number specified for file ", ags_file_name
                 print "Expt. # ",internal_experiment_number + 1, ", Ge detector # ", internal_detector_number + 1
                 return -1
         else:
             silent = False
 
-        # Ask the user for the experiment and detector number (gosia indexing--starting with 1 for both).
-        # Need to make listing methods to display experiments and detectors by proper indices.
+        # Ask the user for the experiment and detector number (gosia
+        # indexing--starting with 1 for both).  Need to make listing methods to
+        # display experiments and detectors by proper indices.
+
         if not silent:
             self.print_experiment_catalog()
             gosia_experiment_number = prompt_number("Gosia experiment number or \"q\" to quit: ","i")
             if gosia_experiment_number == "quit":
                 return 0
             # Convert to the internal (base 0) numbering.
+
             internal_experiment_number = gosia_experiment_number - 1
+
             # Give a list of detector choices.
+
             self.allexperiments[internal_experiment_number].print_detector_catalog()
             gosia_detector_number = prompt_number("Ge detector number for this experiment: ","i")
             if gosia_detector_number == "quit":
                 return 0
+
             # Convert to the internal (base 0) numbering.
+
             internal_detector_number = gosia_detector_number - 1
         else:
             gosia_experiment_number = internal_experiment_number + 1
             gosia_detector_number   = internal_detector_number   + 1
 
         if not silent:
+
             # Prompt for the ags file and read it.
+
             ags_file_name = prompt_for_file_name("AGS file to read: ")
 
             # Ask the user whether this should be set as the auto-load data
             # file for this detector.  If so, set this detector to auto-load
             # from this file name.
+
             set_auto_load = yes_no_prompt("Set this detector to auto-load from this file [Y/n]? ",True)
             if set_auto_load:
                 self.set_one_detector_to_auto_load(internal_experiment_number=internal_experiment_number, \
@@ -15647,18 +15766,19 @@ class experimentmanager:
         with open(ags_file_name,'r') as experimental_yield_file:
             ags_file_lines = experimental_yield_file.readlines()
 
-        # Check the number of gammas in the file
+        # Check the number of gammas in the file.
+
         linenumber = 1 + findinlist(ags_file_lines,["Z","Nlevels","Ngammas","Nbands"])
         number_of_levels_in_ags_file = int(ags_file_lines[linenumber].split()[1])
         number_of_gammas_in_ags_file = int(ags_file_lines[linenumber].split()[2])
         number_of_bands_in_ags_file = int(ags_file_lines[linenumber].split()[3])
         if not silent:
-            print number_of_gammas_in_ags_file," gamma yields to be read." 
+            print number_of_gammas_in_ags_file," gamma yields to be read."
 
-        # Nov 11 2010: 
-        # Read the Radware band number of each level in the ags file to match it to the 
-        # band names.  A dictionary to look up the current band number for each level in 
-        # the AGS file and one to look up the spin.
+        # Read the Radware band number of each level in the ags file to match
+        # it to the band names.  A dictionary to look up the current band
+        # number for each level in the AGS file and one to look up the spin.
+
         ags_file_band_number_dict = {}
         ags_file_spin_dict = {}
         this_line_number = findinlist(ags_file_lines,["Level","Energy","err","Jpi","K","Band#"]) + 2
@@ -15668,11 +15788,14 @@ class experimentmanager:
             temporary_ags_band_number  = int(this_line_fields[5])
             ags_file_band_number_dict[temporary_ags_level_number] = temporary_ags_band_number
             this_line_number = this_line_number + 2
-            # Record the spin.  To parse the spin, first we need to test whether it's integer or half integer.
-            # Note that in Python rounded floats can be tested for equivalence to another rounded float.
-            # Note that in Radford's ags file library, he sometimes puts the
-            # parity symbol on the left, sometimes on the right, hence .strip
-            # instead of .rstrip
+
+            # Record the spin.  To parse the spin, first we need to test
+            # whether it's integer or half integer.  Note that in Python
+            # rounded floats can be tested for equivalence to another rounded
+            # float.  Note that in Radford's ags file library, he sometimes
+            # puts the parity symbol on the left, sometimes on the right, hence
+            # .strip instead of .rstrip
+
             spintext = this_line_fields[3].strip('+-')  # Strip pluses and minuses from the spin text
             if "/" in spintext:  # half-integer spin
                 fractionformspin = spintext.partition('/')
@@ -15681,13 +15804,15 @@ class experimentmanager:
                 this_level_spin = round(float(spintext),1)
             ags_file_spin_dict[temporary_ags_level_number] = this_level_spin
 
-
-        # Nov 11 2010: 
         # Read the band name information so that yields can be matched to
         # levels in memory by band name or pseudonym and spin.
+
         band_info_line = findinlist(ags_file_lines,["Band","Name","X0","NX","LabelDX","LabelDY","EnLabelDX","EnLabelDY"])
         band_starting_line = band_info_line + 1
-        # Make a temporary dictionary of Radware's band names and numbers to match yields to the levels in memory.
+
+        # Make a temporary dictionary of Radware's band names and numbers to
+        # match yields to the levels in memory.
+
         temporary_ags_band_dict = {}
         for line_number in range(band_starting_line, band_starting_line + number_of_bands_in_ags_file):
             this_line = ags_file_lines[line_number]
@@ -15695,9 +15820,11 @@ class experimentmanager:
             temporary_band_name   = this_line[6:14]      # 8 character string band name
             temporary_ags_band_dict[temporary_band_number] = string.join(temporary_band_name.split(),"")  # Assign Radware band name to Radware band number (spaces removed).
 
-        gamma_info_line = findinlist(ags_file_lines,["Gamma","Energy","Mult"]) 
-        
-        # A temporary list to store yields before sending to the experiment object.
+        gamma_info_line = findinlist(ags_file_lines,["Gamma","Energy","Mult"])
+
+        # A temporary list to store yields before sending to the experiment
+        # object.
+
         this_detector_yields = []
         for gamma_number in range(number_of_gammas_in_ags_file):
             gamma_info_line = gamma_info_line + 3  # Skip to the next entry in the gamma data
@@ -15708,6 +15835,7 @@ class experimentmanager:
 
             # Some ags files do not have yields.  Fields 7 and 8 are missing
             # for these entries.
+
             try:
                 experimental_yield = float(this_line_fields[7])
                 experimental_error = float(this_line_fields[8])
@@ -15717,21 +15845,26 @@ class experimentmanager:
                     print "Skipping gamma #",gamma_number + 1," because there is no intensity data"
                 intensity_data = False
             if intensity_data:
-                # The gamma flag is non-zero in the AGS file if the gamma-ray is tentative.
-                # Read the gamma flag, which is on the third line of the gamma-ray entry.
+
+                # The gamma flag is non-zero in the AGS file if the gamma-ray
+                # is tentative.  Read the gamma flag, which is on the third
+                # line of the gamma-ray entry.
+
                 gamma_flag = int(ags_file_lines[gamma_info_line + 2].split()[5])
-                initial_ags_band_number = ags_file_band_number_dict[initial_ags_level]
-                final_ags_band_number   = ags_file_band_number_dict[final_ags_level]
                 initial_ags_band_name   = temporary_ags_band_dict[ags_file_band_number_dict[initial_ags_level]]
                 final_ags_band_name     = temporary_ags_band_dict[ags_file_band_number_dict[final_ags_level]]
                 initial_ags_spin        = ags_file_spin_dict[initial_ags_level]
                 final_ags_spin          = ags_file_spin_dict[final_ags_level]
-                # If Radware's fit yield is not greater than 0, then we won't read it.
-                # Nov. 11 2010: Yields of tentative gammas will also be ignored.
+
+                # If Radware's fit yield is not greater than 0, then we won't
+                # read it.  Yields of tentative gammas will also be ignored.
+
                 if experimental_yield > 0. and gamma_flag == 0:
+
                     # Append this yield, even if the levels are not in memory.
                     # This allows the user to read back in these levels later
                     # and have the yield data immediately.
+
                     this_detector_yields.append([initial_ags_band_name, initial_ags_spin, \
                       final_ags_band_name, final_ags_spin, experimental_yield, experimental_error])
                     if not silent:
@@ -15739,7 +15872,9 @@ class experimentmanager:
                           final_ags_band_name, final_ags_spin," (",gamma_energy," keV):",\
                           experimental_yield," +/- ",experimental_error
                 else:
-                    # Yield was 0 or negative
+
+                    # Yield was 0 or negative.
+
                     if not silent:
                         print "Skipped yield for transition ",initial_ags_band_name, initial_ags_spin,"-->",\
                           final_ags_band_name, final_ags_spin," (",gamma_energy," keV):",
@@ -15752,9 +15887,11 @@ class experimentmanager:
         # Count the actual number of gammas read.  (Some may have been skipped,
         # if levels in the ags file were not found in memory, or if some had
         # non-positive yields.)
+
         actual_transitions_recorded = len(this_detector_yields)
 
         # Give the EXPERIMENTAL yields to the experiment object to store.
+
         self.allexperiments[internal_experiment_number].set_one_detector_experimental_yields(internal_detector_number,this_detector_yields)
 
         print actual_transitions_recorded," experimental yields read for experiment ",gosia_experiment_number,", detector ",gosia_detector_number,"."
@@ -15765,19 +15902,21 @@ class experimentmanager:
         """Reads the yields from gosia file 3 and stores them in an internal format.
 
         See what experiments and detectors are in memory by asking the
-        experiment objects, then read the yield file (tape 3) accordingly.  
+        experiment objects, then read the yield file (tape 3) accordingly.
 
         """
 
 
         gosia_file_number = 3
-        yield_file_name = the_gosia_shell.get_base_file_name() + "." + FILE_DEF_DICT[3]["extension"]
-        
+        yield_file_name = the_gosia_shell.get_base_file_name() + "." + FILE_DEF_DICT[gosia_file_number]["extension"]
+
         with open(yield_file_name,'r') as experimental_yield_file:
             yield_file_lines = experimental_yield_file.readlines()
 
         # Get the number of experiments to read.
+
         number_of_experiments = self.getnumberofexperiments()
+
         # Get a list of the number of detectors for each experiment.
         numbers_of_detectors = self.get_numbers_of_detectors()
 
@@ -15785,12 +15924,15 @@ class experimentmanager:
         line_number = 0
         for experiment_number in range(number_of_experiments):
             for detector_number in range(numbers_of_detectors[experiment_number]):
-                # A temporary list to store the yields for one data set
+
+                # A temporary list to store the yields for one data set.
+
                 this_detector_yields = []
 
-                # Read the header for this data set (detector), and get the number of
-                # yields for that data set.  Read all the lines, and set the line
-                # number to the next header.  Repeat.
+                # Read the header for this data set (detector), and get the
+                # number of yields for that data set.  Read all the lines, and
+                # set the line number to the next header.  Repeat.
+
                 header_line = yield_file_lines[line_number]
                 header_line_fields = header_line.split()
                 yields_in_this_detector = int(header_line_fields[5])
@@ -15806,13 +15948,17 @@ class experimentmanager:
                     experimental_yield = float(this_line_fields[2])
                     experimental_error = float(this_line_fields[3])
                     this_yield_point = [initial_band_name, initial_spin, final_band_name, final_spin, experimental_yield, experimental_error]
-                    # Append this yield point to the list for this detector
+                    # Append this yield point to the list for this detector.
+
                     this_detector_yields.append(this_yield_point)
-                # Step forward one line to the next header
+
+                # Step forward one line to the next header.
+
                 line_number = line_number + 1
 
-                # Pass these EXPERIMENTAL yields for one experiment and one detector to the appropriate logical detector.
-                
+                # Pass these EXPERIMENTAL yields for one experiment and one
+                # detector to the appropriate logical detector.
+
                 self.allexperiments[experiment_number].set_one_detector_experimental_yields(detector_number,this_detector_yields)
 
         print "Experimental yield data read."
@@ -15821,7 +15967,7 @@ class experimentmanager:
     def test_yields(self,experiment_number,detector_number):
         return self.allexperiments[experiment_number].get_calculated_yields(detector_number)
 
-    
+
     def plot_tf(self,initial_band,final_band,initial_spin=None,final_spin=None,ge_polar_angle=None,ge_azimuthal_angle=None):
         """Plots the results of the accuracy test "tf"
 
@@ -15830,16 +15976,20 @@ class experimentmanager:
         x_label = "theta_particle"
         y_label = "point yield, arb. scale"
 
-        # Find the initial and final level keys
+        # Find the initial and final level keys.
+
         initial_band_name = investigated_nucleus.get_primary_band_name_from_band_number(initial_band)
         final_band_name   = investigated_nucleus.get_primary_band_name_from_band_number(final_band)
-        initial_level_key = (initial_band_name,initial_spin) 
-        final_level_key   = (final_band_name,final_spin) 
+        initial_level_key = (initial_band_name,initial_spin)
+        final_level_key   = (final_band_name,final_spin)
 
         # Get scattering angles for each experiment.
+
         particle_angles = the_experiment_manager.get_all_mean_particle_angles()
-        
-        # Create the array to temporarily store calculated yield points for plotting.
+
+        # Create the array to temporarily store calculated yield points for
+        # plotting.
+
         calculated_yield_vs_particle_angle = []
 
         calculated_data_to_plot = False
@@ -15847,15 +15997,18 @@ class experimentmanager:
 
         plot_data_file_name = ".temp_plot_data"
 
-        # Step through the stored calculated yield data to generate plot data
+        # Step through the stored calculated yield data to generate plot data.
+
         for internal_experiment_number in range(self.getnumberofexperiments()):
             title_experiment_number = "Calc. Expt. "+str(internal_experiment_number+1)
-            # Get the internal detector number that matches the polar and azimuthal angles
-            # within one degree for this experiment.
+
+            # Get the internal detector number that matches the polar and
+            # azimuthal angles within one degree for this experiment.
+
             internal_ge_types,ge_theta_list,ge_phi_list = self.allexperiments[internal_experiment_number].get_all_detector_numbers_and_angles(False)
             for n in range(len(internal_ge_types)):
-                this_ge_theta = ge_theta_list[n] 
-                this_ge_phi   = ge_phi_list[n] 
+                this_ge_theta = ge_theta_list[n]
+                this_ge_phi   = ge_phi_list[n]
                 theta_matches = abs(ge_polar_angle - this_ge_theta)   <= 1.0   # theta matches within one degree
                 phi_matches   = abs(ge_azimuthal_angle - this_ge_phi) <= 1.0   # phi matches within one degree
                 if theta_matches and phi_matches:
@@ -15865,52 +16018,59 @@ class experimentmanager:
             this_particle_angle = particle_angles[internal_experiment_number]
             try:
                 this_calculated_yield_set = self.allexperiments[internal_experiment_number].get_calculated_yields(detector_number_for_this_experiment)
-                # Normalizing presents a problem for viewing the normalization transistion!
-                #this_calculated_yield_set = self.allexperiments[internal_experiment_number].get_calculated_yields_with_requested_normalization(detector_number_for_this_experiment)
             except:
                 print "The \"tf\" test failed.  Please report this bug."
                 print "Quitting."
                 return -1
 
-            # Step through the calculated yield set to find the one we want
+            # Step through the calculated yield set to find the one we want.
+
             for one_yield_entry in this_calculated_yield_set:
                 this_initial_band_name, this_initial_spin, this_final_band_name, this_final_spin, this_yield = one_yield_entry
                 this_initial_level_key = (this_initial_band_name, this_initial_spin)
                 this_final_level_key   = (this_final_band_name, this_final_spin)
                 if this_initial_level_key == initial_level_key and this_final_level_key == final_level_key:
                     calculated_data_to_plot = True
-                    # This is the yield point we want.  Append it to the list
+
+                    # This is the yield point we want.  Append it to the list.
+
                     calculated_yield_vs_particle_angle.append([this_particle_angle,this_yield])
-                    # Can break out of the loop now, since the initial/final levels are unique
+
+                    # Can break out of the loop now, since the initial/final levels are unique.
                     break  # out of innermost for loop
 
         # Check that the correct calculated point yields were found.
+
         if (len(calculated_yield_vs_particle_angle) == 0):
             print "The \"tf\" test failed.  Please report this bug."
             print "Quitting."
             return -1
 
-        # Add to the first plot data file
+        # Add to the first plot data file.
+
         lines_to_write = ["# initial I,band = "+str(initial_spin)+", "+str(initial_band)+"\n",\
                          "# final   I,band = "+str(final_spin)+", "+str(final_band)+"\n",\
                          "# Ge polar angle = "+str(ge_polar_angle)+"\n",\
                          "# Ge azimuthal angle = "+str(ge_azimuthal_angle)+"\n"]
 
         # Sort the calculated yield points, since they will be joined by lines.
+
         calculated_yield_vs_particle_angle.sort()
 
         # Generate the lines to send to gnuplot through the plot data file, and
         # save them to the file.
+
         for one_point in calculated_yield_vs_particle_angle:
             this_angle, this_yield = one_point
             this_text_line = str(this_angle) + "     " + str(this_yield) + "\n"
             lines_to_write.append(this_text_line)
         lines_to_write.append("\n\n")  # two blank lines to separate sets
-        with open(plot_data_file_name,"w") as plot_data_file: 
+        with open(plot_data_file_name,"w") as plot_data_file:
             plot_data_file.writelines(lines_to_write)
         print "Data for this plot were written to the file \"" + plot_data_file_name + "\"."
 
-        # Call a routine to launch gnuplot
+        # Call a routine to launch gnuplot.
+
         calculated_legend = ["calculated"]
         chi_squared_string = ""
         experimental_legend=None
@@ -15926,10 +16086,10 @@ class experimentmanager:
 
         """
 
-        # Set x axis label
         x_label = "theta_particle"
 
         # Ask which transition.
+
         if initial_spin == None or final_spin == None:
             initial_spin = prompt_number("Initial spin: ","r")
             if initial_spin == "quit":
@@ -15939,8 +16099,9 @@ class experimentmanager:
                 return 0
 
         # Get the initial and final level keys.
-        initial_level_key = (initial_band_name,initial_spin) 
-        final_level_key   = (final_band_name,final_spin) 
+
+        initial_level_key = (initial_band_name,initial_spin)
+        final_level_key   = (final_band_name,final_spin)
         initial_level_object = investigated_nucleus.levels[initial_level_key]
         final_level_object = investigated_nucleus.levels[final_level_key]
 
@@ -15957,12 +16118,14 @@ class experimentmanager:
             if ge_azimuthal_angle == "quit":
                 return 0
 
-                    
         # Ask if the user wants to plot absolute yields or normalized yields.
         if yes_no_prompt("Plot absolute yields (calculated only) [y/N]? "):
             plot_absolute = True
-            # Turn off plotting of experimental yields for now.  Need to do a little more
-            # coding to take out the automatic normalization in the loops below.
+
+            # Turn off plotting of experimental yields for now.  Need to do a
+            # little more coding to take out the automatic normalization in the
+            # loops below.
+
             plot_experimental_yields = False
             y_label = "yield [mb(mg/cm^2)/sr]"
             print "Note: yields are absolute--not normalized!"
@@ -15973,21 +16136,26 @@ class experimentmanager:
 
         # Put all data in one file for gnuplot.  Otherwise, gnuplot colors get
         # confused.
+
         plot_data_file_name = "temp_rachel_plot_data.dat"
 
         # Header comments for the plot data file.
+
         lines_to_write = ["# initial I,band_name = "+str(initial_spin)+", "+str(initial_band_name)+"\n",\
                           "# final   I,band_name = "+str(final_spin)+", "+str(final_band_name)+"\n",\
                           "# Ge polar angle = "+str(ge_polar_angle)+"\n",\
                           "# Ge azimuthal angle = "+str(ge_azimuthal_angle)+"\n"]
 
-        # Set initial chi-squared to zero for the entire plot (all sets considered in one chi-squared value).
+        # Set initial chi-squared to zero for the entire plot (all sets
+        # considered in one chi-squared value).
+
         chi_squared_for_plot = 0.0
         chi_squared_points = 0      # for calculating reduced chi_squared
         chi_squared_string = ""     # Will remain as an empty string unless there are data to calculate chi-squared.
 
         # Create the dictionaries to store calculated and experimental yield
-        # points for plotting.  The nested data dictionaries will have the form
+        # points for plotting.  The nested data dictionaries will have the
+        # form:
 
         # calculated: {scattering_angle:[gosia_experiment_number,yield],next_scattering_angle:[gosia_experiment_number,yield],...}
         # experimental: {scattering_angle:[gosia_experiment_number,measured_yield,error],...}
@@ -15995,6 +16163,7 @@ class experimentmanager:
         # An experiment with no data will be entered, but with an empty yield
         # vs. spin dictionary, and the legend entries will use the user's
         # experiment number, so that they match the user's setup.
+
         calculated_yield_vs_particle_angle   = {}
         experimental_yield_vs_particle_angle = {}
 
@@ -16005,64 +16174,93 @@ class experimentmanager:
         calculated_legend = ["Calc."]
         experimental_legend = ["Expt."]
 
-        # Step through the stored calculated yield data to generate plot data
+        # Step through the stored calculated yield data to generate plot data.
+
         for internal_experiment_number in range(self.getnumberofexperiments()):
             if plot_experimental_yields:
-                # Get the normalization on the calculated yields that gives the best fit to experimental data.
-                experimental_normalization_constant = self.get_overall_normalization_for_experimental_yields(internal_experiment_number)[1] 
+
+                # Get the normalization on the calculated yields that gives the
+                # best fit to experimental data.
+
+                experimental_normalization_constant = self.get_overall_normalization_for_experimental_yields(internal_experiment_number)[1]
                 if experimental_normalization_constant == None:
                     print "No data in memory for experiment " + str(internal_experiment_number + 1) + "."
                     raw_input ("Press enter to continue.")
 
-            # Get the internal detector number that matches the polar and azimuthal angles
-            # within one degree for this experiment.
+            # Get the internal detector number that matches the polar and
+            # azimuthal angles within one degree for this experiment.
+
             gosia_experiment_number = internal_experiment_number + 1
             internal_ge_types,ge_theta_list,ge_phi_list = self.allexperiments[internal_experiment_number].get_all_detector_numbers_and_angles(False)
             ge_detector_found = False
+
             for n in range(len(internal_ge_types)):
-                this_ge_theta = ge_theta_list[n] 
-                this_ge_phi   = ge_phi_list[n] 
+                this_ge_theta = ge_theta_list[n]
+                this_ge_phi   = ge_phi_list[n]
                 theta_matches = abs(ge_polar_angle - this_ge_theta)   <= 1.0   # theta matches within one degree
                 phi_matches   = abs(ge_azimuthal_angle - this_ge_phi) <= 1.0   # phi matches within one degree
+
                 if theta_matches and phi_matches:
                     internal_detector_number_for_this_experiment = n
                     ge_detector_found = True
                     break  # out of this for loop
 
             if ge_detector_found:
-                # Found the Ge detector for the user's requested theta_Ge, phi_Ge in this experiment.
-                # Get the mean scattering angle for this experiment.
+
+                # Found the Ge detector for the user's requested theta_Ge,
+                # phi_Ge in this experiment.  Get the mean scattering angle for
+                # this experiment.
+
                 this_particle_angle = self.allexperiments[internal_experiment_number].mean_scattering_angle()
 
                 try:
+
                     # Get the calculated yields with the user's requested
-                    # normalization, or without normalization if absolute yields were requested.
+                    # normalization, or without normalization if absolute
+                    # yields were requested.
+
                     this_experiment = self.allexperiments[internal_experiment_number]
                     detector_object = this_experiment.Ge_detectors[internal_detector_number_for_this_experiment]
                     this_calculated_yield_set   = detector_object.return_calculated_yields()
+
                 except:
+
                     print "No calculated yields for experiment ",internal_experiment_number + 1, " detector ",internal_detector_number_for_this_experiment + 1, ".  You may want to run the gosia calculations again, if this experiment should contain the requested detector."
                     break
+
                 if plot_experimental_yields:
+
                     # Store experimental yields for this detector.
+
                     this_experiment = self.allexperiments[internal_experiment_number]
                     detector_object = this_experiment.Ge_detectors[internal_detector_number_for_this_experiment]
                     this_experimental_yield_set   = detector_object.return_experimental_yields()
 
-                # Step through the calculated yield set to find the one we want
+                # Step through the calculated yield set to find the one we
+                # want.
+
                 for one_yield_entry in this_calculated_yield_set:
                     this_initial_band_name, this_initial_spin, this_final_band_name, this_final_spin, this_yield = one_yield_entry
                     this_initial_level_key = (this_initial_band_name, this_initial_spin)
                     this_final_level_key   = (this_final_band_name, this_final_spin)
                     this_initial_level_object = investigated_nucleus.levels[this_initial_level_key]
                     this_final_level_object   = investigated_nucleus.levels[this_final_level_key]
-                    # This needs to match the level *objects*, since there are now an arbitrary number of pseudonyms.
+
+                    # This needs to match the level *objects*, since there are
+                    # now an arbitrary number of pseudonyms.
+
                     if this_initial_level_object == initial_level_object and this_final_level_object == final_level_object:
-                        # This is the yield point we want.  Append it to the list
-                        # If the experimental data are to be plotted, renormalize the calculated yield to the experimental.
+
+                        # This is the yield point we want.  Append it to the
+                        # list.  If the experimental data are to be plotted,
+                        # renormalize the calculated yield to the experimental.
+
                         if plot_experimental_yields:
-                            # Get the normalization on the calculated yields that gives the best fit to experimental data.
-                            this_yield = this_yield * experimental_normalization_constant 
+
+                            # Get the normalization on the calculated yields
+                            # that gives the best fit to experimental data.
+
+                            this_yield = this_yield * experimental_normalization_constant
 
                         # If this particle angle is already in the dict, jog
                         # the point a little to make the plot nicer and to give
@@ -16071,19 +16269,28 @@ class experimentmanager:
                         while this_particle_angle in calculated_yield_vs_particle_angle.keys():
                             this_particle_angle += 0.1 # degrees jog
                         calculated_yield_vs_particle_angle[this_particle_angle] = [gosia_experiment_number,this_yield]
-                        # Can break out of the loop now, since the initial/final levels are unique
+
+                        # Can break out of the loop now, since the
+                        # initial/final levels are unique.
+
                         break  # out of innermost for loop
 
                 if plot_experimental_yields and not plot_absolute:
-                    # Step through the experimental yield set to find the one we want
+
+                    # Step through the experimental yield set to find the one
+                    # we want.
+
                     for one_yield_entry in this_experimental_yield_set:
                         this_initial_band_name, this_initial_spin, this_final_band_name, this_final_spin, this_experimental_normalized_yield, this_normalized_error = one_yield_entry
                         this_initial_level_key = (this_initial_band_name, this_initial_spin)
                         this_final_level_key   = (this_final_band_name, this_final_spin)
                         this_initial_level_object = investigated_nucleus.levels[this_initial_level_key]
                         this_final_level_object   = investigated_nucleus.levels[this_final_level_key]
+
                         # This needs to match the level *objects*, since there are now an arbitrary number of pseudonyms.
+
                         if this_initial_level_object == initial_level_object and this_final_level_object == final_level_object:
+
                             # This is the yield point we want.  Append it to the list
                             # If this particle angle is already in the dict, jog
                             # the point a little to make the plot nicer and to give
@@ -16092,32 +16299,44 @@ class experimentmanager:
                             while this_particle_angle in experimental_yield_vs_particle_angle.keys():
                                 this_particle_angle += 0.1 # degrees jog
                             experimental_yield_vs_particle_angle[this_particle_angle] = [gosia_experiment_number,this_experimental_normalized_yield,this_normalized_error]
-                            # Step through the calculated yield set to find the one we want to compare to, to get the chi-squared contribution.
+
+                            # Step through the calculated yield set to find the
+                            # one we want to compare to, to get the chi-squared
+                            # contribution.
+
                             corresponding_calculated_point = calculated_yield_vs_particle_angle[this_particle_angle]
                             calculated_particle_angle,calculated_yield = corresponding_calculated_point
-                            # This is the correct calculated point for the chi-squared contribution for this point.
+
+                            # This is the correct calculated point for the
+                            # chi-squared contribution for this point.
+
                             chi_squared_contribution = ((this_experimental_normalized_yield - this_yield) / this_normalized_error)**2
                             chi_squared_for_plot = chi_squared_for_plot + chi_squared_contribution
                             chi_squared_points = chi_squared_points + 1
-                            #print "Expt. ",internal_experiment_number + 1," particle angle ",this_particle_angle," chi-squared contribution = ", chi_squared_contribution
+
                             # Can break out of the loop now, since the initial/final levels are unique
                             break  # out of innermost for loop
 
         if len(experimental_yield_vs_particle_angle) == 0 and not plot_absolute:
             print "No matching experimental data found."
+
         elif (len(calculated_yield_vs_particle_angle) == 0):
                 print "No calculated yields to compare to.  Calculate the \"Integrated yields\" first."
                 print "Quitting."
                 return -1
 
         # Sort the calculated yield points, since they will be joined by lines.
+
         sorted_keys_for_calculated_yields = calculated_yield_vs_particle_angle.keys()
         sorted_keys_for_calculated_yields.sort()
+
         # Sort the experimental yield points, since they will be joined by lines.
+
         sorted_keys_for_experimental_yields = experimental_yield_vs_particle_angle.keys()
         sorted_keys_for_experimental_yields.sort()
 
         # Write out the calculated set.
+
         lines_to_write.append("# Calculated yield vs. scattering angle.\n")
         for this_angle in sorted_keys_for_calculated_yields:
             this_experiment_number, this_calculated_yield = calculated_yield_vs_particle_angle[this_angle]
@@ -16125,51 +16344,59 @@ class experimentmanager:
             lines_to_write.append(this_text_line)
         lines_to_write.append("\n\n")  # two blank lines to separate sets
 
-        # Now make the experimental yield part of the plot data file
+        # Now make the experimental yield part of the plot data file.
+
         if plot_experimental_yields and not plot_absolute:
             lines_to_write.append("# Experimental yield vs. scattering angle.\n")
-            # Now get the total reduced chi-squared.  (The number of degrees of
+
+            # Now get the total reduced chi-squared.  The number of degrees of
             # freedom is taken as simply the number of experimental data points
             # on the plot and does not include the number of fit parameters.
+
             try:
                 reduced_chi_squared_for_plot = chi_squared_for_plot / float(chi_squared_points)
-                # Generate a string to report the chi-squared and reduced chi-squared for the plot
+
+                # Generate a string to report the chi-squared and reduced
+                # chi-squared for the plot.
+
                 chi_squared_string = "\"For " + str(chi_squared_points) + " points, chi-squared = " + str(round(chi_squared_for_plot,1)) + "      red. chi-squared  = " + str(round(reduced_chi_squared_for_plot,1)) + "\""
             except:
                 try:
-                    chi_squared_string = "\"chi-squared = " + str(round(chi_squared_for_plot,1)) 
+                    chi_squared_string = "\"chi-squared = " + str(round(chi_squared_for_plot,1))
                 except:
                     chi_squared_string = ""
 
             # Add the lines for the experimental data.
+
             for this_angle in sorted_keys_for_experimental_yields:
                 this_experiment_number, this_yield, this_error = experimental_yield_vs_particle_angle[this_angle]
                 this_text_line = str(this_angle) + "     " + str(this_yield) + "     " + str(this_error) + "\n"
                 lines_to_write.append(this_text_line)
+
             # Write a final two line feeds for gnuplot
+
             lines_to_write.append("\n\n")
 
-        with open(plot_data_file_name,"w") as plot_data_file: 
+        with open(plot_data_file_name,"w") as plot_data_file:
             plot_data_file.writelines(lines_to_write)
         print "Data for this plot were written to the file \"" + plot_data_file_name + "\"."
 
-
         # Print the data and chi-squared to the terminal.
+
         for one_line in lines_to_write:
             one_line = one_line.strip("\n")
             print one_line
         print chi_squared_string
 
-        # Call a routine to launch gnuplot
+        # Call a routine to launch gnuplot.
+
         if plot_absolute:
             block_print_with_line_breaks("Plotting calculated yields.  The yields may not represent actual counts due to normalizations required by Gosia.")
             experimental_legend = None
             better_gnu_plot_launch(plot_data_file_name,calculated_legend,x_label,y_label,experimental_legend)
         elif plot_experimental_yields:
             block_print_with_line_breaks("Plotting experimental and calculated yields.  The yields may not represent actual counts due to normalizations required by Gosia.")
-            #print plot_data_file_name, "\n",experimental_plot_data_file_name
             better_gnu_plot_launch(plot_data_file_name,calculated_legend,x_label,y_label,experimental_legend,chi_squared_string)
-            #gnu_plot_launch(plot_data_file_name,chi_squared_string,x_label,y_label,experimental_plot_data_file_name)
 
         return 0
 
@@ -16179,9 +16406,11 @@ class experimentmanager:
         """
 
         # Set x axis label
+
         x_label = "spin"
 
         # Ask which transitions.
+
         delta_I = prompt_number("delta_I: ","r")
         if delta_I  == "quit":
             return 0
@@ -16191,6 +16420,7 @@ class experimentmanager:
         # Ask which Ge detector.  Only one is allowed per plot.  All
         # experiments with a Ge detector at this theta, phi position will
         # contribute.
+
         self.display_Ge_detectors_for_all_experiments()
         print "Detector will be selected with +/- 1 degree tolerance. (See table.)"
         ge_polar_angle = prompt_number("Ge detector polar angle: ","f")
@@ -16199,12 +16429,15 @@ class experimentmanager:
         ge_azimuthal_angle = prompt_number("Ge detector azimuthal angle: ","f")
         if ge_azimuthal_angle  == "quit":
             return 0
-                    
+
         # Ask if the user wants to plot absolute yields or normalized yields.
         if yes_no_prompt("Plot absolute yields (calculated only) [y/N]? "):
             plot_absolute = True
-            # Turn off plotting of experimental yields for now.  Need to do a little more
-            # coding to take out the automatic normalization in the loops below.
+
+            # Turn off plotting of experimental yields for now.  Need to do a
+            # little more coding to take out the automatic normalization in the
+            # loops below.
+
             plot_experimental_yields = False
             y_label = "yield [mb(mg/cm^2)/sr]"
             print "Note: yields are absolute--not normalized!"
@@ -16215,9 +16448,11 @@ class experimentmanager:
 
         # Put all data in one file for gnuplot.  Otherwise, gnuplot colors get
         # confused.
+
         plot_data_file_name = "temp_rachel_plot_data.dat"
 
         # Header comments for the plot data file.
+
         lines_to_write = ["# initial   band_name = "+str(initial_band_name)+"\n",\
                           "# final     band_name = "+str(final_band_name)+"\n",\
                           "# delta_I        = "+str(delta_I)+"\n",\
@@ -16225,14 +16460,17 @@ class experimentmanager:
                           "# Ge azimuthal angle = "+str(ge_azimuthal_angle)+"\n"]
 
         # Create the dictionaries to store calculated and experimental yield
-        # points for plotting.  The nested data dictionaries will have the form
+        # points for plotting.
 
         # An experiment with no data will be entered, but with an empty yield
         # vs. spin dictionary, and the legend entries will use the user's
         # experiment number, so that they match the user's setup.
+
         calculated_yield_vs_spin   = {}
         experimental_yield_vs_spin = {}
+
         # Create the nested dictionaries:
+
         for internal_experiment_number in range(the_experiment_manager.getnumberofexperiments()):
             gosia_experiment_number = internal_experiment_number + 1
             calculated_yield_vs_spin[gosia_experiment_number] = {}    # The nested spin:yield dictionary for this experiment is added.
@@ -16243,28 +16481,41 @@ class experimentmanager:
         # put in here, to avoid the complication of trying to re-use code.
         # Plotting methods are troublesome because of set types (with/without
         # errors) and skipping of sets.
+
         calculated_legend = []
         experimental_legend = []
 
+        # Now go through the experiments and pick out data for this detector
+        # and the requested bands, Delta-I.
 
-        # Now go through the experiments and pick out data for this detector and the requested bands, Delta-I.
         for internal_experiment_number in range(the_experiment_manager.getnumberofexperiments()):
             if plot_experimental_yields:
-                # Get the normalization on the calculated yields that gives the best fit to experimental data.
-                experimental_normalization_constant = self.get_overall_normalization_for_experimental_yields(internal_experiment_number)[1] 
+
+                # Get the normalization on the calculated yields that gives the
+                # best fit to experimental data.
+
+                experimental_normalization_constant = self.get_overall_normalization_for_experimental_yields(internal_experiment_number)[1]
             gosia_experiment_number = internal_experiment_number + 1
+
             # See if this experiment has the requested Ge detector.
+
             internal_detector_number_for_this_experiment = self.allexperiments[internal_experiment_number].get_first_detector_number_at_position(ge_polar_angle,ge_azimuthal_angle)
+
             # If this detector is found in this experiment, look for the
-          # requested yield data and add it to the plot dictionaries.
+            # requested yield data and add it to the plot dictionaries.
             # Otherwise, the loop will iterate to the next experiment.
 
             if not internal_detector_number_for_this_experiment == -1:
-                # This detector is in the experiment.
-                # Try to get calculated yields.
+
+                # This detector is in the experiment.  Try to get calculated
+                # yields.
+
                 try:
+
                     # Get the calculated yields with the user's requested
-                    # normalization, or without normalization if absolute yields were requested.
+                    # normalization, or without normalization if absolute
+                    # yields were requested.
+
                     this_experiment = self.allexperiments[internal_experiment_number]
                     detector_object = this_experiment.Ge_detectors[internal_detector_number_for_this_experiment]
                     this_calculated_yield_set   = detector_object.return_calculated_yields()
@@ -16279,11 +16530,16 @@ class experimentmanager:
                     except:
                         this_experimental_yield_set = []
 
-                # Step through the calculated yield set to find the ones we want
-                # For now, we exit with an error message if there are no calculated yields to plot:
+                # Step through the calculated yield set to find the ones we
+                # want.  For now, we exit with an error message if there are no
+                # calculated yields to plot.
+
                 if not (this_calculated_yield_set == -1) and not (len(this_calculated_yield_set) == 0):
                     for one_yield_entry in this_calculated_yield_set:
-                        # Because of pseudonyms, we need to match level objects, not keys.
+
+                        # Because of pseudonyms, we need to match level
+                        # objects, not keys.
+
                         this_initial_band_name, this_initial_spin, this_final_band_name, this_final_spin, this_yield = one_yield_entry
                         this_initial_level_key = (this_initial_band_name,this_initial_spin)
                         this_final_level_key   = (this_final_band_name,this_final_spin)
@@ -16298,18 +16554,30 @@ class experimentmanager:
                         except:
                             a_level_does_not_exist = True
                         this_delta_I = round(this_final_spin - this_initial_spin ,1)
-                        # See if this data point matches the ones we are looking for.  There are an arbitrary number of pseudonyms, so we need to match them all by comparing object pointers.
+
+                        # See if this data point matches the ones we are
+                        # looking for.  There are an arbitrary number of
+                        # pseudonyms, so we need to match them all by comparing
+                        # object pointers.
+
                         if not a_level_does_not_exist and this_initial_level_object == desired_initial_level_object and this_final_level_object == desired_final_level_object:
+
                             # This is one yield point we want.
-                            #print "raw calc", this_initial_spin,this_yield
+
                             if plot_experimental_yields:
-                                # Get the normalization on the calculated yields that gives the best fit to experimental data.
-                                this_yield = this_yield * experimental_normalization_constant 
-                                #print "renorm calc", this_initial_spin,this_yield
+
+                                # Get the normalization on the calculated
+                                # yields that gives the best fit to
+                                # experimental data.
+
+                                this_yield = this_yield * experimental_normalization_constant
+
                             calculated_yield_vs_spin[gosia_experiment_number][this_initial_spin] = this_yield
 
                     if plot_experimental_yields and not plot_absolute:
-                        # Step through the experimental yield set to find the one we want
+
+                        # Step through the experimental yield set to find the one we want.
+
                         try:
                             for one_yield_entry in this_experimental_yield_set:
                                 this_initial_band_name, this_initial_spin, this_final_band_name, this_final_spin, this_normalized_yield, this_normalized_error = one_yield_entry
@@ -16345,54 +16613,70 @@ class experimentmanager:
         for internal_experiment_number in range(the_experiment_manager.getnumberofexperiments()):
             temporary_lines_to_write = []
             gosia_experiment_number = internal_experiment_number + 1
+
             # See if we have calculated data for this experiment.
+
             this_set_calculated_yield_vs_spin = calculated_yield_vs_spin[gosia_experiment_number]
             title_experiment_number = "Calc. Expt. "+str(gosia_experiment_number)
-            # Put the legend info in comments in the data file as well
+
+            # Put the legend info in comments in the data file as well.
+
             title_comment = "#"+title_experiment_number+"\n"
             lines_to_write.append(title_comment)
             calculated_legend.append(title_experiment_number)
             if not len(this_set_calculated_yield_vs_spin) == 0:
-                # There are calculated yields.  Append to a temporary list to sort the calculated data.
+
+                # There are calculated yields.  Append to a temporary list to
+                # sort the calculated data.
+
                 these_keys = this_set_calculated_yield_vs_spin.keys()
                 these_keys.sort()
                 for one_spin in these_keys:
                     this_yield = this_set_calculated_yield_vs_spin[one_spin]
                     this_text_line = str(one_spin) + "     " + str(this_yield) + "\n"
                     temporary_lines_to_write.append(this_text_line)
+
                 # Sort the lines by spin.  This sorts strings, and first
                 # characters are the positive float spins, so the sort() method
                 # effectively sorts by spin.
-                # This method does not work, because it results in ...10,12,14...2,20,22...
-                #temporary_lines_to_write.sort()
+
                 lines_to_write.extend(temporary_lines_to_write)
             else:
+
                 # No calculated yields for this set.  Put in a spurious point at spin=-1.
+
                 this_text_line = "-1.  ?  \n"   # Proper way to skip sets in gnuplot
                 lines_to_write.append(this_text_line)
             lines_to_write.append("\n\n")  # two blank lines to separate sets
 
             # Now add the experimental data.
-            # This is being modified to skip empty sets to avoid errors in gnuplot.  August 7, 2010.
+
             if plot_experimental_yields and not plot_absolute:
                 title_experiment_number = "Meas. Expt. "+str(gosia_experiment_number)
+
                 # Put the legend info in comments in the data file as well
+
                 title_comment = "#"+title_experiment_number+"\n"
                 lines_to_write.append(title_comment)
                 experimental_legend.append(title_experiment_number)
+
                 # See if there are any yields in this set.
+
                 this_set_experimental_yield_vs_spin = experimental_yield_vs_spin[gosia_experiment_number]
                 if not len(this_set_experimental_yield_vs_spin) == 0:
                     for this_spin in this_set_experimental_yield_vs_spin.keys():
                         this_yield, this_error = this_set_experimental_yield_vs_spin[this_spin]
                         this_text_line = str(this_spin) + "     " + str(this_yield) + "     " + str(this_error) + "\n"
                         lines_to_write.append(this_text_line)
-                        # Step through the calculated yield set to find the one we want to compare to, to get the chi-squared contribution.
-                        # These spins are rounded numbers, so they can be compared exactly.
+
+                        # Step through the calculated yield set to find the one
+                        # we want to compare to, to get the chi-squared
+                        # contribution.  These spins are rounded numbers, so
+                        # they can be compared exactly.
+
                         try:
                             calculated_yield_for_chi_squared = this_set_calculated_yield_vs_spin[this_spin]
                             chi_squared_contribution = ((this_yield - calculated_yield_for_chi_squared) / this_error)**2
-                            #print "Expt. # ",gosia_experiment_number," spin ",this_spin,"calc: ",calculated_yield_for_chi_squared, " expt: ",this_yield," err: ",this_error," chi-squared contribution = ", chi_squared_contribution
                             chi_squared_for_plot = chi_squared_for_plot + chi_squared_contribution
                             chi_squared_points = chi_squared_points + 1
                         except:
@@ -16407,7 +16691,7 @@ class experimentmanager:
                     lines_to_write.append(this_text_line)
                 lines_to_write.append("\n\n")  # two blank lines to separate sets
 
-        with open(plot_data_file_name,"w") as plot_data_file: 
+        with open(plot_data_file_name,"w") as plot_data_file:
             plot_data_file.writelines(lines_to_write)
         print "Data for this plot were written to the file \"" + plot_data_file_name + "\"."
 
@@ -16427,10 +16711,10 @@ class experimentmanager:
                 chi_squared_string = "\"For " + str(chi_squared_points) + " points, chi-squared = " + str(round(chi_squared_for_plot,1)) + "      red. chi-squared  = " + str(round(reduced_chi_squared_for_plot,1)) + "\""
             except:
                 try:
-                    chi_squared_string = "\"chi-squared = " + str(round(chi_squared_for_plot,1)) 
+                    chi_squared_string = "\"chi-squared = " + str(round(chi_squared_for_plot,1))
                 except:
                     chi_squared_string = ""
-            
+
         # Print the plot data and chi-squared to the terminal.
         for one_line in lines_to_write:
             one_line = one_line.strip("\n")
@@ -16473,8 +16757,8 @@ class experimentmanager:
                 return 0
 
         # Get the initial and final level keys.
-        initial_level_key = (initial_band_name,initial_spin) 
-        final_level_key   = (final_band_name,final_spin) 
+        initial_level_key = (initial_band_name,initial_spin)
+        final_level_key   = (final_band_name,final_spin)
         initial_level_object = investigated_nucleus.levels[initial_level_key]
         final_level_object = investigated_nucleus.levels[final_level_key]
 
@@ -16581,7 +16865,7 @@ class experimentmanager:
                             # Save the calculated yield data and exit the innermost for loop.
                             if plot_experimental_yields:
                                 # Get the normalization on the calculated yields that gives the best fit to experimental data.
-                                calculated_yield = calculated_yield * experimental_normalization_constant 
+                                calculated_yield = calculated_yield * experimental_normalization_constant
 
                             # If this angle is already in the dict, jog
                             # the point a little to make the plot nicer and to give
@@ -16661,8 +16945,8 @@ class experimentmanager:
 
                 lines_to_write.append("\n\n")  # two blank lines to separate sets
 
-        
-        with open(plot_data_file_name,"w") as plot_data_file: 
+
+        with open(plot_data_file_name,"w") as plot_data_file:
             plot_data_file.writelines(lines_to_write)
         print "Data for this plot were written to the file \"" + plot_data_file_name + "\"."
 
@@ -16678,12 +16962,12 @@ class experimentmanager:
                 chi_squared_string = ""
             else:
                 try:
-                    reduced_chi_squared_for_plot = chi_squared_sum / chi_squared_points 
+                    reduced_chi_squared_for_plot = chi_squared_sum / chi_squared_points
                     # Generate a string to report the chi-squared and reduced chi-squared for the plot
                     chi_squared_string = "\"For " + str(chi_squared_points) + " points, chi-squared = " + str(round(chi_squared_sum,1)) + "      red. chi-squared  = " + str(round(reduced_chi_squared_for_plot,1)) + "\""
                 except:
                     chi_squared_string = "Could not calculate chi-squared. Please report this bug."
-                    
+
         # Write the plot data to the terminal.
         for one_line in lines_to_write:
             one_line = one_line.strip("\n")
@@ -16722,8 +17006,8 @@ class experimentmanager:
                 return 0
 
         # Get the initial and final level keys.
-        initial_level_key = (initial_band_name,initial_spin) 
-        final_level_key   = (final_band_name,final_spin) 
+        initial_level_key = (initial_band_name,initial_spin)
+        final_level_key   = (final_band_name,final_spin)
         initial_level_object = investigated_nucleus.levels[initial_level_key]
         final_level_object = investigated_nucleus.levels[final_level_key]
 
@@ -16836,7 +17120,7 @@ class experimentmanager:
                             # Add this point.
                             if plot_experimental_yields:
                                 # Get the normalization on the calculated yields that gives the best fit to experimental data.
-                                calculated_yield = calculated_yield * experimental_normalization_constant 
+                                calculated_yield = calculated_yield * experimental_normalization_constant
                             calculated_yield_vs_phi_Ge[gosia_experiment_number][phi] = calculated_yield
                             calculated_yield_found   = True
                             break
@@ -16907,8 +17191,8 @@ class experimentmanager:
 
                 lines_to_write.append("\n\n")  # two blank lines to separate sets
 
-        
-        with open(plot_data_file_name,"w") as plot_data_file: 
+
+        with open(plot_data_file_name,"w") as plot_data_file:
             plot_data_file.writelines(lines_to_write)
         print "Data for this plot were written to the file \"" + plot_data_file_name + "\"."
 
@@ -16924,12 +17208,12 @@ class experimentmanager:
                 chi_squared_string = ""
             else:
                 try:
-                    reduced_chi_squared_for_plot = chi_squared_sum / chi_squared_points 
+                    reduced_chi_squared_for_plot = chi_squared_sum / chi_squared_points
                     # Generate a string to report the chi-squared and reduced chi-squared for the plot
                     chi_squared_string = "\"For " + str(chi_squared_points) + " points, chi-squared = " + str(round(chi_squared_sum,1)) + "      red. chi-squared  = " + str(round(reduced_chi_squared_for_plot,1)) + "\""
                 except:
                     chi_squared_string = "Could not calculate chi-squared. Please report this bug."
-                    
+
         # Write the plot data to the terminal.
         for one_line in lines_to_write:
             one_line = one_line.strip("\n")
@@ -16990,11 +17274,11 @@ class experimentmanager:
             error_code = self.plot_yield_data_vs_spin(initial_band_name = initial_band_name,final_band_name = final_band_name)
             return error_code
 
-        elif which_type == "p": 
+        elif which_type == "p":
             error_code = self.plot_yield_data_vs_polar_Ge_angle(initial_band_name = initial_band_name,final_band_name = final_band_name)
             return error_code
 
-        elif which_type == "z": 
+        elif which_type == "z":
             error_code = self.plot_yield_data_vs_azimuthal_Ge_angle(initial_band_name = initial_band_name,final_band_name = final_band_name)
             return error_code
 
@@ -17004,7 +17288,7 @@ class experimentmanager:
 
         If should_apply is True, then they will be applied to the YNRM
         coefficients.
-        
+
         """
         # Get the number of experiments.
         number_of_experiments = self.getnumberofexperiments()
@@ -17012,7 +17296,7 @@ class experimentmanager:
         # Get the gosia output file name from the gosia shell.
         gosia_output_file_name = the_gosia_shell.get_base_file_name() + "." + FILE_DEF_DICT[22]["extension"]
 
-        # Read the gosia output file from disk.  
+        # Read the gosia output file from disk.
         with open(gosia_output_file_name,'r') as gosia_output_file:
             gosia_output_lines = gosia_output_file.readlines()
         # Save a copy of the last lines of the output, which might contain an error message.
@@ -17404,8 +17688,6 @@ class experimentmanager:
             # Zero the calculated G2--G6, and then read & save the new ones.
             investigated_nucleus.zero_deorientation_Gs()
 
-            G_coefficients = {}  # For temporary storage and printing.
-
             number_of_experiments = self.getnumberofexperiments()
             search_strings = ["LEVEL","G2","G4","G6"]
             vacuum_lines = find_all_in_list(gosia_output_lines,search_strings)
@@ -17508,7 +17790,7 @@ class experimentmanager:
                 include_mixing = True
             except:
                 include_mixing = False
-                
+
             try:
                 self.measured_matrix_data
                 include_matrix = True
@@ -17532,10 +17814,10 @@ class experimentmanager:
                         chisq_contribution = (ratio - calculated_value)**2 / error**2
                         if DEBUGGING_MODE:
                             print the_key, calculated_value, ratio, error, chisq_contribution
-                        chi_squared_spectroscopic += chisq_contribution 
+                        chi_squared_spectroscopic += chisq_contribution
                         number_of_spectroscopic_data_points += 1
-                        numerator   = "Branching " + str(the_key[0:2]) + "-->" + str(the_key[2:4]) 
-                        denominator = "          " + str(the_key[0:2]) + "-->" + str(the_key[4:6]) 
+                        numerator   = "Branching " + str(the_key[0:2]) + "-->" + str(the_key[2:4])
+                        denominator = "          " + str(the_key[0:2]) + "-->" + str(the_key[4:6])
                         max_len = max(len(numerator), len(denominator)) - 10
                         line    = "Ratio     " + max_len * "-"
                         this_line = numerator + "\n" + line + "\n" + denominator
@@ -17561,16 +17843,16 @@ class experimentmanager:
                     try:
                         calculated_value = calculated_mixing_ratios[the_key]
                     except:
-                        # No calculated value exists. 
+                        # No calculated value exists.
                         continue
                     # Get the chisq contribution for this, and add to the number of spectroscopic data points.
                     # Ignoring data weights.
                     chisq_contribution = (ratio - calculated_value)**2 / error**2
                     if DEBUGGING_MODE:
                         print the_key, calculated_value, ratio, error, chisq_contribution
-                    chi_squared_spectroscopic += chisq_contribution 
+                    chi_squared_spectroscopic += chisq_contribution
                     number_of_spectroscopic_data_points += 1
-                    this_line = "Mixing ratio " + str(the_key[0:2]).strip("()") + " --> " + str(the_key[0:2]).strip("()")  
+                    this_line = "Mixing ratio " + str(the_key[0:2]).strip("()") + " --> " + str(the_key[0:2]).strip("()")
                     if len(this_line) > 55:
                         this_line += "\n"
                     else:
@@ -17581,11 +17863,11 @@ class experimentmanager:
             if include_matrix:
                 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                 # Matrix data
-                #  
+                #
                 # Cycle through the measured matrix elements, and match them to ones in
                 # memory.  We should include only the ones for transitions that are
                 # possible with the given matrix and levels.
-                # Storage of measured m.e. is currently in this format: 
+                # Storage of measured m.e. is currently in this format:
                 # self.measured_matrix_data.append([initial_band_name, final_band_name, initial_spin, final_spin, multipole_code, reduced_matrix_element, error])
                 # while the actual matrix is stored with tuple keys:
                 # (7, 'gamma', 12.0, 'gamma', 13.0)
@@ -17684,7 +17966,7 @@ class experimentmanager:
             this_experiment_number_of_detectors = this_experiment.get_number_of_detectors()
             # Get the weighted mean normalization of the experimental data.
             try:
-                experimental_normalization_constant = self.get_overall_normalization_for_experimental_yields(internal_experiment_number)[1] 
+                experimental_normalization_constant = self.get_overall_normalization_for_experimental_yields(internal_experiment_number)[1]
                 skip_experiment = False
             except:
                 print "Not enough experimental data to generate a chi-squared report for experiment " + str(internal_experiment_number + 1) + "."
@@ -17704,7 +17986,7 @@ class experimentmanager:
                     # experimental yield, if it exists.  Calculate the chi-squared
                     # contribution from this point, and add it to the totals.  The
                     # weighted-mean normalization is applied to the experimental
-                    # data.  
+                    # data.
 
                     if not this_calculated_yield_set == None and not this_experimental_yield_set == None:
                         for one_calculated_entry in this_calculated_yield_set:
@@ -17726,7 +18008,6 @@ class experimentmanager:
                             if not skip_calc_entry:
 
                                 # Compare with expt yields until a matching entry is found.
-                                this_expt_yld_found = False
                                 for one_experimental_entry in this_experimental_yield_set:
                                     this_initial_band_name, this_initial_spin, this_final_band_name, this_final_spin, absolute_experimental_yield, absolute_error = one_experimental_entry
                                     try:
@@ -17759,9 +18040,8 @@ class experimentmanager:
                                         display_detector_number   = internal_detector_number + 1
                                         transition_string = str(display_detector_number).ljust(10) + " " + initial_band_name.ljust(8) + " " + str(initial_spin).rjust(5) + " --> " + final_band_name.ljust(8) + " " + str(final_spin).rjust(5) + " " + format(experimental_yield,".3g").rjust(9) + " +/- " + format(error,".3g").ljust(9) + " " + format(calculated_yield,".3g").rjust(8) + "  " + format(percent_discrepancy,".1f").rjust(7) + "% " + format(sigma_discrepancy,".1f").rjust(9) + "    " + format(chisquared_contribution,".1f").rjust(9)
                                         # We record a two-item list of [chisq,report string], so that they can be formatted in order of decreasing chisq.
-                                        chisq_report_list[internal_experiment_number].append([chisquared_contribution,transition_string])  
+                                        chisq_report_list[internal_experiment_number].append([chisquared_contribution,transition_string])
 
-                                        this_expt_yld_found = True
                                         # Try to remove this entry, so we don't check it twice.
                                         # This may not be very robust for floats in the list.
                                         this_experimental_yield_set.remove(one_experimental_entry)
@@ -17777,7 +18057,7 @@ class experimentmanager:
             expt_to_calc_normalization = expt_to_calc_normalizations[internal_experiment_number]
             if not data_points == None and not chi_squared == None and not expt_to_calc_normalization == None:
                 if not data_points == 0:
-                    reduced_chi_squared = chi_squared / data_points  
+                    reduced_chi_squared = chi_squared / data_points
                 else:
                     reduced_chi_squared = 0.0
                 total_data_points += data_points
@@ -17819,7 +18099,6 @@ class experimentmanager:
 
         # Add to the report the worst chisq offenders for each experiment.
         for internal_expt_number in range(len(chisq_report_list)):
-            expt_counter_line = "Experiment " + str(internal_expt_number + 1).rjust(2)
             lines_to_display.extend(["","Experiment " + str(internal_expt_number + 1).rjust(2),chisq_header_string_1,chisq_header_string_2,underline_header, ""])
             one_expt_list = chisq_report_list[internal_expt_number]
             one_expt_list.sort()  # low to high chisq
@@ -17863,15 +18142,13 @@ class experimentmanager:
         # final_gosia_level_number):yield_entry,...}, where yield_entry is the
         # formatted string for the gosia.yld file.
 
-        # one_data_set_sorting_dict = {}  THIS IS IN THE WRONG PLACE AND CAUSES ERRORS!
-
         for experiment_number in range(number_of_experiments):
             gosia_experiment_number = experiment_number + 1
             for detector_number in range(numbers_of_detectors[experiment_number]):
                 one_data_set_sorting_dict = {}  # Reset the sorting dictionary for each new data set (detector).  Bug-fix Mar. 4, 2012.
                 one_set_yld_file_lines = [] # a temporary list of yields (text strings) to be put into the total list "yld_file_lines"
                 # Step through all integrated yields, adding an error bar for each.
-                # Get the yields for this detector.  
+                # Get the yields for this detector.
                 one_data_set_yields = self.allexperiments[experiment_number].get_experimental_yields(detector_number)
                 number_of_yields = len(one_data_set_yields)  # for this data set in this experiment
                 for yield_number in range(number_of_yields):
@@ -17888,7 +18165,7 @@ class experimentmanager:
                     final_level_key     = (final_band_name, final_spin)
                     initial_energy      = investigated_nucleus.get_level_information(initial_level_key,"energy")  # Energy in keV
                     final_energy        = investigated_nucleus.get_level_information(final_level_key,"energy")  # Energy in keV
-                    
+
                     # Is the initial state populated, and is there at least one
                     # matrix element coupling the initial and final states for
                     # this data point?  Is the transition from higher to lower
@@ -17896,13 +18173,13 @@ class experimentmanager:
                     # include the decay data.  Otherwise, skip the data.
 
                     level_energies_known = not (initial_energy == None or final_energy == None)
-                    is_populated = self.is_populated(initial_level_key) 
+                    is_populated = self.is_populated(initial_level_key)
                     are_coupled  = investigated_nucleus.are_coupled(initial_level_key, final_level_key)
                     # Is this a decay transition from higher to lower energy (and are both energies known)?
                     is_decay_transition = (initial_energy >= final_energy) and not None in [initial_energy, final_energy]
                     if level_energies_known and is_populated and are_coupled and is_decay_transition:
                         yield_entry = str(gosia_initial_level) + "  " + str(gosia_final_level) + "  " + str(intensity) \
-                          + "  " + str(intensity_error) 
+                          + "  " + str(intensity_error)
                         gosia_state_sorting_key = (gosia_initial_level,gosia_final_level)
                         one_data_set_sorting_dict[gosia_state_sorting_key] = yield_entry
 
@@ -17920,7 +18197,7 @@ class experimentmanager:
                 WT = 1.0     # make the weights 1 for all experiments
                 data_set_header = str(gosia_experiment_number) + "  " + str(gosia_data_set_number) \
                   + "  " + str(ZP) + "  " + str(AP) + "  " + str(EP) + "  " + str(number_of_yields_used) \
-                  + "  " + str(WT) 
+                  + "  " + str(WT)
                 yld_file_lines.append(data_set_header)
 
                 # Sort the yields for this data set by initial and final gosia level number.
@@ -17928,7 +18205,7 @@ class experimentmanager:
                 sorted_yield_keys.sort()
                 for one_key in sorted_yield_keys:
                     one_set_yld_file_lines.append(one_data_set_sorting_dict[one_key])
-                    
+
                 # Now put the yields for this set into the list to write to the yld file.
                 yld_file_lines.extend(one_set_yld_file_lines)
 
@@ -17937,8 +18214,8 @@ class experimentmanager:
 
         # Define the file name to be written.
         gosia_file_number = 3
-        gosia_yld_file_name = the_gosia_shell.get_base_file_name() + "." + FILE_DEF_DICT[3]["extension"]
-        
+        gosia_yld_file_name = the_gosia_shell.get_base_file_name() + "." + FILE_DEF_DICT[gosia_file_number]["extension"]
+
         # Write the yields to the file
         write_lines_to_file(gosia_yld_file_name,yld_file_lines,to_force)
 
@@ -17963,16 +18240,16 @@ class experimentmanager:
         then the prompts are skipped, and the parameter dict is used instead.
 
         Required parameters:
-            inspect_change_efficiency 
-            days_of_beam 
-            beam_intensity 
-            minimum_counts 
-            estimated_additional_error 
-            user_energy_threshold 
-            add_scatter                   
+            inspect_change_efficiency
+            days_of_beam
+            beam_intensity
+            minimum_counts
+            estimated_additional_error
+            user_energy_threshold
+            add_scatter
 
         Example of all_parameters dict:
-            
+
               { \
                 "days_of_beam":5.0, \
                 "beam_intensity":1.0, \
@@ -21247,7 +21524,7 @@ class detectormanager:
             read_standard_types = False
             # Set empty dictionary for the standard types.
             current_standard_ge_types = {}
-    
+
         # Combine the two dicts (possibly empty):
         all_library_types = copy.deepcopy(current_standard_ge_types)
         all_library_types.update(current_local_ge_types)
@@ -21270,7 +21547,7 @@ class detectormanager:
                     else:
                         # This should be the start of a six-line definition.
                         # Only the first word is kept as the name.
-                        user_name_for_crystal = line_fields[0] 
+                        user_name_for_crystal = line_fields[0]
                         this_crystal_type_dictionary = {}
 
                         print "Reading crystal type: \"",user_name_for_crystal , "\" ..."
@@ -21316,7 +21593,7 @@ class detectormanager:
                                     print "Error parsing crystal types."
                                     print "No changes made."
                                     return -1
-                                
+
                             line_number += 1
 
                         # Save this successfully read detector dictionary to a dict.
@@ -21343,7 +21620,7 @@ class detectormanager:
             if not existing_type_number == None:
                 print "A crystal type called \"",one_new_name,"\" is in memory!"
                 duplicate_found_in_memory = True
-                
+
         print ""
         if duplicate_found_in_memory:
             block_print_with_line_breaks("One or more of the crystal names defined in this file were found in memory.  Set unique crystal names in the file, and try again.\nNo crystal types were saved.\n",60)
@@ -21353,9 +21630,9 @@ class detectormanager:
             for one_new_name in all_new_detector_names:
                 new_detector_parameter_dict = copy.deepcopy(all_new_detector_dicts[one_new_name])
                 # This tool is used for generating detector arrays quickly, so no 4pi detectors should be added this way.
-                new_detector_parameter_dict["four_pi"] = False  
+                new_detector_parameter_dict["four_pi"] = False
                 # Add the detector name to the dictionary for the session.
-                new_detector_parameter_dict["detector_name"] = one_new_name 
+                new_detector_parameter_dict["detector_name"] = one_new_name
                 # Add the absorber thicknesses.
                 new_detector_parameter_dict["l"] = absorber_thicknesses
                 # Add to the physical detectors in memory (which will be sent to the GDET run for Gosia).
@@ -21382,7 +21659,7 @@ class detectormanager:
             for one_new_name in all_new_detector_names:
                 new_detector_parameter_dict = copy.deepcopy(all_new_detector_dicts[one_new_name])
                 # Add the new types to the standard type dictionary.
-                current_local_ge_types[one_new_name] = new_detector_parameter_dict 
+                current_local_ge_types[one_new_name] = new_detector_parameter_dict
                 # Update the standard types file in the working directory only (!) with this type.
                 rachel_ge_types_file = "rv_rachel_detector_dict.txt"
             with open(rachel_ge_types_file,"w") as detector_dict_file:
@@ -21392,7 +21669,7 @@ class detectormanager:
         create_popup_tip("gdet_for_clusters")
 
         print "Done."
-        
+
         return 0
 
 
@@ -21444,7 +21721,7 @@ class detectormanager:
             read_standard_types = False
             # Set empty dictionary for the standard types.
             standard_ge_types = {}
-    
+
 
         # Prompt for a standard detector type, if desired.
         print "Standard types in library:"
@@ -21477,7 +21754,7 @@ class detectormanager:
             print "---------------------------------------------------"
             # Get all the type names read from the file library file.
             local_type_names = local_ge_types.keys()
-            local_type_names.sort() 
+            local_type_names.sort()
 
             for one_type_name in local_type_names:
                 # print one_type_name.ljust(20),"  ",local_ge_types[one_type_name]["detector_description"]
@@ -21496,7 +21773,7 @@ class detectormanager:
 
         else:
             local_type_names = []
-            
+
 
         block_print_with_line_breaks("\nEnter one of the names above if desired, or a new alphanumeric name to define your own detector.\nNew in version 1.0 is an option to load physical detector definitions from a human-readable text file.  This is option \"ip\" in the Tools button menu.")
 
@@ -21514,7 +21791,7 @@ class detectormanager:
             else:
                 name_is_invalid = False
                 print "Name taken as \""+type_name+"\"."
-                
+
 
         if type_name in standard_type_names:
             library_pointer = standard_ge_types
@@ -21526,8 +21803,8 @@ class detectormanager:
         if library_pointer == None:
             # No standard type was chosen.  Prompt for all information.
 
-            # If this is meant to be a 4pi array, then mark a flag.  This will 
-            # have to be handled after the OP,GDET run of gosia by replacing 
+            # If this is meant to be a 4pi array, then mark a flag.  This will
+            # have to be handled after the OP,GDET run of gosia by replacing
             # appropriate fields in the .gdt file.
             four_pi = yes_no_prompt("Do you want a summed isotropic 4pi array [y/N]? ",False)
             if four_pi:
@@ -23332,17 +23609,7 @@ class main_gui:
 
         create_popup_tip("gnuplot_summary")
 
-#        for one_line in summary:
-#            one_line = one_line + "\n"
-#            self.insertnewtext(one_line)
 
-# THIS VERSION WORKS, BUT DOESN'T SCROLL TO END AUTOMATICALLY.
-#    def insertnewtext(self,newtext):
-#        new_position = self.textbuffer.get_char_count()
-#        new_iter = self.textbuffer.get_iter_at_offset(new_position)  # the bottom line?
-#        self.textbuffer.insert(new_iter, newtext)  # new
-#        new_position = self.textbuffer.get_char_count()
-                                                                                                                                        
     def insertnewtext(self,newtext,scroll_to_bottom = True):
         # This will insert text in the main textview window at the bottom and place the scrollbar
         # so that the bottom line is visible afterward.
@@ -23957,29 +24224,6 @@ class main_gui:
         except:
             platform = "[platform unavailable]"
 
-#        try:
-#            last_traceback_object = sys.last_traceback
-#            print dir(last_traceback_object)
-#            print "tb_frame, tb_lasti, tb_lineno, tb_next"
-#            print last_traceback_object.tb_frame, last_traceback_object.tb_lasti, last_traceback_object.tb_lineno, last_traceback_object.tb_next
-#            print "tbframe dir:"
-#            print dir(last_traceback_object.tb_frame)
-#            print "fcode: ",last_traceback_object.tb_frame.f_code
-#            print "ftrace: ",last_traceback_object.tb_frame.f_trace
-#            print "fback: ",last_backback_object.tb_frame.f_back
-#            print "fbuiltins: ",last_builtinsback_object.tb_frame.f_builtins
-#            print "fexc_traceback: ",last_exc_tracebackback_object.tb_frame.f_exc_traceback
-#            print "fexc_type: ",last_exc_typeback_object.tb_frame.f_exc_type
-#            print "fexc_value: ",last_exc_valueback_object.tb_frame.f_exc_value
-#            print "flasti: ",last_lastiback_object.tb_frame.f_lasti
-#            print "ftrace: ",last_traceback_object.tb_frame.f_trace
-#            print "ftrace: ",last_traceback_object.tb_frame.f_trace
-#            print "tbnext dir:"
-#            print dir(last_traceback_object.tb_next)
-#            print "========================================"
-#        except:
-#            print "dir tb..."
-#            print sys.exc_info()
 
 
         try:
@@ -24017,7 +24261,7 @@ class main_gui:
                     # Put together the platform, traceback, etc.
             except:
                 traceback_string = "    No exception appears to have occurred, but user reactivated GUI."
-                
+
             try:
                 full_description = platform + "\n" + traceback_string
             except:
@@ -24042,7 +24286,7 @@ class main_gui:
         # Reactivate GUI buttons.
         self.set_activation(self)
 
-        
+
     def read_bst(self,widget):
 
         print_separator()
@@ -24977,17 +25221,6 @@ class main_gui:
                     # Reactivate GUI buttons.
                     self.set_activation(self)
                     break 
-#                elif user_expression == "upgrade":
-#                    nucleus_returned_errors,     nucleus_upgrade_text     = investigated_nucleus.for_upgrade()
-#                    experiment_returned_errors,  experiment_upgrade_text  = the_experiment_manager.for_upgrade()
-#                    gosia_shell_returned_errors, gosia_shell_upgrade_text = the_gosia_shell.for_upgrade()
-#                    detector_returned_errors,    detector_upgrade_text    = the_detector_manager.for_upgrade()
-#                    returned_errors = nucleus_returned_errors + experiment_returned_errors + gosia_shell_returned_errors + detector_returned_errors
-#                    print returned_errors, " errors in upgrade."
-#                    if returned_errors == 0:
-#                        print "Enter \"q\" to quit the interpreter and save your session file now."
-#                    else:
-#                        print "Do NOT save your session file.  Something went wrong with the upgrade!"
                 elif user_expression.strip() == "functions":
 
                     block_print_with_line_breaks("The following commands take prompted input for common calculations.  All functions below are accurate for elastic or inelastic scattering.  Quantities are symmetrized over the entrance and exit velocities as appropriate.\n")
@@ -25020,7 +25253,7 @@ class main_gui:
                     block_print_with_line_breaks("user_evsl - Generates a plot of inelastic lab-frame scattering and recoil energies vs the lab scattering/recoil angle.")
                     block_print_with_line_breaks("user_gs   - Searches for initial and final states whose difference in energy matches a specified gamma-ray energy.")
                     print "These are function calls, so type \"user_evsl()\" for example."
-                    
+
                     print  ""
                     #block_print_with_line_breaks("Syntax for each function can be displayed by typing for example \"safe_energy.__doc__\".")
                     block_print_with_line_breaks("The commands described above will not affect the GUI state.\n")
@@ -25032,34 +25265,6 @@ class main_gui:
                 elif user_expression.strip() == "chisq":
                     the_experiment_manager.properly_weighted_chi_squared_report()
 
-#                elif user_expression.strip() == "script":
-#                    script_file_name = prompt_for_file_name(prompt_string = "Enter script file name: ")
-#                    with open(script_file_name,"r") as script_file:
-#                        script_lines = script_file.readlines()
-#                    for one_line in script_lines:
-#                        one_line = one_line.strip()
-#                        if not len(one_line) == 0:
-#                            if not one_line[0] == "#":
-#                                print "Rachel>" + one_line
-#                                eval(one_line)
-#                    print "Script finished."
-
-#                elif user_expression.strip() == "python":
-#                    script_file_name = prompt_for_file_name(prompt_string = "Enter script file name: ")
-#                    print "Trying to run script \"" + script_file_name + "\"."
-#                    try:
-#                        with open(script_file_name,"r") as test_file:
-#                            test_file.readline()
-#                        print "Found file \"" + script_file_name + "\"."
-#                        file_found = True
-#                        print "Running..."
-#                    except:
-#                        print "Could not find file in the working directory.\nInclude the full path."
-#                        file_found = False
-#
-#                    if file_found:
-#                        execfile(script_file_name)
-#                        print "\nScript execution ended."
 
                 elif user_expression.strip() == "exec":
                     block_print_with_line_breaks("This is similar to a python interpreter session, except that evaluation of expressions does not give any output, unless preceded by \"print \"")
@@ -25077,7 +25282,7 @@ class main_gui:
                                 exec(command_line)
                             except:
                                 print "Error:", sys.exc_info()[0]
-                        
+
                 else:
                     if not user_expression == "":
                         try:
@@ -25092,7 +25297,7 @@ class main_gui:
             # Reactivate GUI buttons.
             self.set_activation(self)
             return -1
-            
+
 
     def __init__(self):
 
@@ -25965,89 +26170,6 @@ def p_gamma_events(I_passed,days_passed,A_passed,Gosia_yield_passed,gamma_effici
     return detected_events
 
 
-
-
-#def absolute_efficiency(E_gamma_passed, efficiency_parameters = None, overall_normalization = None, curve_type = "radware"):
-#    """Calculates the absolute gamma efficiency 
-#
-#    (Radware, others to be added.)
-#
-#    Syntax absolute_efficiency(E_gamma[keV],parameter_list)
-#
-#    The efficiency parameters are the ones used in Radware.  Their values can
-#    be passed in as a list.  If they are not, then the values are taken from
-#    DEFAULT_EFFICIENCY_PARAMETERS.
-#
-#    e.g.
-#    [5.7021, 4.83491, 0., 6.20016, -6.06E-01, -5.36E-03, 4.5934, 0.000219]
-#     A       B        C   D        E          F          G       N 
-#
-#    N is a scale factor for estimated absolute efficiency.
-#
-#    """
-#
-#    E_gamma = float(E_gamma_passed)
-#
-#    if curve_type == "radware":
-#        if efficiency_parameters == None:
-#            # Use the default values:
-#            A, B, C, D, E, F, G = DEFAULT_EFFICIENCY_PARAMETERS[:7]
-#        else:
-#            # Efficiency parameters were passed in.  Convert them all to floats:
-#            A = float(efficiency_parameters[0])
-#            B = float(efficiency_parameters[1])
-#            C = float(efficiency_parameters[2])
-#            D = float(efficiency_parameters[3])
-#            E = float(efficiency_parameters[4])
-#            F = float(efficiency_parameters[5])
-#            G = float(efficiency_parameters[6])
-#
-#        if overall_normalization == None:
-#            # Use the default value.
-#            N = DEFAULT_EFFICIENCY_PARAMETERS[7]
-#        else:
-#            # Use the value passed by the caller.
-#            N = float(overall_normalization)
-#
-#        # See D. Radford, Nucl. Instruments and Methods A 361:297 (1995) for the
-#        # form of the efficiency curve.
-#
-#        x = math.log(float(E_gamma) / 100.)
-#        y = math.log(float(E_gamma) / 1000.)
-#
-#        first_quadratic  =   A  +  B * x  +  C * x**2
-#        second_quadratic =   D  +  E * y  +  F * y**2
-#        ln_efficiency = (first_quadratic**(-G) + second_quadratic**(-G))**(-1. / G)
-#        absolute_efficiency = N * math.exp(ln_efficiency)
-#
-#    elif curve_type == "miniball":
-#        curve_data = the_detector_manager.understood_efficiency_curve_types["miniball"]
-#        if efficiency_parameters == None:
-#            # Use the default values:
-#            par = curve_data[default_parameter_values]
-#        else:
-#            # Efficiency parameters were passed in.  Convert them all to floats:
-#            A = float(efficiency_parameters[0])
-#            B = float(efficiency_parameters[1])
-#            C = float(efficiency_parameters[2])
-#            D = float(efficiency_parameters[3])
-#            E = float(efficiency_parameters[4])
-#            F = float(efficiency_parameters[5])
-#            G = float(efficiency_parameters[6])
-#
-#        if overall_normalization == None:
-#            # Use the default value.
-#            N = DEFAULT_EFFICIENCY_PARAMETERS[7]
-#        else:
-#            # Use the value passed by the caller.
-#            N = float(overall_normalization)
-#        
-#    return absolute_efficiency
-
-
-
-
-
 def one_step_perturbation_cross_section(elambda_text,BElambda_passed,Z_proj_passed,A_proj_passed,Z_targ_passed,A_targ_passed,E_mean_passed,E_excited_state_passed):
     """Calculates the one-step excitation cross section for 4pi scattering in mb.
 
@@ -26088,7 +26210,6 @@ def one_step_perturbation_cross_section(elambda_text,BElambda_passed,Z_proj_pass
     else:
         print "Error in one_step_perturbation_cross_section: multipole not allowed."
         return -1
-
 
 
 def winther_C_Elambda(elambda_text,Z_proj_passed,A_proj_passed,Z_targ_passed,A_targ_passed):
@@ -26262,115 +26383,6 @@ def calc_wu(A,multipole_text):
     else:
         return "calc_wu error: invalid multipole"
 
-
-# def integrated_rutherford_cross_section(Z_proj_passed,A_proj_passed,Z_targ_passed,A_targ_passed,E_lab_passed,theta_min_lab_passed,theta_max_lab_passed,recoil=False):
-#     """ Returns the integrated Rutherford cross section in mb in the lab frame,
-#     currently only for azimuthal symmetry, summed for both kinematic solutions,
-#     if the Z,A values indicate inverse kinematics.
-# 
-#     **************THIS IS NOT SYMMETRIZED AND Q-DEPENDENT.  NEEDS UPDATES.**************
-# 
-#     Syntax: integrated_rutherford_cross_section(Z_proj,A_proj,Z_targ,A_targ,E_lab,theta_min_lab,theta_max_lab,recoil=False)
-#     (If True is not passed as the last parameter, then projectile angles are assumed.)
-# 
-#     If the maximum scattering angle is greater than allowed for inverse
-#     kinematics, it returns -1.
-# 
-#     If the minimum projectile angle is less than 0.01, then it returns -2
-# 
-#     If recoil=True, then it interprets the angles theta_min_lab, theta_max_lab
-#     as recoil angles.
-# 
-#     """
-# 
-# 
-# 
-#     #Borrowed some lines from Wu's ruthxx.f code, but some 
-#     #apparent similarities might be misleading.
-# 
-#     #         ruthi - multiplicative constant for cross section function
-#     #                 The factor 1.296 converts the cross sections to millibarns (mb).
-#       
-# 
-#     # Convert all to floats
-#     Z_proj = float(Z_proj_passed)
-#     A_proj = float(A_proj_passed)
-#     Z_targ = float(Z_targ_passed)
-#     A_targ = float(A_targ_passed)
-#     E_lab = float(E_lab_passed)
-#     theta_min_lab = float(theta_min_lab_passed)
-#     theta_max_lab = float(theta_max_lab_passed)
-# 
-#     E_beam_com = beam_energy_com(A_proj,A_targ,E_lab)
-# 
-#     am=A_proj*A_targ/(A_proj+A_targ)**2
-#     ruthi=(Z_proj*Z_targ)**2*1.296/E_beam_com**2       # gives result in mb.
-# 
-#     # If projectile angles were passed
-#     if A_proj <= A_targ:
-#         inverse = False
-#     else:
-#         inverse = True
-# 
-#     if not recoil:
-#         # If projectile angles were passed
-#         if not inverse:
-#             theta_scattering_limit = 180.  # In the lab frame
-#         else:
-#             theta_scattering_limit = math.degrees(math.asin(A_targ/A_proj))   # In the lab frame, in degrees
-# 
-#         if theta_max_lab > theta_scattering_limit:
-#             return -1
-# 
-#         if theta_min_lab < 0.01:
-#             return -2  # Trying to integrate too close to 0 degrees
-#         theta_com_low = theta_scattering_com(A_proj,A_targ,theta_min_lab,True)  # True means forward solution
-#         theta_com_high = theta_scattering_com(A_proj,A_targ,theta_max_lab,True)  # True means forward solution
-#         
-# 
-#         # For normal kinematics or the first scattering solution for inverse kinematics
-#         integrated_cross_section = 2. * math.pi * ruthi * 4. * ((1. / (math.cos(math.radians(theta_com_high)) - 1.))\
-#           - (1. / (math.cos(math.radians(theta_com_low)) - 1.)))
-# 
-#         # If it's an inverse-kinematics case, then compute the same integral for the second solution
-# 
-#         if inverse:
-#             theta_com_low = theta_scattering_com(A_proj,A_targ,theta_min_lab,False)  # False means backward solution
-#             theta_com_high = theta_scattering_com(A_proj,A_targ,theta_max_lab,False)  # False means backward solution
-# 
-#             integrated_cross_section += 2. * math.pi * ruthi * 4. * ((1. / (math.cos(math.radians(theta_com_high)) - 1.))\
-#               - (1. / (math.cos(math.radians(theta_com_low)) - 1.)))
-#   
-#         return integrated_cross_section
-# 
-#     else:
-#         # Recoil angles were passed.
-# 
-#         if theta_max_lab > 89.9:
-#             #Trying to integrate too close to 0 deg scattering (90 recoil)
-#             return -2
-#         else:
-#             # Recoil angles were passed.
-#             theta_scat_lab_1 = theta_recoil_to_scattering_lab(A_proj,A_targ,theta_max_lab)
-#             theta_scat_lab_2 = theta_recoil_to_scattering_lab(A_proj,A_targ,theta_min_lab)
-#             theta_scat_com_1 = theta_scattering_com(A_proj,A_targ,theta_scat_lab_1)
-#             theta_scat_com_2 = theta_scattering_com(A_proj,A_targ,theta_scat_lab_2)
-#             theta_scat_com_max = max(theta_scat_com_1,theta_scat_com_2)
-#             theta_scat_com_min = min(theta_scat_com_1,theta_scat_com_2)
-#             integrated_cross_section = 2. * math.pi * ruthi * 4. * ((1. / (math.cos(math.radians(theta_scat_com_max)) - 1.))\
-#               - (1. / (math.cos(math.radians(theta_scat_com_min)) - 1.)))
-#             if inverse:
-#                 # Now we need to add the second solution.
-#                 theta_scat_lab_1 = theta_recoil_to_scattering_lab(A_proj,A_targ,theta_max_lab)
-#                 theta_scat_lab_2 = theta_recoil_to_scattering_lab(A_proj,A_targ,theta_min_lab)
-#                 theta_scat_com_1 = theta_scattering_com(A_proj,A_targ,theta_scat_lab_1,False)
-#                 theta_scat_com_2 = theta_scattering_com(A_proj,A_targ,theta_scat_lab_2,False)
-#                 theta_scat_com_max = max(theta_scat_com_1,theta_scat_com_2)
-#                 theta_scat_com_min = min(theta_scat_com_1,theta_scat_com_2)
-#                 integrated_cross_section += 2. * math.pi * ruthi * 4. * ((1. / (math.cos(math.radians(theta_scat_com_max)) - 1.))\
-#                   - (1. / (math.cos(math.radians(theta_scat_com_min)) - 1.)))
-# 
-#             return integrated_cross_section
 
 
 def time_reversal(I_a,I_b,multipole_text,a_to_b_matrix_element):
@@ -26582,11 +26594,11 @@ def safe_energy(Z_proj,A_proj,Z_targ,A_targ):
 #  |                                                                 |
 #  V                                                                 V
 
-# Done
+
 def inelastic_scattering_tau(A_proj_passed,A_targ_passed,E_proj_lab_passed,Q_value):
 
     """Returns the inelastic value of the scattering parameter tau.
-        
+
         tau is defined in the Gosia manual, section 5.1.2
 
     NOTE:
@@ -26609,7 +26621,6 @@ def inelastic_scattering_tau(A_proj_passed,A_targ_passed,E_proj_lab_passed,Q_val
     return tau
 
 
-# Done
 def inelastic_scattering_tau_tilde(A_proj_passed,A_targ_passed,E_proj_lab_passed,Q_value):
 
     """Returns the inelastic value of the scattering parameter tau-tilde.
@@ -26639,7 +26650,7 @@ def inelastic_scattering_tau_tilde(A_proj_passed,A_targ_passed,E_proj_lab_passed
 def inelastic_E_tilde(A_proj_passed,A_targ_passed,E_proj_lab_passed,Q_value):
 
     """Returns the inelastic value of the scattering parameter E-tilde.
-        
+
         E-tilde is defined in the Gosia manual, section 5.1.2
 
     NOTE:
@@ -26659,10 +26670,9 @@ def inelastic_E_tilde(A_proj_passed,A_targ_passed,E_proj_lab_passed,Q_value):
 
     E_tilde = E_proj_lab - dE * (1.0 + (A_proj / A_targ))
 
-    return E_tilde 
+    return E_tilde
 
 
-# Done
 def lab_beam_energy_to_com(A_proj,A_targ,E_proj):
     """Returns the c.o.m. beam energy for a lab energy of E_proj.
 
@@ -26679,7 +26689,7 @@ def lab_beam_energy_to_com(A_proj,A_targ,E_proj):
 
     return E_com
 
-# Done
+
 def com_beam_energy_to_lab(A_proj,A_targ,E_com):
     """Returns the lab beam energy for a c.o.m. energy of E_com.
 
@@ -26723,7 +26733,7 @@ def inelastic_lab_scattering_angle_to_lab_scattering_energy(A_proj_passed,A_targ
     com_scattering_angle = inelastic_lab_scattering_angle_to_com_scattering_angle(A_proj,A_targ,theta_lab,forward,E_proj,Q_value)
     E_tilde = inelastic_E_tilde(A_proj,A_targ,E_proj,Q_value)
 
-    E_scattering_lab = ( A_targ / (A_proj + A_targ))**2 * (1.0 + tau**2 + 2.0 * tau * math.cos(math.radians(com_scattering_angle))) * E_tilde
+    E_scattering_lab = (A_targ / (A_proj + A_targ))**2 * (1.0 + tau**2 + 2.0 * tau * math.cos(math.radians(com_scattering_angle))) * E_tilde
 
     return E_scattering_lab 
 
@@ -26757,10 +26767,9 @@ def inelastic_lab_recoil_angle_to_lab_recoil_energy(A_proj_passed,A_targ_passed,
 
     E_recoil_lab = ((A_proj * A_targ) / (A_proj + A_targ)**2) * (1.0 + tau_tilde**2 + 2.0 * tau_tilde * math.cos(math.radians(com_recoil_angle))) * E_tilde
 
-    return E_recoil_lab 
+    return E_recoil_lab
 
 
-# Done
 def inelastic_com_scattering_angle_to_com_recoil_angle(theta_passed):
     """This is universal for elastic and inelastic.
 
@@ -26776,15 +26785,13 @@ def inelastic_com_scattering_angle_to_com_recoil_angle(theta_passed):
 
     return com_recoil_angle
 
-# Done
+
 def inelastic_com_recoil_angle_to_com_scattering_angle(theta_passed):
     """This is universal for elastic and inelastic.
 
     Tested May 9 2012.
 
     """
-
-
 
     theta_recoil_com = float(theta_passed)
     theta_recoil_com_rad = math.radians(theta_recoil_com)
@@ -26793,11 +26800,11 @@ def inelastic_com_recoil_angle_to_com_scattering_angle(theta_passed):
 
     return com_scattering_angle
 
-# Done
+
 def inelastic_lab_scattering_angle_to_lab_recoil_angle(A_proj_passed,A_targ_passed,theta_lab_passed,forward,E_proj_passed,Q_value):
     """
 
-    Angles are given and returned in degrees.  
+    Angles are given and returned in degrees.
 
     NOTE:
         E_projectile is in MeV.
@@ -26818,7 +26825,6 @@ def inelastic_lab_scattering_angle_to_lab_recoil_angle(A_proj_passed,A_targ_pass
     A_proj = float(A_proj_passed)
     A_targ = float(A_targ_passed)
     E_proj = float(E_proj_passed)
-    dE     = float(abs(Q_value))
     theta_scat_lab = float(theta_lab_passed)  # This is the recoil angle in the lab frame.
 
     theta_scat_com = inelastic_lab_scattering_angle_to_com_scattering_angle(A_proj,A_targ,theta_scat_lab,forward,E_proj,Q_value)
@@ -26828,7 +26834,6 @@ def inelastic_lab_scattering_angle_to_lab_recoil_angle(A_proj_passed,A_targ_pass
     return theta_rec_lab
 
 
-# Done
 def inelastic_com_recoil_angle_to_lab_recoil_angle(A_proj_passed,A_targ_passed,theta_com_passed,E_proj_passed,Q_value):
     """
 
@@ -26857,7 +26862,7 @@ def inelastic_com_recoil_angle_to_lab_recoil_angle(A_proj_passed,A_targ_passed,t
 
     return theta_recoil_lab
 
-# Done
+
 def inelastic_com_scattering_angle_to_lab_scattering_angle(A_proj_passed,A_targ_passed,theta_com_passed,E_proj_passed,Q_value):
     """
 
@@ -26925,7 +26930,7 @@ def inelastic_lab_recoil_angle_to_lab_scattering_angle(A_proj_passed,A_targ_pass
 
     return theta_proj_lab
 
-# Done
+
 def inelastic_lab_recoil_angle_to_com_recoil_angle(A_proj_passed,A_targ_passed,theta_lab_passed,forward,E_proj_passed,Q_value):
     """Returns the recoil angle in the c.o.m. frame
 
@@ -26964,7 +26969,6 @@ def inelastic_lab_recoil_angle_to_com_recoil_angle(A_proj_passed,A_targ_passed,t
     return theta_com
 
 
-# Done
 def inelastic_lab_scattering_angle_to_com_scattering_angle(A_proj_passed,A_targ_passed,theta_lab_passed,forward,E_proj_passed,Q_value):
     """Returns the projectile scattering angle in the c.o.m. frame
 
@@ -26992,10 +26996,14 @@ def inelastic_lab_scattering_angle_to_com_scattering_angle(A_proj_passed,A_targ_
 
 
     # Is this a normal or inverse kinematics case?
+
     if A_proj_passed < A_targ_passed:
+
         # This is normal kinematics
         normal_kinematics = True
+
     else:
+
         # Inverse kinematics
         normal_kinematics  = False
 
@@ -27017,7 +27025,6 @@ def inelastic_lab_scattering_angle_to_com_scattering_angle(A_proj_passed,A_targ_
     return theta_com
 
 
-# Done
 def inelastic_maximum_scattering_angle(A_proj_passed,A_targ_passed,E_proj_passed,Q_value):
     """Returns the maximum projectile scattering angle in the lab frame.
 
@@ -27034,10 +27041,8 @@ def inelastic_maximum_scattering_angle(A_proj_passed,A_targ_passed,E_proj_passed
 
     """
 
+    # Convert all to floats.
 
-
-
-    # Convert all to floats
     A_proj = float(A_proj_passed)
     A_targ = float(A_targ_passed)
     E_proj = float(E_proj_passed)
@@ -27045,13 +27050,15 @@ def inelastic_maximum_scattering_angle(A_proj_passed,A_targ_passed,E_proj_passed
     tau = inelastic_scattering_tau(A_proj,A_targ,E_proj,Q_value)
 
     if A_proj < A_targ:
+
         # This was an unnecessary call for normal kinematics.
         return 180.0
+
     else:
+
         return math.degrees(math.asin(1. / tau))
 
 
-# Done
 def inelastic_maximum_recoil_angle(A_proj_passed,A_targ_passed,E_proj_passed,Q_value):
     """Returns the maximum projectile scattering angle in the lab frame.
 
@@ -27068,10 +27075,8 @@ def inelastic_maximum_recoil_angle(A_proj_passed,A_targ_passed,E_proj_passed,Q_v
 
     """
 
+    # Convert all to floats.
 
-
-
-    # Convert all to floats
     A_proj = float(A_proj_passed)
     A_targ = float(A_targ_passed)
     E_proj = float(E_proj_passed)
@@ -27081,7 +27086,6 @@ def inelastic_maximum_recoil_angle(A_proj_passed,A_targ_passed,E_proj_passed,Q_v
     return math.degrees(math.asin(1. / tau_tilde))
 
 
-# Done
 def inelastic_differential_scattering_cross_section(Z_proj_passed,A_proj_passed,Z_targ_passed,A_targ_passed,theta_lab_passed,forward,E_proj_passed,Q_value):
     """Returns dsigma/dOmega in the lab frame (mb/sr) for a projectile scattering angle.
 
@@ -27091,7 +27095,7 @@ def inelastic_differential_scattering_cross_section(Z_proj_passed,A_proj_passed,
 
 
     There is no default kinematic solution.
-    
+
     Syntax: (Z_proj,A_proj,Z_targ,A_targ,E_proj,theta_lab,forward,Q_value)
 
     forward = True indicates the forward-c.o.m. solution for inverse kinematics;
@@ -27104,10 +27108,8 @@ def inelastic_differential_scattering_cross_section(Z_proj_passed,A_proj_passed,
 
     """
 
+    # Convert all to floats.
 
-
-
-    # Convert all to floats
     Z_proj = float(Z_proj_passed)
     A_proj = float(A_proj_passed)
     Z_targ = float(Z_targ_passed)
@@ -27116,16 +27118,20 @@ def inelastic_differential_scattering_cross_section(Z_proj_passed,A_proj_passed,
     theta_lab = float(theta_lab_passed)
 
     # Get the scattering angle in the c.o.m. frame.
+
     theta_com     = inelastic_lab_scattering_angle_to_com_scattering_angle(A_proj,A_targ,theta_lab,forward,E_proj,Q_value)
 
-    # Call the com frame q-dependent cross section first, then apply the transformation.
+    # Call the com frame q-dependent cross section first, then apply the
+    # transformation.
+
     com_cross_section = inelastic_differential_scattering_cross_section_com(Z_proj,A_proj,Z_targ,A_targ,theta_com,E_proj,Q_value)
 
     theta_com_rad = math.radians(theta_com)
     theta_lab_rad = math.radians(theta_lab)
 
     # The transformation factor to the lab frame is
-    numerator    = math.sin(theta_com_rad)**2 
+
+    numerator    = math.sin(theta_com_rad)**2
     #              ----------------------------------------------------------------------------------------------------------------------------
     denominator  = math.sin(theta_lab_rad)**2 * abs(math.cos(theta_com_rad - theta_lab_rad))
 
@@ -27133,7 +27139,7 @@ def inelastic_differential_scattering_cross_section(Z_proj_passed,A_proj_passed,
 
     return differential_cross_section_lab
 
-# Done
+
 def inelastic_symmetrized_energy(A_proj_passed,A_targ_passed,E_proj_passed,Q_value):
     """ Calculates the symmetrized center-of-mass energy.  See A&W appendix x.2,
 
@@ -27149,8 +27155,6 @@ def inelastic_symmetrized_energy(A_proj_passed,A_targ_passed,E_proj_passed,Q_val
 
     """
 
-
-
     A_proj = float(A_proj_passed)
     A_targ = float(A_targ_passed)
     E_proj = float(E_proj_passed)
@@ -27162,7 +27166,7 @@ def inelastic_symmetrized_energy(A_proj_passed,A_targ_passed,E_proj_passed,Q_val
 
     return Ecm_sym
 
-# Done
+
 def inelastic_differential_scattering_cross_section_com(Z_proj_passed,A_proj_passed,Z_targ_passed,A_targ_passed,theta_com_passed,E_proj_passed,Q_value):
     """Returns dsigma/dOmega in the c.o.m. frame (mb/sr).
 
@@ -27180,22 +27184,19 @@ def inelastic_differential_scattering_cross_section_com(Z_proj_passed,A_proj_pas
 
     """
 
-
-
     # Convert all to floats
     Z_proj = float(Z_proj_passed)
     A_proj = float(A_proj_passed)
     Z_targ = float(Z_targ_passed)
     A_targ = float(A_targ_passed)
     E_proj = float(E_proj_passed)
-    dE     = float(abs(Q_value))
     theta_com = float(theta_com_passed)
     theta_com_rad = math.radians(theta_com)
 
     E_sym = inelastic_symmetrized_energy(A_proj_passed,A_targ_passed,E_proj_passed,Q_value)
     # The initial lab and com energies are related by Ep/(1+Ap/At) = E_com.
 
-    numerator   = RUTHERFORD_CONSTANT * Z_proj**2 * Z_targ**2 
+    numerator   = RUTHERFORD_CONSTANT * Z_proj**2 * Z_targ**2
     #             -------------------------------------------
     denominator = E_sym**2 * math.sin(theta_com_rad / 2.)**4
 
@@ -27565,11 +27566,11 @@ def user_svsr():
     full_list.extend(lo_list)
     for theta_rec_lab in full_list:
         theta_scat_lab = inelastic_lab_recoil_angle_to_lab_scattering_angle(Ap,At,theta_rec_lab,forward,E_beam,E_exc)
-        point = [theta_rec_lab,theta_scat_lab]
         plot_list[0].append(theta_rec_lab)
         plot_list[1].append(theta_scat_lab)
 
     # Get the top half of the scat vs. rec plot.
+
     forward = False
     full_list = list(numpy.linspace(max_rec * 0.9999, max_rec * 0.999, 100))
     lo_list = list(numpy.linspace(max_rec * 0.999, 0.0, 1000))
@@ -27581,10 +27582,11 @@ def user_svsr():
 
     block_print_with_line_breaks("The plot shows lab-frame (projectile) scattering angle (y) vs. lab-frame (target) recoil angle in degrees.  The maximum scattering and recoil angles, respectively, are ")
 
-    
-    print str(round(max_scat,3)) + " and  " + str(round( max_rec,3)) + " degrees.\n"
+
+    print str(round(max_scat,3)) + " and  " + str(round(max_rec,3)) + " degrees.\n"
 
     # Call the quick-plot function for gnuplot.
+
     quick_plot_n_sets({"proj vs. rec":plot_list})
 
     return 0
