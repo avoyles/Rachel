@@ -1,10 +1,24 @@
 #!/usr/bin/env python
 
-VERSION = "1.3.1"
+VERSION = ""
 RECOVERY_MODE = False
 DEBUGGING_MODE = False
 SCRIPT_MODE = False
 
+# The following if-block satisfies pyflakes for objects and variables that are
+# defined in places that pyflakes does not understand.  This will be removed at
+# some point, in favor of relocating the definitions appropriately.
+if False:
+    the_experiment_manager = None
+    the_detector_manager   = None
+    the_gosia_shell        = None
+    investigated_nucleus   = None
+    GLOBAL_SETUP_DICT      = None
+    LAST_DIALOG_POPUP      = None
+    comp                   = None
+    splash                 = None
+    undo                   = None
+    temporary_data_storage = None
 
 def import_error(library_name):
 
@@ -283,19 +297,19 @@ MINIMUM_NUMBER_OF_STOPPING_POWERS        = 6             # At least 6 for reason
 # entry,type,lower_limit,upper_limit]
 
 DEFAULTMINIMIZATIONPARAMETERDICT = {\
-    "fast_approximation"    : [False,"If True, then fast approximation is used to calculate chi-squared derivatives.",1,"boolean"],\
-    "steepest_descent"      : [False,"If True, use steepest-descent method; if False, use gradient-derivative.",2,"boolean"],\
-    "absolute_change"       : [True,"If True, then absolute changes in matrix elements are used to improve the minimum; if False, then relative changes are used.",3,"boolean"],\
-    "linear_yields"         : [True,"If True, then yields and other data are used to calculate chi-squared; if False, then a logarithmic scale is used.",4,"boolean"],\
-    "max_steps"             : [10,"The maximum number of minimization steps.",5,"integer",0,10000],\
-    "chi_squared_limit"     : [0.9,"The lower limit on the reduced chi-squared to stop the minimization.",6,"float",0,1.0e6],\
-    "convergence_criterion" : [1.0e-4,"The minimum change in the vector of matrix elements below which minimization is stopped.",7,"float",0.0,1.0e6],\
-    "recalc_test"           : [1.01,"Internal correction factors are recalculated if the reduced chi-squared drops by a factor of recalc_test.  A faster option to setting \"fast_approximation\" to False is to set this value <1.  See the Gosia manual entry on TEST in OP,MINI.",8,"float",0.0,1.0e6],\
-    "lockf"                 : [False,"If lockf is False, then minimization is terminated when the convergence_criterion is satisfied; lockf = True causes Gosia to lock the nlock number of matrix elements having the most significant chi-squared derivatives.  This is useful for escaping a local minimum.",9,"boolean"],\
-    "nlock"                 : [0,"The number of matrix elements having the largest derivatives of chi-squared to be locked if lockf = 1 and the convergence_criterion is satisfied.",10,"integer",0,1000],\
-    "forward_backward"      : [True,"If True, then derivatives of chi-squared are calculated using the forward-backward difference method; if False, then only the forward difference is used.",11,"boolean"],\
-    "lock_less_effective"   : [False,"If True, then at the first step of minimization, Gosia locks all matrix elements for which the partial derivative of chi-squared is less than dlocks.",12,"boolean"],\
-    "dlocks"                : [0,"The limit of the partial derivatives of chi-squared with respect to a matrix element, below which it will be fixed if lock_less_effective is True.",13,"float",0.0,1.0e6]\
+    "fast_approximation"    : [False,  "If True, then fast approximation is used to calculate chi-squared derivatives.",1,"boolean"],\
+    "steepest_descent"      : [False,  "If True, use steepest-descent method; if False, use gradient-derivative.",2,"boolean"],\
+    "absolute_change"       : [True,   "If True, then absolute changes in matrix elements are used to improve the minimum; if False, then relative changes are used.",3,"boolean"],\
+    "linear_yields"         : [True,   "If True, then yields and other data are used to calculate chi-squared; if False, then a logarithmic scale is used.",4,"boolean"],\
+    "max_steps"             : [10,     "The maximum number of minimization steps.",5,"integer",0,10000],\
+    "chi_squared_limit"     : [0.9,    "The lower limit on the reduced chi-squared to stop the minimization.",6,"float",0,1.0e6],\
+    "convergence_criterion" : [1.0e-4, "The minimum change in the vector of matrix elements below which minimization is stopped.",7,"float",0.0,1.0e6],\
+    "recalc_test"           : [1.01,   "Internal correction factors are recalculated if the reduced chi-squared drops by a factor of recalc_test.  A faster option to setting \"fast_approximation\" to False is to set this value <1.  See the Gosia manual entry on TEST in OP,MINI.",8,"float",0.0,1.0e6],\
+    "lockf"                 : [False,  "If lockf is False, then minimization is terminated when the convergence_criterion is satisfied; lockf = True causes Gosia to lock the nlock number of matrix elements having the most significant chi-squared derivatives.  This is useful for escaping a local minimum.",9,"boolean"],\
+    "nlock"                 : [0,      "The number of matrix elements having the largest derivatives of chi-squared to be locked if lockf = 1 and the convergence_criterion is satisfied.",10,"integer",0,1000],\
+    "forward_backward"      : [True,   "If True, then derivatives of chi-squared are calculated using the forward-backward difference method; if False, then only the forward difference is used.",11,"boolean"],\
+    "lock_less_effective"   : [False,  "If True, then at the first step of minimization, Gosia locks all matrix elements for which the partial derivative of chi-squared is less than dlocks.",12,"boolean"],\
+    "dlocks"                : [0,      "The limit of the partial derivatives of chi-squared with respect to a matrix element, below which it will be fixed if lock_less_effective is True.",13,"float",0.0,1.0e6]\
     }
 
 # A dict to lookup the parameter number for each possible VAC, entry.
@@ -473,7 +487,6 @@ class updater:
 
             # The server should return a string representation of a list.
             try:
-                #print list_text
                 self.SHA512_list = eval(list_text)
             except:
                 return False
@@ -490,7 +503,6 @@ class updater:
             return True
 
         except:
-            #print "exception"
             sys.stdout.flush()
             pass
             return False
@@ -620,7 +632,6 @@ class Completer(object):
 
     def complete(self, text, state):
         "Generic readline completion entry point."
-        buffer = readline.get_line_buffer()
         line = readline.get_line_buffer().split()
         impl = getattr(self, 'complete_file')
         if line == []:
@@ -650,8 +661,15 @@ def prompt_for_file_name(prompt_string=""):
     # (See class Completer for credit to "samplebias.")
     readline.set_completer_delims(' \t\n;')
     readline.parse_and_bind("tab: complete")
-    # Create a completer object if none exists
+    # Create a completer object if none exists.
     try:
+        # if False... solves a warning in pyflakes, but there is a better way
+        # to do this:  in the future, "comp" should be put in a dictionary with
+        # a string key (e.g. {"comp":comp}), and the test should be for the
+        # existence of the key.
+        if False:
+            # We never intend to set comp to None.  See above.
+            comp = None
         comp
     except:
         comp = Completer()
@@ -778,8 +796,6 @@ def top_level_testing():
 
     the_gosia_shell.read_final_chi_squared_from_gosia()
     the_gosia_shell.save_calculated_spectroscopic_data()
-    #print "reading nucl data file!"
-    #the_experiment_manager.get_nuclear_data_lines(1.,1.,1.,1.)
     print "Generating report..."
     the_experiment_manager.properly_weighted_chi_squared_report(include_spect=True)
 
@@ -794,7 +810,6 @@ def top_level_testing():
     # Load the session.
     setup_globals("reset")  # to make sure we don't have old data hanging around in the original objects
     unpickle_return_code,textview_summary = setup_globals(action="unpickle",force=True)
-    #print investigated_nucleus.matrix_data
 
     desc = the_experiment_manager.allexperiments[0].long_description()
     pprint(desc)
@@ -1239,10 +1254,9 @@ def quick_plot(x_list,y_list):
     calculated_legend = ["y"]
 
     try:
-        low_x = 0.
-        high_x = max(x_plot_list)
-        low_y = min(y_plot_list)
-        high_y = max(y_plot_list)
+        max(x_plot_list)
+        min(y_plot_list)
+        max(y_plot_list)
     except:
         print "\nNot enough plot data for a \"quick_plot\".\n"
         return -1
@@ -1292,10 +1306,9 @@ def plot_efficiency_curve(energies,efficiencies):
     calculated_legend = ["efficiency"]
 
     try:
-        low_x = 0.
-        high_x = max(plot_energies)
-        low_y = min(plot_efficiencies)
-        high_y = max(plot_efficiencies)
+        max(plot_energies)
+        min(plot_efficiencies)
+        max(plot_efficiencies)
     except:
         print "\nNo efficiency curve can be generated using the present parameters!\n"
         raw_input("Press enter to continue.")
@@ -1415,7 +1428,8 @@ def gnuplot_draw(plot_data_file_name,calculated_legend,x_label,y_label,title_str
         #gnuplot_command_file.write("plot \"testing.txt\" with yerrorbars\n")
         gnuplot_command_file.writelines(gnu_commands)
     command_line = "gnuplot gnuplot_commands.rachel -"
-    gnuplot_subprocess = subprocess.call(command_line,shell=True) # Must run this way, or the gnuplot window disappears (with os.popen)
+    #gnuplot_subprocess = subprocess.call(command_line,shell=True)  # Must run this way, or the gnuplot window disappears (with os.popen)
+    subprocess.call(command_line,shell=True)  # Must run this way, or the gnuplot window disappears (with os.popen)
 
     return 0
 
@@ -1564,7 +1578,8 @@ def better_gnu_plot_launch(plot_data_file_name,calculated_legend,x_label,y_label
     with open("gnuplot_commands.rachel","w") as gnuplot_command_file:
         gnuplot_command_file.writelines(gnu_commands)
     command_line = "gnuplot gnuplot_commands.rachel -"
-    gnuplot_subprocess = subprocess.call(command_line,shell=True) # Must run this way, or the gnuplot window disappears (with os.popen)
+    # gnuplot_subprocess = subprocess.call(command_line,shell=True) # Must run this way, or the gnuplot window disappears (with os.popen)
+    subprocess.call(command_line,shell=True) # Must run this way, or the gnuplot window disappears (with os.popen)
 
 
 
@@ -1767,24 +1782,17 @@ def call_rochester_srim_server(beam_Z=None, beam_mass=None, target_density=None,
         returned_request_number = int(request_line.split()[3])
         if request_number == returned_request_number:
             good_request_number = True
-            #print "Request number matches."
         else:
             good_request_number = False
             error_strings.append("error - request number does not match")
-            #print "REQUEST NUMBER DOESN'T MATCH."
 
         if good_request_number:
 
             header_tags_list = ["Beam","Stopping", "power","meshpoints)"]
             matching_lines = internal_find_all_in_list(page_lines,header_tags_list)
-            #print "matching line numbers: ",matching_lines
             meshpoint_header_line_number = matching_lines[0]
-            #print "Header line numbers: ",meshpoint_header_line_number
 
-            header_line_fields = page_lines[meshpoint_header_line_number].split()
-            #print "header line fields: ",header_line_fields 
             expected_number_of_meshpoints = int(page_lines[meshpoint_header_line_number].split()[3].strip("("))
-            #print expected_number_of_meshpoints, "meshpoints expected"
 
             # Get the line number where the stopping power data should begin.
             stopping_power_line_number = meshpoint_header_line_number + 4
@@ -2409,12 +2417,6 @@ def kronecker(a,b):
 
     """
 
-    # The new_a, new_b variables are not used, but don't touch this for now,
-    # because the matrix element calculations are accurate, and very hard to
-    # debug!
-
-    new_a = round(a,1)
-    new_b = round(b,1)
     if a == b:
         return 1
     else:
@@ -2424,7 +2426,6 @@ def equivalent_half_integer(float_1,float_2):
     """Returns True if the two floats are equal to the nearest half-integer.
 
     """
-    #print float_1,float_2
     two_times_float_1 = int(round(2. * float_1))
     two_times_float_2 = int(round(2. * float_2))
     if two_times_float_1 == two_times_float_2:
@@ -2561,7 +2562,8 @@ class undo_class:
         command_line = "rm " + UNDOBASEFILENAME + "*"
         # subprocess.call waits for the process to complete.
         with open(".rachel_garbage","w") as garbage_file:
-            ls_subprocess = subprocess.call(command_line,shell=True,stderr=garbage_file)
+            # ls_subprocess = subprocess.call(command_line,shell=True,stderr=garbage_file)
+            subprocess.call(command_line,shell=True,stderr=garbage_file)
         # Clear the undo information stack
         self.undo_stack = []
         self.next_undo_number = 0
@@ -3351,9 +3353,9 @@ class nucleus:
             warning_lines.append("No problems found in the nucleus definitions.")
 
         if warning_issued:
-            setup_problems_popup = dialog_popup({"text_lines":warning_lines,"title":"Experimental setup issues that need attention"})
+            dialog_popup({"text_lines":warning_lines,"title":"Experimental setup issues that need attention"})
         elif not quiet:
-            setup_problems_popup = dialog_popup({"text_lines":warning_lines,"title":"Experimental setup issues that need attention"})
+            dialog_popup({"text_lines":warning_lines,"title":"Experimental setup issues that need attention"})
 
         if warning_issued:
             return -1
@@ -3599,11 +3601,6 @@ class nucleus:
             print "Bad matrix file, or file not found.  Cancelled."
             return -1
 
-        # A temporary list for coupled matrix elements.  These must be added
-        # last, so that we can test for the existence of the masters in memory.
-        # (The master could be a "fixed" matrix element.)
-        coupled_matrix_elements = []
-
         # First, find the pseudonym_dict and process it.
         # This is a temporary pseudonym dict for hte matrix file.
         pseudonym_dict = {}  # empty, in case none are found in the file.
@@ -3821,9 +3818,9 @@ class nucleus:
         if not value == None:
             # If the value is positive, give an extra space to line up decimals.
             if value >= 0.0:
-                text = text + "=  " + str(value) + " " +  units_string
+                text = text + "=  " + str(value) + " " + units_string
             else:
-                text = text + "= " + str(value) + " " +  units_string
+                text = text + "= " + str(value) + " " + units_string
         if not comment == None:
             text = text + " " + comment
 
@@ -4148,10 +4145,8 @@ class nucleus:
             best_chi_squared = float(gosia_output_lines[best_chi_squared_line].split()[8])
             print "\nA better minimum was found during the correlated error calculation."
             print "Reduced chi-squared = ", best_chi_squared,"\n\n"
-            new_minimum = True
         else:
             print "\nNo change in the minimum chi-squared was found.\n\n"
-            new_minimum = False
 
         block_print_with_line_breaks("(You can examine the Gosia output file (usually \"gosia.out\") before answering the following prompt.)")
         read_best_fit = yes_no_prompt("Would you like to save the best-fit matrix elements and their errors to the GUI memory [Y/n]: ",True)
@@ -4178,7 +4173,6 @@ class nucleus:
             matrix_key = matrix_keys_in_order[internal_matrix_element_number]
             # Get the matrix element object.
             matrix_element_object = self.matrix_data[matrix_key]
-            original_value_of_reported_matrix_element = matrix_element_object.get_current_value()
             better_matrix_element_value    = float(fields[3])
             low_absolute_error             = float(fields[5])
             high_absolute_error            = float(fields[7].split(")")[0])
@@ -4301,7 +4295,6 @@ class nucleus:
             else:
                 this_color = 'k'
 
-            units = UNITS_DICT[multipole_text]
             if not initial_level_key == final_level_key:
                 # It's not a static moment
                 self.drawonetransition(initial_band_name,final_band_name,initial_spin,final_spin,color=this_color,label=multipole_text,interactive=False)
@@ -4664,6 +4657,10 @@ class nucleus:
             fi = final_spin
             ib = initial_band_number
             fb = final_band_number
+            if False:
+                # Satisfies pyflakes for these variables that may or may not be
+                # referenced by the user.
+                me, ml, mt, ii, fi, ib, fb
 
             # Now run through all conditions to see if this matrix element meets the user's conditions.
             selected = True
@@ -4714,20 +4711,22 @@ class nucleus:
                         matrix_element_description = self.format_one_matrix_element(initial_band_name=initial_band_name,\
                           initial_spin=initial_spin,final_band_name=final_band_name,final_spin=final_spin,\
                           multipole_text=multipole_text,value=current_value)
-                        print matrix_element_description 
+                        print matrix_element_description
                         print "  This matrix element now has limits ",r1,r2
 
                     elif is_static and couple_static:
+
                         # This is a static moment, and the user requested that it
                         # be coupled to the transition below.  Try to find the
                         # lower E2 transition from ii-2 to ii and couple to
                         # that.  Otherwise, leave it fixed.
+
                         lower_E2_initial_spin = round((initial_spin - 2.0),1)
                         lower_E2_final_spin   = final_spin
-                        lower_E2_matrix_key = (multipole_code, initial_band_name, lower_E2_initial_spin, initial_band_name, lower_E2_final_spin)
+
                         # Try to find the E2 transition matrix element directly below.
+
                         try:
-                            lower_E2_matrix_element_object = self.matrix_data[lower_E2_matrix_key]
                             # The desired E2 transition below exists.  Couple this static moment to it.
                             matrix_element_object.set_is_dependent()
                             matrix_element_object.set_master_initial_band_name(initial_band_name)
@@ -4906,7 +4905,7 @@ class nucleus:
             print "Use the \"Help\" button topic \"normalizationtransition\" for more information."
 
         return 0
-            
+
     def get_normalization_transition_keys(self):
         """Returns the initial and final level keys of the normalizing transition.
 
@@ -4962,7 +4961,7 @@ class nucleus:
                 # Add the level entry with data that can be used to sort the levels
                 # into the proper order for display or for Gosia.
                 names_to_return.append(band_name)
-            
+
         return names_to_return
 
     def get_all_level_keys_in_band_name(self,requested_band_name):
@@ -5302,7 +5301,6 @@ class nucleus:
             # Determine appropriate flags and indices for coupled matrix elements,
             # fixed or master matrix element.
             elif self.matrix_data[matrix_element_key].get_is_dependent():
-                is_dependent = True
                 final_gosia_level = -final_gosia_level  # set negative flag indicating that this is a dependent matrix element
                 master_multipole_number    = self.matrix_data[matrix_element_key].get_master_multipole_number()
                 master_initial_band_name   = self.matrix_data[matrix_element_key].get_master_initial_band_name()
@@ -5329,7 +5327,7 @@ class nucleus:
 
                 # Get the master's multipole text ("E2", "M1", etc.) to comment the coupling.
                 master_multipole_text = REVERSE_MULTIPOLE[master_multipole_number]
-                
+
                 # Add a comment describing which master this dependent is coupled to.
                 comment = "   ! coupled to <" + str(master_final_gosia_level) + "||" \
                   + master_multipole_text + "||" + str(master_initial_gosia_level) + ">"
@@ -5364,7 +5362,6 @@ class nucleus:
             output_lines.append(this_line)
 
         output_lines.append('0 0 0 0 0')
-            
 
         return output_lines
 
@@ -5390,20 +5387,23 @@ class nucleus:
 
         # 2010/06/09 zero the coupling information before regenerating it.  The
         # time advantage is not worth trying to save it.
+
         self.major_couplings = []
 
         for this_matrix_key in self.matrix_data.keys():
+
             # Extract the information from the key.  This is done in several
             # lines, in case something is added to the key.
+
             multipole_number     = this_matrix_key[0]
             initial_band_name    = this_matrix_key[1]
-            initial_spin         = this_matrix_key[2]
             final_band_name      = this_matrix_key[3]
-            final_spin           = this_matrix_key[4]
-            # We don't need the pointer to the matrix element object.
-            #this_matrix_element_object = self.matrix_data[this_matrix_key]
-            # The description field on the level scheme diagram will be only the multipole text: E2, M1,... 
+
+            # The description field on the level scheme diagram will be only
+            # the multipole text: E2, M1,...
+
             description = REVERSE_MULTIPOLE[multipole_number]
+
             # Form a list to add to the major couplings:
             # The band *names* are used now to make the methods more robust.
             # Band numbers may change, but the names will not.
@@ -5551,7 +5551,6 @@ class nucleus:
         try:
             if  what == "K":
                 self.bandk[band] = value
-                new_value = self.getbandinfo(band,"K")
             elif what == "name":
                 self.bandname[band] = str(value)
             elif what == "pseudonym":
@@ -5561,7 +5560,7 @@ class nucleus:
             print "Invalid band or setting."
             return -1
 
-            
+
     def fix_matrix_element(self,matrixelementidentity):
         """Marks a matrix element as fixed and removes its limits.
 
@@ -5601,10 +5600,6 @@ class nucleus:
                 this_multipole_code = matrixelement[0]
                 this_initial_level = matrixelement[1]
                 this_final_level = matrixelement[2]
-                this_initial_band = self.get_level_information(this_initial_level,"band")
-                this_final_band = self.get_level_information(this_final_level,"band")
-                this_initial_spin = self.get_level_information(this_initial_level,"spin")
-                this_final_spin = self.get_level_information(this_final_level,"spin")
                 this_r1 = matrixelement[4]
                 this_r2 = matrixelement[5]
                 this_coupling = matrixelement[6]
@@ -5640,7 +5635,7 @@ class nucleus:
             if initial_band == this_initial_band and initial_spin == this_initial_spin and final_band == this_final_band\
               and final_spin == this_final_spin and multipole_code == this_multipole_code:
                 # This is the one we want
-                matrixelement[4] = r1  
+                matrixelement[4] = r1
                 matrixelement[5] = r2
                 matrixelement[6] = "master"
                 self.matrix_data[i] = matrixelement
@@ -7270,7 +7265,12 @@ class nucleus:
             fi = final_spin
             ib = initial_band_number
             fb = final_band_number
-            
+
+            if False:
+                # Satisfies pyflakes for these variables that may or may not be
+                # referenced by the user.
+                me, ml, mt, ii, fi, ib, fb
+
             # Now run through all conditions to see if this matrix element meets the user's conditions.
             selected = True
             for condition in rules_list:
@@ -7867,10 +7867,8 @@ class nucleus:
                             formatted_text = self.format_one_matrix_element(initial_band_name = initial_band_name,initial_spin = initial_spin,\
                               final_band_name = final_band_name, initial_K = initial_K, final_K = final_K, final_spin = final_spin, \
                               multipole_text = multipole_text, value = reduced_matrix_element, comment = comment) 
-                            # print formatted_text
                             matrix_element_counter += 1
 
-        # print "Added ",matrix_element_counter," matrix elements."
         # Don't need to redraw; the add_inter_band method does that.
 
         return 0   # No errors are returned at present.
@@ -8692,10 +8690,6 @@ class nucleus:
         internal_band_number_1 = external_band_number_1 - 1
         internal_band_number_2 = external_band_number_2 - 1
 
-        # Get the initial and final band names.
-        original_band_name_1 = self.band_settings_list[internal_band_number_1]
-        original_band_name_2 = self.band_settings_list[internal_band_number_2]
-
         # Make a deepcopy of the band settings list.
         copy_of_old_band_settings_list = copy.deepcopy(self.band_settings_list)
 
@@ -9033,7 +9027,11 @@ class nucleus:
             fi = final_spin
             ib = initial_band_number
             fb = final_band_number
-            
+            if False:
+                # Satisfies pyflakes for these variables that may or may not be
+                # referenced by the user.
+                me, ml, mt, ii, fi, ib, fb
+
             # Now run through all conditions to see if this matrix element meets the user's conditions.
             selected = True
             for condition in rules_list:
@@ -9154,7 +9152,11 @@ class nucleus:
             fi = final_spin
             ib = initial_band_number
             fb = final_band_number
-            
+            if False:
+                # Satisfies pyflakes for these variables that may or may not be
+                # referenced by the user.
+                me, ml, mt, ii, fi, ib, fb
+
             # Now run through all conditions to see if this matrix element meets the user's conditions.
             selected = True
             for condition in rules_list:
@@ -10849,11 +10851,6 @@ class gosia_shell:
         if "Error" in yiel_lines[0]:
             return -1
 
-        # Generate the OP,MAP line.  This is done "on the fly."  Is that acceptable?
-        # THIS IS NOW DONE SEPARATELY, BECAUSE ON SOME SYSTEMS BOTH CANNOT BE DONE IN ONE CALL TO GOSIA.
-        #print "Note: calculating the q-parameter map \"on the fly\"..."
-        #map_lines = ["OP,MAP"]
-
         # Generate the OP,MINI section.  Go through the minimization
         # parameter dictionary and set string values from it.
         mini_lines = ["OP,MINI"]
@@ -12356,20 +12353,20 @@ class experimentmanager:
 
             # Check this experiment for quantities that exceed Gosia's memory limits.
             # UNFINISHED!
-                
+
         if not warning_issued:
             warning_lines.append("No problems found in the experiment definitions.")
 
         if warning_issued:
-            setup_problems_popup = dialog_popup({"text_lines":warning_lines,"title":"Experimental setup issues that need attention"})
+            dialog_popup({"text_lines":warning_lines,"title":"Experimental setup issues that need attention"})
         elif not quiet:
-            setup_problems_popup = dialog_popup({"text_lines":warning_lines,"title":"Experimental setup issues that need attention"})
+            dialog_popup({"text_lines":warning_lines,"title":"Experimental setup issues that need attention"})
 
         if warning_issued:
             return -1
         else:
             return 0
-        
+
     def is_ready(self):
         """Returns true if at least one experiment is defined and each experiment has at least one detector.
 
@@ -12501,7 +12498,6 @@ class experimentmanager:
         full_integration_yields = self.allexperiments[internal_experiment_number].get_calculated_yields(0)
         full_integration_yields.sort()
 
-        #print "Now testing a piecewise integration.  This may take a long time...\n"
         # Now the piecewise test.
         # Generate a list of theta limits for the piecewise integration.
         test_experiment_parameter_dict = copy.deepcopy(self.allexperiments[internal_experiment_number].parameter_dict)
@@ -12767,7 +12763,6 @@ class experimentmanager:
             else:
                 parameter_dict["LN"] = i + 1
             # Add the experiment
-            #print "parameter_dict: ",parameter_dict
             self.allexperiments.append(copy.deepcopy(experiment(parameter_dict,True,True)))
             self.allexperiments[i].set_theta_subdivisions(theta_subdivisions)
             self.allexperiments[i].set_energy_subdivisions(energy_subdivisions)
@@ -13024,13 +13019,10 @@ class experimentmanager:
 
                 else:
                     # Reached end of file.
-                    #print "reached end of file."
                     break  # out of experiment counter loop
 
-            #print "saving experiment ", internal_experiment_number
             data_storage_key = "amplitude data " + str(internal_experiment_number)
             temporary_data_storage.set(data_storage_key,amplitudes_dictionary)
-            #print "example: ",amplitudes_dictionary[1][:5]
 
         print "  Done."
 
@@ -13197,7 +13189,6 @@ class experimentmanager:
                 # Sort for plotting by omega
                 a_and_p_vs_omega = all_data[gosia_substate_number]
                 a_and_p_vs_omega.sort()
-                #print a_and_p_vs_omega
                 omega, real_amplitude, imaginary_amplitude, probability = zip(*a_and_p_vs_omega)
 
                 # Generate files for gnuplot
@@ -13219,15 +13210,6 @@ class experimentmanager:
                 x_label = "w"
                 y_label = ""
                 calculated_legend = ["Re[a(w)]","Im[a(w)]","P(w)"]
-
-                low_x = min(omega)
-                high_x = max(omega)
-                low_p = min(probability)
-                high_p = max(probability)
-                low_r = min(real_amplitude)
-                high_r = max(real_amplitude)
-                low_i = min(imaginary_amplitude)
-                high_i = max(imaginary_amplitude)
 
                 experimental_legend = None
                 better_gnu_plot_launch(plot_data_file_name,calculated_legend,x_label,y_label,experimental_legend)
@@ -13560,7 +13542,7 @@ class experimentmanager:
                 units = UNITS_DICT[REVERSE_MULTIPOLE[multipole_code]]
                 print "< ",final_band_name,",",final_spin," ||" + REVERSE_MULTIPOLE[multipole_code] + "|| ",initial_band_name,",",initial_spin," > = ",reduced_matrix_element," +/- ",error
                 label_text = " < f||" + REVERSE_MULTIPOLE[multipole_code] + "||i> = (" + str(reduced_matrix_element) + " +/- " + str(error) + ") " + units
-                color = 'r'  
+                color = 'r'
                 # Add to the plotting dictionary for plotting.
                 append_one_label(decay_data_plot_dict,  (initial_band_name,final_band_name,initial_spin,final_spin), [color,label_text])
 
@@ -13818,23 +13800,6 @@ class experimentmanager:
           phi_max_line, which_excited_line, un_Z_line, un_A_line, E_beam_line, E_exit_line, safe_energy_line, target_line,\
           detected_particle_line, inverse_line, kinematic_solution_line, normalization_line, sommerfeld_line, ge_detector_line,comment_line,""]
 
-        #print header_line
-        #print experiment_number_line 
-        #print theta_min_line         
-        #print theta_max_line         
-        #print phi_min_line   
-        #print phi_max_line   
-        #print un_Z_line              
-        #print un_A_line              
-        #print E_beam_line            
-        #print safe_energy_line
-        #print target_line
-        #print detected_particle_line
-        #print inverse_line
-        #print normalization_line 
-        #print sommerfeld_line
-        #print ge_detector_line
-        #print ""
         if low_sommerfeld:
             sommerfeld_warning = block_print_with_line_breaks("*Indicates a sommerfeld parameter much less than 100.  See help topic \"sommerfeld\" before continuing with your analysis.",60,True)
             lines_to_display.extend(sommerfeld_warning)
@@ -14804,8 +14769,6 @@ class experimentmanager:
             if self.allexperiments[one_internal_experiment_number].get_parameter("LN") - 1 == this_experiment_ln:
                 internal_experiment_numbers_with_common_normalization.append(one_internal_experiment_number)
 
-        #print "Experiments with common normalization: ",internal_experiment_numbers_with_common_normalization
-
         # Keep a sum of the weighting factors (1/error**2) in the normalization
         # and the summation of weighted normalization constants to get the
         # weighted mean normalization.
@@ -14814,7 +14777,6 @@ class experimentmanager:
 
         # Get the calculated and experimental yields from all detectors in each of these experiments.
         for one_internal_experiment_number in internal_experiment_numbers_with_common_normalization:
-            #print "Internal expt number: ",one_internal_experiment_number 
             one_experiment_object = self.allexperiments[one_internal_experiment_number]
             one_experiment_number_of_detectors = one_experiment_object.get_number_of_detectors()
             for one_detector_number in range(one_experiment_number_of_detectors):
@@ -14839,7 +14801,6 @@ class experimentmanager:
                         skip = True
                     if not skip:
                         for one_calculated_yield in one_detector_calculated_yields:
-                            #print "Calc.: ",one_calculated_yield
                             calculated_initial_band_name, calculated_initial_spin, calculated_final_band_name, calculated_final_spin, calculated_yield = one_calculated_yield
                             try:
                                 skip_calculated = False
@@ -14866,7 +14827,6 @@ class experimentmanager:
                                 weighted_normalization_constant = unweighted_normalization_constant * weight_factor
                                 normalization_constant += weighted_normalization_constant 
                                 sum_of_weight_factors  += weight_factor 
-                                #print calculated_initial_band_name, calculated_initial_spin, calculated_final_band_name, calculated_final_spin, calculated_yield,experimental_yield, experimental_yield_error,experimental_yield/calculated_yield,weight_factor,weighted_normalization_constant
 
                                 break # out of the search for the matching calculated yield.
 
@@ -14991,7 +14951,7 @@ class experimentmanager:
             if not excited_target:
                 # if the beam is excited, then multiply Z_n by -1
                 Z_n = -Z_n
-            #print "LN = ",LN, "  debugging"
+
             # Construct the EXPT line for this experiment (experiment_number)
             line_list = [Z_n, A_n, E_mean, theta_lab_mean, M_c, M_a, I_ax, phi_1, phi_2, I_kin, LN]
             line = str(line_list).strip('[]')   # Turn line_list into a comma-delimited string with 
@@ -16593,7 +16553,6 @@ class experimentmanager:
                                     # This is the yield point we want.  Append it to the list.
                                     # Experimental data are always plotted normalized as the user requested.
                                     experimental_yield_vs_spin[gosia_experiment_number][this_initial_spin] = [this_normalized_yield,this_normalized_error]
-                                    #print "expt", this_initial_spin,this_normalized_yield
                         except:
                             block_print_with_line_breaks("Error in plotting experimental yields.  Please report this, if you think it is a bug.")
                             return -1
@@ -16722,9 +16681,7 @@ class experimentmanager:
             better_gnu_plot_launch(plot_data_file_name,calculated_legend,x_label,y_label,experimental_legend)
         elif plot_experimental_yields:
             block_print_with_line_breaks("Plotting experimental and calculated yields.  The yields may not represent actual counts due to normalizations required by Gosia.")
-            #print plot_data_file_name, "\n",experimental_plot_data_file_name
             better_gnu_plot_launch(plot_data_file_name,calculated_legend,x_label,y_label,experimental_legend,chi_squared_string)
-            #gnu_plot_launch(plot_data_file_name,chi_squared_string,x_label,y_label,experimental_plot_data_file_name)
         else:
             block_print_with_line_breaks("Plotting calculated yields.  The yields may not represent actual counts due to normalizations required by Gosia.")
             experimental_legend=None
@@ -17395,8 +17352,6 @@ class experimentmanager:
             # Set this value of YNRM for all detectors in this experiment.
             one_experiment.set_detector_normalization("all",new_normalization_constant)
             if not silent:
-                #print "Differential Rutherford cross section for expt.",gosia_experiment_number," = ",differential_rutherford_cross_section," mb/sr,\n",\
-                #  "  sin(theta_lab_mean) = ",sine_factor, "  and normalization constant = ",new_normalization_constant
                 print "Experiment " + str(gosia_experiment_number) + " normalization constant = " + format(new_normalization_constant,"g")
 
             # Increment the gosia experiment number.
@@ -17428,7 +17383,6 @@ class experimentmanager:
         # Get a list of the number of detectors so that we can understand the order of
         # experiments and detectors in the gosia output file.
         numbers_of_detectors = self.get_numbers_of_detectors()
-        #print "at beginning, numbers_of_detectors ",numbers_of_detectors 
 
         # Make a list of sets of states excited in each experiment and each
         # detector.  States will be added if they are excited in a given
@@ -21395,7 +21349,6 @@ class detectormanager:
                 try:
                     with open(rachel_ge_types_file,"r") as detector_dict_file:
                         current_ge_library = pickle.load(detector_dict_file)
-                    #print "Read the current crystal types library from the working directory."
                     read_standard_types = True
                 except:
                         # No library file in working directory.  Start with an empty one.
@@ -21728,7 +21681,6 @@ class detectormanager:
             standard_type_names.sort()
 
             for one_type_name in standard_type_names:
-                # print one_type_name.ljust(20),"  ",standard_ge_types[one_type_name]["detector_description"]
                 # To accomodate long descriptions:
                 print one_type_name.ljust(20),"  ",
                 description_lines = block_print_with_line_breaks(standard_ge_types[one_type_name]["detector_description"],50,True,False)
@@ -21752,7 +21704,6 @@ class detectormanager:
             local_type_names.sort()
 
             for one_type_name in local_type_names:
-                # print one_type_name.ljust(20),"  ",local_ge_types[one_type_name]["detector_description"]
                 # To accomodate long descriptions:
                 print one_type_name.ljust(20),"  ",
                 description_lines = block_print_with_line_breaks(local_ge_types[one_type_name]["detector_description"],50,True,False)
@@ -21917,7 +21868,11 @@ class detectormanager:
             all_keys = this_detector_parameter_dict.keys()
             all_keys.sort()
             for item in all_keys:
-                if not item == "l" and not "efficiency" in item:   # printing the absorber information is omitted now.  This can only cause confusion, because eff. corr. data are required.
+
+                # Printing the absorber information is omitted now.  This can
+                # only cause confusion, because eff. corr. data are required.
+
+                if not item == "l" and not "efficiency" in item:
                     parameter_value = this_detector_parameter_dict[item]
                     this_line = str(item) + " = " + str(parameter_value)
                     lines_to_display.append(this_line)
@@ -22420,10 +22375,11 @@ def setup_globals(action=None,pickle_file_name=None,force=False,rotate=False):
 
             if not force:
                 if not VERSION == restored_version:
-                    first_paragraph = "This session file predates version "+VERSION+".  An attempt will be made to upgrade this session to version "+VERSION+" format.  Check to make sure the upgraded session operates in the new GUI, and then save the session if the upgrade was successful."
-                    text_view_output_lines = textwrap.wrap(first_paragraph,TEXTVIEW_COLUMNS) 
-                    other_text = "  If this does not work, then you may need to start again with a new session.  You can use your former Rachel version to export nuclear data and then import it into a new version " + str(VERSION) + " session."
+                    first_paragraph        = "This session file predates version "+VERSION+".  An attempt will be made to upgrade this session to version "+VERSION+" format.  Check to make sure the upgraded session operates in the new GUI, and then save the session if the upgrade was successful."
+                    text_view_output_lines = textwrap.wrap(first_paragraph,TEXTVIEW_COLUMNS)
+                    other_text             = "  If this does not work, then you may need to start again with a new session.  You can use your former Rachel version to export nuclear data and then import it into a new version " + str(VERSION) + " session."
                     text_view_output_lines.extend(textwrap.wrap(other_text,TEXTVIEW_COLUMNS))
+                    failure_string         = ""
 
                     try:
                         nucleus_returned_errors,     nucleus_upgrade_text     = investigated_nucleus.for_upgrade(restored_version)
@@ -22620,16 +22576,15 @@ def generate_dot_rachel_setup_file():
     try:
         setup_variables = ["ELAST_EXECUTABLE = ","GOSIA_EXECUTABLE = ","BRICC_IDX_FILE = ","BRICC_ICC_FILE = ","RACHEL_DIRECTORY = "]
         while True:
-            home_path = os.path.expanduser("~")
             setup_values = []
             temp_string = prompt_for_file_name(prompt_string = "Please enter the name of the elast executable, including the full path: ")
-            setup_values.append(temp_string) 
+            setup_values.append(temp_string)
             temp_string = prompt_for_file_name(prompt_string = "Please enter the name of the gosia executable, including the full path: ")
-            setup_values.append(temp_string) 
+            setup_values.append(temp_string)
             temp_string = prompt_for_file_name(prompt_string = "Please enter the name of the BRICC .idx file, including the full path, if it is not in working directory: ")
-            setup_values.append(temp_string) 
+            setup_values.append(temp_string)
             temp_string = prompt_for_file_name(prompt_string = "Please enter the name of the BRICC .icc file, including the full path, if it is not in working directory: ")
-            setup_values.append(temp_string) 
+            setup_values.append(temp_string)
             temp_string = prompt_for_file_name(prompt_string = "Please enter the full path to the directory where the Rachel executable is stored: ")
             # Strip the final / from the rachel directory, if there is one.
             if temp_string[-1] == "/":
@@ -23543,7 +23498,7 @@ class main_gui:
                     block_print_with_line_breaks("NOTE: For a consistent phase convention, always add in-band matrix elements from lower to higher ENERGY and interband m.e. from LEFT to RIGHT (lower to higher band number).  Rachel may refuse to add matrix elements in the wrong order for Gosia, so that the phase conventions can be understood.")
                     print "Spin limits can be applied to the INITIAL band."
                     if yes_no_prompt("Apply spin limits (y/N)? ",False):
-                        # Ask the user for spin 
+                        # Ask the user for spin
                         low_spin_limit =  prompt_number("Lower limit: ","r")
                         if low_spin_limit   == "quit":
                             return 0
@@ -23570,7 +23525,7 @@ class main_gui:
             # Reactivate GUI buttons.
             self.set_activation(self)
             return -1
-        
+
     # Callback for close_application.
     def close_application(self, widget):
 
@@ -23656,7 +23611,7 @@ class main_gui:
             # Reactivate GUI buttons.
             self.set_activation(self)
             return -1
-        
+
     def quick_unpickle(self,widget):
         #deactivate all button presses while this runs.
         self.set_deactivation(self,self.all_button_list)
@@ -23678,22 +23633,23 @@ class main_gui:
             for one_line in textview_summary:
                 self.insertnewtext(one_line)
                 self.insertnewtext("\n")
-            return return_code
+            return unpickle_return_code
 
         except:
             # Reactivate GUI buttons.
             self.set_activation(self)
             return -1
-        
+
     def create_nucleus(self,widget):
         #deactivate all button presses while this runs.
         self.set_deactivation(self,self.all_button_list)
         while gtk.events_pending():
             gtk.main_iteration(False)
         try:
-            # Should eventually ask a status variable if the user needs to be prompted
-            # and prompt y/n if necessary.
+            # Should eventually ask a status variable if the user needs to be
+            # prompted and prompt y/n if necessary.
             investigated_nucleus = nucleus()
+            investigated_nucleus  # Satisfies pyflakes while this is under development.
             print "Nucleus created."
             # Reactivate GUI buttons.
             self.set_activation(self)
@@ -23703,7 +23659,7 @@ class main_gui:
             # Reactivate GUI buttons.
             self.set_activation(self)
             return -1
-        
+
     def show_me(self,widget):
         """Displays matrix elements in level scheme window.
 
@@ -26239,7 +26195,8 @@ def ned(aj,bj,cj,am,bm,cm):
         return 'MAX2DARRAYSIZE violated in ned().'
 
     q=numpy.zeros((zz+1,zz+1))     # numpy functions return data on demand, saving space and time.
-    for i in range(1,zz+1):                                                     #    loop from 1 to zz
+    # loop from 1 to zz
+    for i in range(1,zz+1):
         q[i][1] = 1.0                                                           #    q(i,1)=1.d0
         q[i][i] = 1.0                                                           #    q(i,i)=1.d0
                                                                                 #2   continue
@@ -26970,7 +26927,7 @@ def inelastic_differential_scattering_cross_section_com(Z_proj_passed,A_proj_pas
     theta_com = float(theta_com_passed)
     theta_com_rad = math.radians(theta_com)
 
-    E_sym = inelastic_symmetrized_energy(A_proj_passed,A_targ_passed,E_proj_passed,Q_value)
+    E_sym = inelastic_symmetrized_energy(A_proj,A_targ,E_proj,Q_value)
     # The initial lab and com energies are related by Ep/(1+Ap/At) = E_com.
 
     numerator   = RUTHERFORD_CONSTANT * Z_proj**2 * Z_targ**2

@@ -1,6 +1,13 @@
 Rachel, GUI for Gosia
 ======
 
+Rachel is currently being cleaned up and made PEP8 compliant in preparation to
+turn over maintenance to users.  Please fork if you are interested in doing
+maintenance or improvements.
+
+This is a DEVELOPMENT version.  You may find bugs.  If you want a
+completely-tested version, download [the release version](http://www-user.pas.rochester.edu/~gosia/mediawiki/index.php/Main_Page#Downloads)
+
 :boom: [Mind-blowing demo video](http://youtu.be/moVVC-GODzQ)
 
 ![Rachel snapshot](http://www-user.pas.rochester.edu/~gosia/mediawiki/images/4/41/Guisnapshot.png)
