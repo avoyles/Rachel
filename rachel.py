@@ -209,7 +209,7 @@ global LAST_POPUP_TIP
 TEXTVIEW_COLUMNS = 50  # the default number of columns to display in the textview of the control panel.
 
 # Setup for command and filename completion:
-COMMANDS = [] # e.g. ['extra', 'extension', 'stuff', 'errors', 'email', 'foobar', 'foo']
+COMMANDS = []  # e.g. ['extra', 'extension', 'stuff', 'errors', 'email', 'foobar', 'foo']
 RE_SPACE = re.compile('.*\s+$', re.M)
 
 # Undo settings.
@@ -233,68 +233,69 @@ LOGROTATE_CONFIG = [\
 
 
 # Constants defined
-ASMIDGE = 0.1                    # a small number to use for >,< comparisons where rounding
-                                 # to base 2 could be a problem.  0.1 is fine
-                                 # for comparing spins This is only used now
-                                 # for internal plotting with matplotlib, since
-                                 # the round(number,1) function effectively
-                                 # rounds to half-spin.
+ASMIDGE                                  = 0.1           # A small number to use for >,< comparisons
+                                                         # where rounding to base 2 could be a problem.
+                                                         # 0.1 is fine for comparing spins.   This is
+                                                         # only used now for internal plotting with
+                                                         # matplotlib, since the round(number,1)
+                                                         # function effectively rounds to half-spin.
 
-MAXIMUMLEVELS = 99                           # This is not used yet, except in reporting to the user.
-MAXIMUM_NUMBER_OF_MATRIX_ELEMENTS = 999      # This is not used yet, except in reporting to the user.
+MAXIMUMLEVELS                            = 99            # This is not used yet, except in reporting to the user.
+MAXIMUM_NUMBER_OF_MATRIX_ELEMENTS        = 999           # This is not used yet, except in reporting to the user.
 
-MAXALLOWEDSPIN = 60              # To be used for the general K-forbidden Mikhailov formula where large
-                                 # factorials are calculated.
+MAXALLOWEDSPIN                           = 60            # To be used for the general K-forbidden Mikhailov formula where large
+                                                         # factorials are calculated.
 
-MAX2DARRAYSIZE = 200*200         # This is the maximum number of elements in the array,
-                                 # regardless of the length:width ratio.  It is used in ned().
+MAX2DARRAYSIZE                           = 200 * 200     # This is the maximum number of elements in the array,
+                                                         # regardless of the length:width ratio.  It is used in ned().
 
-NOCOUPLING = "Fixed"             # This is the marker in nucleus.matrix_data that indicates
-                                 # that the matrix element is not a slave to another.  Using
-                                 # this constant to ensure consistency.
+NOCOUPLING                               = "Fixed"       # This is the marker in nucleus.matrix_data that indicates
+                                                         # that the matrix element is not a slave to another.  Using
+                                                         # this constant to ensure consistency.
 
-DEFAULT_MAGNETIC_SUBSTATES = 8   # The default number of magnetic substates for the full
-                                 # Coulex calculations
+DEFAULT_MAGNETIC_SUBSTATES               = 8             # The default number of magnetic substates for the full
+                                                         # Coulex calculations
 
-MAXENERGYMESHPOINTS = 100
-DEFAULT_ENERGY_MESHPOINTS = 20
-MINENERGYMESHPOINTS = 5
-MAXTHETAMESHPOINTS = 100
-MINIMUM_THETA_MESHPOINTS        = 5  # The minimum acceptable number (should be at least 3 to allow the use of spline interpolation).
-DEFAULT_THETA_MESHPOINTS  = 20
-RUTHERFORD_CHANGE_CRITERION = 0.05   # The default fractional change in Ruth. c.s. above which a new meshpoint is needed.
+MAXENERGYMESHPOINTS                      = 100
+DEFAULT_ENERGY_MESHPOINTS                = 20
+MINENERGYMESHPOINTS                      = 5
+MAXTHETAMESHPOINTS                       = 100
+MINIMUM_THETA_MESHPOINTS                 = 5             # The minimum acceptable number (should be at least 3 to allow the use of spline interpolation).
+DEFAULT_THETA_MESHPOINTS                 = 20
+RUTHERFORD_CHANGE_CRITERION              = 0.05          # The default fractional change in Ruth. c.s. above which a new meshpoint is needed.
 
-MAXENERGYSUBDIVISIONS = 100        # The maximum allowed in gosia. Should be an even integer.
-MAXTHETASUBDIVISIONS  = 100        # The maximum allowed in gosia. Should be an even integer.
-MINENERGYSUBDIVISIONS = 6          # The minimum allowed in the gui. Should be an even integer.
-MINTHETASUBDIVISIONS  = 6          # The minimum allowed in the gui. Should be an even integer.
-DEFAULTENERGYSUBDIVISIONS = 50     # Should be an even integer.
-DEFAULTTHETASUBDIVISIONS  = 50     # Should be an even integer.
-MAXIMUM_DETECTORS_PER_EXPERIMENT = 32  # The maximum number of detectors (data sets) in one experiment.
-MAXIMUM_EXPERIMENTS = 50               # The most experiments allowed in Gosia.
+MAXENERGYSUBDIVISIONS                    = 100           # The maximum allowed in gosia. Should be an even integer.
+MAXTHETASUBDIVISIONS                     = 100           # The maximum allowed in gosia. Should be an even integer.
+MINENERGYSUBDIVISIONS                    = 6             # The minimum allowed in the gui. Should be an even integer.
+MINTHETASUBDIVISIONS                     = 6             # The minimum allowed in the gui. Should be an even integer.
+DEFAULTENERGYSUBDIVISIONS                = 50            # Should be an even integer.
+DEFAULTTHETASUBDIVISIONS                 = 50            # Should be an even integer.
+MAXIMUM_DETECTORS_PER_EXPERIMENT         = 32            # The maximum number of detectors (data sets) in one experiment.
+MAXIMUM_EXPERIMENTS                      = 50            # The most experiments allowed in Gosia.
 
-# Default stopping power points
-DEFAULT_NUMBER_OF_STOPPING_POWERS = 20  # 20 is the maximum allowed by Gosia.
-MINIMUM_NUMBER_OF_STOPPING_POWERS = 6   # At least 6 for reasonable spline interpolation.
+                                                         # Default stopping power points
+DEFAULT_NUMBER_OF_STOPPING_POWERS        = 20            # 20 is the maximum allowed by Gosia.
+MINIMUM_NUMBER_OF_STOPPING_POWERS        = 6             # At least 6 for reasonable spline interpolation.
+
 
 # Default minimization parameters.  The value for each key is a list of
 # [default value, description, parameter number for easy user
 # entry,type,lower_limit,upper_limit]
 
 DEFAULTMINIMIZATIONPARAMETERDICT = {\
-    "fast_approximation":[False,"If True, then fast approximation is used to calculate chi-squared derivatives.",1,"boolean"],\
-    "steepest_descent":[False,"If True, use steepest-descent method; if False, use gradient-derivative.",2,"boolean"],\
-    "absolute_change":[True,"If True, then absolute changes in matrix elements are used to improve the minimum; if False, then relative changes are used.",3,"boolean"],\
-    "linear_yields":[True,"If True, then yields and other data are used to calculate chi-squared; if False, then a logarithmic scale is used.",4,"boolean"],\
-    "max_steps":[10,"The maximum number of minimization steps.",5,"integer",0,10000],\
-    "chi_squared_limit":[0.9,"The lower limit on the reduced chi-squared to stop the minimization.",6,"float",0,1.0e6],\
-    "convergence_criterion":[1.0e-4,"The minimum change in the vector of matrix elements below which minimization is stopped.",7,"float",0.0,1.0e6],\
-    "recalc_test":[1.01,"Internal correction factors are recalculated if the reduced chi-squared drops by a factor of recalc_test.  A faster option to setting \"fast_approximation\" to False is to set this value <1.  See the Gosia manual entry on TEST in OP,MINI.",8,"float",0.0,1.0e6],\
-    "lockf":[False,"If lockf is False, then minimization is terminated when the convergence_criterion is satisfied; lockf = True causes Gosia to lock the nlock number of matrix elements having the most significant chi-squared derivatives.  This is useful for escaping a local minimum.",9,"boolean"],\
-    "nlock":[0,"The number of matrix elements having the largest derivatives of chi-squared to be locked if lockf = 1 and the convergence_criterion is satisfied.",10,"integer",0,1000],\
-    "forward_backward":[True,"If True, then derivatives of chi-squared are calculated using the forward-backward difference method; if False, then only the forward difference is used.",11,"boolean"],\
-    "lock_less_effective":[False,"If True, then at the first step of minimization, Gosia locks all matrix elements for which the partial derivative of chi-squared is less than dlocks.",12,"boolean"],\
-    "dlocks":[0,"The limit of the partial derivatives of chi-squared with respect to a matrix element, below which it will be fixed if lock_less_effective is True.",13,"float",0.0,1.0e6]\
+    "fast_approximation"    : [False,"If True, then fast approximation is used to calculate chi-squared derivatives.",1,"boolean"],\
+    "steepest_descent"      : [False,"If True, use steepest-descent method; if False, use gradient-derivative.",2,"boolean"],\
+    "absolute_change"       : [True,"If True, then absolute changes in matrix elements are used to improve the minimum; if False, then relative changes are used.",3,"boolean"],\
+    "linear_yields"         : [True,"If True, then yields and other data are used to calculate chi-squared; if False, then a logarithmic scale is used.",4,"boolean"],\
+    "max_steps"             : [10,"The maximum number of minimization steps.",5,"integer",0,10000],\
+    "chi_squared_limit"     : [0.9,"The lower limit on the reduced chi-squared to stop the minimization.",6,"float",0,1.0e6],\
+    "convergence_criterion" : [1.0e-4,"The minimum change in the vector of matrix elements below which minimization is stopped.",7,"float",0.0,1.0e6],\
+    "recalc_test"           : [1.01,"Internal correction factors are recalculated if the reduced chi-squared drops by a factor of recalc_test.  A faster option to setting \"fast_approximation\" to False is to set this value <1.  See the Gosia manual entry on TEST in OP,MINI.",8,"float",0.0,1.0e6],\
+    "lockf"                 : [False,"If lockf is False, then minimization is terminated when the convergence_criterion is satisfied; lockf = True causes Gosia to lock the nlock number of matrix elements having the most significant chi-squared derivatives.  This is useful for escaping a local minimum.",9,"boolean"],\
+    "nlock"                 : [0,"The number of matrix elements having the largest derivatives of chi-squared to be locked if lockf = 1 and the convergence_criterion is satisfied.",10,"integer",0,1000],\
+    "forward_backward"      : [True,"If True, then derivatives of chi-squared are calculated using the forward-backward difference method; if False, then only the forward difference is used.",11,"boolean"],\
+    "lock_less_effective"   : [False,"If True, then at the first step of minimization, Gosia locks all matrix elements for which the partial derivative of chi-squared is less than dlocks.",12,"boolean"],\
+    "dlocks"                : [0,"The limit of the partial derivatives of chi-squared with respect to a matrix element, below which it will be fixed if lock_less_effective is True.",13,"float",0.0,1.0e6]\
     }
 
 # A dict to lookup the parameter number for each possible VAC, entry.
@@ -317,45 +318,45 @@ REVERSE_MULTIPOLE   = {1:'E1',2:'E2',3:'E3',4:'E4',5:'E5',6:'E6',7:'M1',8:'M2'}
 
 # File extension definitions and default status and format keyed by file number.
 FILE_DEF_DICT = {\
-                 22:{"extension":"out","status":"3","format":1},\
-                 25:{"extension":"inp","status":"3","format":1},\
-                 9:{"extension":"gdt","status":"3","format":1},\
-                 3:{"extension":"yld","status":"3","format":1},\
-                 4:{"extension":"cor","status":"3","format":1},\
-                 7:{"extension":"map","status":"3","format":1},\
-                 12:{"extension":"bst","status":"3","format":1},\
-                 15:{"extension":"err","status":"3","format":1},\
-                 29:{"extension":"icc","status":"3","format":1},\
-                 99:{"extension":"amp","status":"3","format":1}
+                 22 : {"extension" : "out","status" : "3","format" : 1},\
+                 25 : {"extension" : "inp","status" : "3","format" : 1},\
+                 9  : {"extension" : "gdt","status" : "3","format" : 1},\
+                 3  : {"extension" : "yld","status" : "3","format" : 1},\
+                 4  : {"extension" : "cor","status" : "3","format" : 1},\
+                 7  : {"extension" : "map","status" : "3","format" : 1},\
+                 12 : {"extension" : "bst","status" : "3","format" : 1},\
+                 15 : {"extension" : "err","status" : "3","format" : 1},\
+                 29 : {"extension" : "icc","status" : "3","format" : 1},\
+                 99 : {"extension" : "amp","status" : "3","format" : 1}
                  }
 
 # Default file names when making or using dummy files to avoid overwriting real data.
 DUMMY_FILE_DEF_DICT = {\
-                 22:{"extension":"dummy_out","status":"3","format":1},\
-                 25:{"extension":"dummy_inp","status":"3","format":1},\
-                 9:{"extension":"dummy_gdt","status":"3","format":1},\
-                 3:{"extension":"dummy_yld","status":"3","format":1},\
-                 4:{"extension":"dummy_cor","status":"3","format":1},\
-                 7:{"extension":"dummy_map","status":"3","format":1},\
-                 12:{"extension":"dummy_bst","status":"3","format":1},\
-                 15:{"extension":"dummy_err","status":"3","format":1},\
-                 29:{"extension":"dummy_icc","status":"3","format":1},\
-                 99:{"extension":"dummy_amp","status":"3","format":1}
+                 22 : {"extension" : "dummy_out","status" : "3","format" : 1},\
+                 25 : {"extension" : "dummy_inp","status" : "3","format" : 1},\
+                 9  : {"extension" : "dummy_gdt","status" : "3","format" : 1},\
+                 3  : {"extension" : "dummy_yld","status" : "3","format" : 1},\
+                 4  : {"extension" : "dummy_cor","status" : "3","format" : 1},\
+                 7  : {"extension" : "dummy_map","status" : "3","format" : 1},\
+                 12 : {"extension" : "dummy_bst","status" : "3","format" : 1},\
+                 15 : {"extension" : "dummy_err","status" : "3","format" : 1},\
+                 29 : {"extension" : "dummy_icc","status" : "3","format" : 1},\
+                 99 : {"extension" : "dummy_amp","status" : "3","format" : 1}
                  }
 
 # The DEORIENTATION_FILE_DEF_DICT uses temporary files for the .cor and .map
 # calculations, so that we don't overwrite real data.
 DEORIENTATION_FILE_DEF_DICT = {\
-                 22:{"extension":"out","status":"3","format":1},\
-                 25:{"extension":"inp","status":"3","format":1},\
-                 9:{"extension":"gdt","status":"3","format":1},\
-                 3:{"extension":"yld","status":"3","format":1},\
-                 4:{"extension":"temporary_cor","status":"3","format":1},\
-                 7:{"extension":"temporary_map","status":"3","format":1},\
-                 12:{"extension":"bst","status":"3","format":1},\
-                 15:{"extension":"err","status":"3","format":1},\
-                 29:{"extension":"icc","status":"3","format":1},\
-                 99:{"extension":"amp","status":"3","format":1}
+                 22 : {"extension" : "out","status"           : "3","format" : 1},\
+                 25 : {"extension" : "inp","status"           : "3","format" : 1},\
+                 9  : {"extension" : "gdt","status"           : "3","format" : 1},\
+                 3  : {"extension" : "yld","status"           : "3","format" : 1},\
+                 4  : {"extension" : "temporary_cor","status" : "3","format" : 1},\
+                 7  : {"extension" : "temporary_map","status" : "3","format" : 1},\
+                 12 : {"extension" : "bst","status"           : "3","format" : 1},\
+                 15 : {"extension" : "err","status"           : "3","format" : 1},\
+                 29 : {"extension" : "icc","status"           : "3","format" : 1},\
+                 99 : {"extension" : "amp","status"           : "3","format" : 1}
                  }
 
 # The default file name for all nuclear data tagged by symbols in beta v. 2.0.0
@@ -365,30 +366,28 @@ NUCLEAR_DATA_FILE_NAME = "rachel_nuclear_data.txt"
 PROMPTSTRING = "~ "
 
 # Graphics parameters for the level scheme in matplotlib.
-LEVELWIDTH = 0.5
-LEVELCOLOR = 'k'            # color of levels
-RMEARROWCOLOR = 'r'         # color of individual reduced matrix element arrows
-MASTERMECOLOR = 'g'         # color of master matrix elements
-FIXEDMECOLOR = 'k'          # color of master matrix elements
-INTRINSICARROWCOLOR = 'b'   # color of intrinsic m.e. arrows (band-->band)
-SPINLABELFONTSIZE = 8
-LEVELSCHEMEFIGURE = 1
-LSFIGSIZE = (10,8)          # default size in inches for the level scheme figure
+LEVELWIDTH                                = 0.5                             # color of levels
+LEVELCOLOR                                = 'k'                             # color of individual reduced matrix element arrows
+RMEARROWCOLOR                             = 'r'                             # color of master matrix elements
+MASTERMECOLOR                             = 'g'                             # color of master matrix elements
+FIXEDMECOLOR                              = 'k'                             # color of intrinsic m.e. arrows (band-->band)
+INTRINSICARROWCOLOR                       = 'b'
+SPINLABELFONTSIZE                         = 8
+LEVELSCHEMEFIGURE                         = 1                               # default size in inches for the level scheme figure
+LSFIGSIZE                                 = (10,8)
+                                                                            # factor in M1 matrix elements
+M1CONSTANT                                = math.sqrt(3. / (4. * math.pi))  # Constant for the differential cross section formulas in mb,MeV.
+RUTHERFORD_CONSTANT                       = 1.29596
+                                                                            # Calculated yields lower than this limit
+CALCULATED_YIELD_LOWER_LIMIT              = 1.0E-10                         # (in mb*(mg/cm^2)/sr in integrated
+                                                                            # yields), will not be read from Gosia
+                                                                            # calculations.  This also applies to
+                                                                            # simulated yield data.
 
-# Math constants
-M1CONSTANT = math.sqrt(3./(4.*math.pi))  # factor in M1 matrix elements
-RUTHERFORD_CONSTANT = 1.29596  # Constant for the differential cross section formulas in mb,MeV.
-
-# Constants related to calculations and fitting:
-CALCULATED_YIELD_LOWER_LIMIT = 1.0E-10  # Calculated yields lower than this limit
-                                        # (in mb*(mg/cm^2)/sr in integrated
-                                        # yields), will not be read from Gosia
-                                        # calculations.  This also applies to
-                                        # simulated yield data.
-
-HELP_DICTIONARY = {}     # A globally accessible dictionary of help strings. This will be read from a file.
-TIPS_DICTIONARY = {}     # A globally accessible dictionary of tips strings for popup help. This will be read from a file.
-DEFAULT_EDITOR_COMMAND = "vim"  # The text editor to be called from the GUI.
+                                                                            # A globally accessible dictionary of help strings. This will be read from a file.
+HELP_DICTIONARY                           = {}                              # A globally accessible dictionary of tips strings for popup help. This will be read from a file.
+TIPS_DICTIONARY                           = {}                              # The text editor to be called from the GUI.
+DEFAULT_EDITOR_COMMAND                    = "vim"
 
 DEFAULT_EFFICIENCY_PARAMETERS = [5.7021, 4.83491, 0., 6.20016, -6.06E-01, -5.36E-03, 4.5934, 0.000219]
 #                                A       B        C   D        E          F          G       N
@@ -398,11 +397,9 @@ DEFAULT_EFFICIENCY_PARAMETERS = [5.7021, 4.83491, 0., 6.20016, -6.06E-01, -5.36E
 
 class updater:
 
-
     def __init__(self):
 
         pass
-
 
     def check_server(self):
         """Checks the Rochester server for current version data.
@@ -421,8 +418,9 @@ class updater:
 
         # Make the server call to get stopping powers.
         url_text  = "http://www-user.pas.rochester.edu/~gosia/rachel_version/version.py"
+
         try:
-            response  = urllib2.urlopen(url=url_text,timeout = 5)
+            response  = urllib2.urlopen(url=url_text, timeout=5)
             full_page = response.read()
         except:
             print "\b...failed."
@@ -451,7 +449,6 @@ class updater:
                 lines = block_print_with_line_breaks(text,line_length=60,silent=True,paragraphs=True)
                 create_dialog_popup({"text_lines":lines, "title":"Updater Failed", "force_popup":True})
                 return False
-
 
             if not self.version_dict["version"] == VERSION:
 
@@ -500,13 +497,13 @@ class updater:
             return False
             # Should notify Rochester of the bug.
 
+
 class checksum:
 
     def __init__(self):
         """Create the hash object and read this file into it.
 
         """
-
 
         self.ok = True
         this_file = GLOBAL_SETUP_DICT["RACHEL_DIRECTORY"] + "/rachel.py"
@@ -631,10 +628,10 @@ class Completer(object):
             args = ["./"]  # Default to the working directory.
         else:
             cmd = line[0].strip()
-            args = line # was line[1:]
+            args = line  # was line[1:] in original
         if args:
             return (impl(args) + [None])[state]
-        return [cmd ][state]
+        return [cmd][state]
 
 
     def nullcomplete(self, text, state):
@@ -642,7 +639,7 @@ class Completer(object):
 
 
 
-def prompt_for_file_name(prompt_string = ""):
+def prompt_for_file_name(prompt_string=""):
     """Uses tab-completion to prompt for file names.
 
     This is done in a separate def so that tab-completion does not suggest file
@@ -928,7 +925,7 @@ def check_for_gosia_error(gosia_output_lines):
                   ]
 
     overflow_detected = False
-    for i in range(len(gosia_output_lines)-1):
+    for i in range(len(gosia_output_lines) - 1):
         one_line = gosia_output_lines[i]
         next_line = gosia_output_lines[i+1]
         if "ERROR" in one_line:
@@ -1108,7 +1105,7 @@ def write_lines_to_file(file_name,list_of_lines,force=False):
     def internal_write(file_name,list_of_lines):
         """Write routine for use by the write_lines_to_file def only.
 
-        This writes to a file without questioning the user.  The 
+        This writes to a file without questioning the user.  The
         higher-level def write_lines_to_file asks permission for
         existing files.
         """
@@ -1546,8 +1543,8 @@ def better_gnu_plot_launch(plot_data_file_name,calculated_legend,x_label,y_label
         if should_plot_experimental_data:
             if n == (len(calculated_legend) - 1):
                 plot_command = plot_command + ", \\\n"
-            this_legend_title = experimental_legend[n] 
-            plot_command = plot_command +  "\"" + plot_data_file_name + "\" ind " + str(2*n + 1) \
+            this_legend_title = experimental_legend[n]
+            plot_command = plot_command + "\"" + plot_data_file_name + "\" ind " + str(2*n + 1) \
               + ":" + str(2*n + 1) + " usi 1:2:3 title \"" + this_legend_title \
               + "\" with yerrorbars linestyle " + str(11 + n)
             if not n == (len(calculated_legend) - 1):
@@ -4572,7 +4569,6 @@ class nucleus:
                         # Act as though the user hit "y".
                         # Clear the level scheme again.
                         self.draw_level_scheme()
-                        
 
         print "These are the only fit parameters specified."
         print "Finished."
@@ -6383,7 +6379,8 @@ class nucleus:
 
         # Count the major interband couplings (one for each multipole and pair
         # of bands) to figure the spacing for them.
-        def f(x): return not x[0] == x[1]
+        def f(x):
+            return not x[0] == x[1]
         ninterbandcouplings = len(filter(f,self.major_couplings))
         majorarrowspacing = lowlim / (ninterbandcouplings + 1.)  # This will be negative
         currentyposition = majorarrowspacing # set position for first arrow
@@ -9269,7 +9266,7 @@ class nucleus:
                 # This object matches the object to which level_key points.
                 # There can only be one primary level key that points to this
                 # object in the sorted unique level keys.  Return this one.
-                 pseudonym_keys.append(one_key)
+                pseudonym_keys.append(one_key)
 
         return pseudonym_keys
 
@@ -9277,7 +9274,7 @@ class nucleus:
     def get_primary_level_key_from_pseudonym(self,level_key):
         """Returns the primary (band_name,spin) tuple of the requested level.
 
-        If this level_key is a primary name, then it is returned unchanged.  
+        If this level_key is a primary name, then it is returned unchanged.
 
         If it is a pseudonym, then the primary level key is returned.
 
@@ -12945,7 +12942,7 @@ class experimentmanager:
                 # Not keeping the final amplitudes.
                 internal_level_number = int(level_string) - 1  # internal numbering
                 spin = round(float(spin_string),1)   # rounded to the nearest half integer
-                Mf   = round(float(M_string),1)      #    "
+                Mf   = round(float(M_string),1)      # rounded to the nearest half integer
 
                 final_real_amplitude = float(real_string)
                 final_imaginary_amplitude = float(imaginary_string)
@@ -16185,7 +16182,7 @@ class experimentmanager:
                 experimental_normalization_constant = self.get_overall_normalization_for_experimental_yields(internal_experiment_number)[1]
                 if experimental_normalization_constant == None:
                     print "No data in memory for experiment " + str(internal_experiment_number + 1) + "."
-                    raw_input ("Press enter to continue.")
+                    raw_input("Press enter to continue.")
 
             # Get the internal detector number that matches the polar and
             # azimuthal angles within one degree for this experiment.
@@ -25182,24 +25179,14 @@ class main_gui:
         """Let the user evaluate expressions at the console prompt
 
         This enable evaluation of Clebsch-Gordan coefficients, look at
-        internal variables, etc.  
-        
+        internal variables, etc.
+
         The expressions will be evaluated until "q" is entered to break
         the loop.  The user can do fancy things like this to create objects
         and call their methods, etc.
 
-        Enter 'q' to quit the interpreter.
-        ~>self.user_stack
-        []
-        ~>self.user_stack.append(experiment())
-        None
-        ~>self.user_stack
-        [<__main__.experiment instance at 0x3b6d6c0>]
-        ~>self.user_stack[0].selected
-        True
-        ~>
-
         """
+
         #deactivate all button presses while this runs.
         self.set_deactivation(self,self.all_button_list)
         while gtk.events_pending():
@@ -25301,23 +25288,6 @@ class main_gui:
 
     def __init__(self):
 
-        # Create a stack (list) for the user to play with in the module
-        # user_command.  Assignments like y=3 don't work in that module,
-        # so for now I just put in this stack, which may allow more sophisticated
-        # things like self.user_stack.append(nucleus())  or math on saved items, etc.
-        # Enter 'q' to quit the interpreter.
-        # ~>self.user_stack
-        # []
-        # ~>self.user_stack.append(experiment())
-        # None
-        # ~>self.user_stack
-        # [<__main__.experiment instance at 0x3b6d6c0>]
-        # ~>self.user_stack[0].selected
-        # True
-        # ~>
-
-        self.user_stack = []
-
         # The undo stack does not currently function properly in when
         # recovering a crashed session.  To make sure that the user doesn't
         # continue work in recovery moe, there is a global variable
@@ -25326,96 +25296,65 @@ class main_gui:
         # session, then quit and reload the session to resume work.
         # A list of only the buttons that should be made active in recovery mode.
         self.recovery_mode_button_list = []
+
         # A list of all buttons.
         self.all_button_list = []
 
-        # READ THE RACHEL SETUP FILE, IF IT EXISTS.  This will be in the form of 
+        # READ THE RACHEL SETUP FILE, IF IT EXISTS.  This will be in the form of
         # dictionary keys and values, e.g.
         # gosia_executable    /usr/local/bin/gosia
         # elo_executable      /usr/local/bin/elo
         # etc.
 
 
-        # Create a new window.
         window = gtk.Window(gtk.WINDOW_TOPLEVEL)
-        # Set the window size to be resizable.
-        window.set_resizable(True)  
-        # If the user hits the "X" button, refuse to close the GUI window.
+        window.set_resizable(True)
         window.connect("delete_event", self.refuse_to_quit)
-        # Set the title for the window.
-        title_string = "Rachel Main Control Panel -- Version " + VERSION 
+        title_string = "Rachel Main Control Panel -- Version " + VERSION
         window.set_title(title_string)
-        # Set the border width.
         window.set_border_width(0)
 
-        # Create a horizontal box in the window.
         box1 = gtk.HBox(False, 0)
-        # Add the vertical box to the window. 
         window.add(box1)
-        # Show the window.
         box1.show()
 
-        # create a vertical box.
         box2 = gtk.VBox(False, 10)
-        # set the border width of this vertical box.
         box2.set_border_width(10)
-        # Pack this vertical box into the first vertical box.
         box1.pack_start(box2, False, False, 0)
-        # Show the newly created vertical box.
         box2.show()
 
-        # Create a horizontal button box.
         hbox = gtk.HBox()
-        # pack the horizontal button box into the vertical box.
         box2.pack_start(hbox, False, False, 0)
-        # Show the horizontal button box.
         hbox.show()
 
-        # Create a vertical box.
-        # START PUTTING BUTTONS IN HERE AS IN GLADE MODEL
         vbox = gtk.VButtonBox()
-        # Show the vertical box.
         vbox.show()
-        # Show the vertical box into the horizontal box.
         hbox.pack_start(vbox, False, False, 0)
 
-        # Create a new button 
         button1 = gtk.Button("Load session")
         self.button1_pointer = button1  # So that it can be forced active 
         button1.connect("clicked", self.quick_unpickle)
-        # pack the button1 
         vbox.pack_start(button1, False, False)
-        # Set the default flags 
         button1.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
         button1.grab_default()
-        # Show the button1.
         button1.show()
         self.all_button_list.append(button1)
 
         button2 = gtk.Button("Read level scheme")
         self.button2_pointer = button2  # So that it can be forced active 
         button2.connect("clicked", self.read_level_scheme)
-        # pack the button 
         vbox.pack_start(button2, False, False)
-        # Set the default flags 
         button2.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
         button2.grab_default()
-        # Show the button.
         button2.show()
         self.all_button_list.append(button2)
 
         button3 = gtk.Button("Redraw LS window")
         self.button3_pointer = button3  # So that it can be forced active 
         button3.connect("clicked", self.update_ls_window)
-        # pack the button 
         vbox.pack_start(button3, False, False)
-        # Set the default flags 
         button3.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
         button3.grab_default()
-        # Show the button.
         button3.show()
         self.recovery_mode_button_list.append(button3)
         self.all_button_list.append(button3)
@@ -25423,13 +25362,9 @@ class main_gui:
         button27 = gtk.Button("Recreate LS window")
         self.button27_pointer = button27  # So that it can be forced active to break out of functions.
         button27.connect("clicked", self.activate_ls_window)
-        # pack the button27 
         vbox.pack_start(button27, False, False)
-        # Set the default flags 
         button27.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
         button27.grab_default()
-        # Show the button27.
         button27.show()
         self.all_button_list.append(button27)
         self.recovery_mode_button_list.append(button27)
@@ -25437,104 +25372,72 @@ class main_gui:
         button4 = gtk.Button("Merge bands")
         self.button4_pointer = button4  # So that it can be forced active 
         button4.connect("clicked", self.merge_bands)
-        # pack the button 
         vbox.pack_start(button4, False, False)
-        # Set the default flags 
         button4.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
         button4.grab_default()
-        # Show the button.
         button4.show()
         self.all_button_list.append(button4)
 
         button5 = gtk.Button("Delete bands")
         self.button5_pointer = button5  # So that it can be forced active 
         button5.connect("clicked", self.delete_band)
-        # pack the button 
         vbox.pack_start(button5, False, False)
-        # Set the default flags 
         button5.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
         button5.grab_default()
-        # Show the button.
         button5.show()
         self.all_button_list.append(button5)
 
         button6 = gtk.Button("Swap bands")
         self.button6_pointer = button6  # So that it can be forced active 
         button6.connect("clicked", self.swap_bands)
-        # pack the button 
         vbox.pack_start(button6, False, False)
-        # Set the default flags 
         button6.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
         button6.grab_default()
-        # Show the button.
         button6.show()
         self.all_button_list.append(button6)
 
         button7 = gtk.Button("View / Set K")
         self.button7_pointer = button7  # So that it can be forced active 
         button7.connect("clicked", self.set_band_k)
-        # pack the button 
         vbox.pack_start(button7, False, False)
-        # Set the default flags 
         button7.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
         button7.grab_default()
-        # Show the button.
         button7.show()
         self.all_button_list.append(button7)
 
         button8 = gtk.Button("Add <If||ML||Ii>")
         self.button8_pointer = button8  # So that it can be forced active 
         button8.connect("clicked", self.add_reduced_me)
-        # pack the button 
         vbox.pack_start(button8, False, False)
-        # Set the default flags 
         button8.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
         button8.grab_default()
-        # Show the button.
         button8.show()
         self.all_button_list.append(button8)
 
         button9 = gtk.Button("Tools")
         self.button9_pointer = button9  # So that it can be forced active 
         button9.connect("clicked", self.tools)
-        # pack the button 
         vbox.pack_start(button9, False, False)
-        # Set the default flags 
         button9.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
         button9.grab_default()
-        # Show the button.
         button9.show()
         self.all_button_list.append(button9)
 
         button10 = gtk.Button("Gosia controls")
         self.button10_pointer = button10  # So that it can be forced active 
         button10.connect("clicked", self.gosia_controls)
-        # pack the button10 
         vbox.pack_start(button10, False, False)
-        # Set the default flags 
         button10.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
         button10.grab_default()
-        # Show the button10.
         button10.show()
         self.all_button_list.append(button10)
 
         button11 = gtk.Button("Examine setup")
         self.button11_pointer = button11  # So that it can be forced active 
         button11.connect("clicked", self.examine_setup)
-        # pack the button11 
         vbox.pack_start(button11, False, False)
-        # Set the default flags 
         button11.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
         button11.grab_default()
-        # Show the button11.
         button11.show()
         self.all_button_list.append(button11)
         self.recovery_mode_button_list.append(button11)
@@ -25542,13 +25445,9 @@ class main_gui:
         button12 = gtk.Button("Show m.e.")
         self.button12_pointer = button12  # So that it can be forced active 
         button12.connect("clicked", self.show_me)
-        # pack the button12 
         vbox.pack_start(button12, False, False)
-        # Set the default flags 
         button12.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
         button12.grab_default()
-        # Show the button12.
         button12.show()
         self.all_button_list.append(button12)
         self.recovery_mode_button_list.append(button12)
@@ -25556,13 +25455,9 @@ class main_gui:
         button13 = gtk.Button("Plot B(ML)")
         self.button13_pointer = button13  # So that it can be forced active 
         button13.connect("clicked", self.plot_bml)
-        # pack the button13 
         vbox.pack_start(button13, False, False)
-        # Set the default flags 
         button13.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
         button13.grab_default()
-        # Show the button13.
         button13.show()
         self.all_button_list.append(button13)
         self.recovery_mode_button_list.append(button13)
@@ -25570,61 +25465,40 @@ class main_gui:
         button15 = gtk.Button("Undo")
         self.button15_pointer = button15  # So that it can be forced active 
         button15.connect("clicked", self.undo)
-        # pack the button15 
         vbox.pack_start(button15, False, False, 0)
-        # Set the default flags 
         button15.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
         button15.grab_default()
-        # Show the button15.
         button15.show()
         self.all_button_list.append(button15)
 
         button16 = gtk.Button("Redo")
         self.button16_pointer = button16  # So that it can be forced active 
         button16.connect("clicked", self.redo)
-        # pack the button16 
         vbox.pack_start(button16, False, False)
-        # Set the default flags 
         button16.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
         button16.grab_default()
-        # Show the button16.
         button16.show()
         self.all_button_list.append(button16)
 
         button17 = gtk.Button("Save session")
         self.button17_pointer = button17  # So that it can be forced active 
         button17.connect("clicked", self.quick_pickle)
-        # pack the button17 
         vbox.pack_start(button17, False, False)
-        # Set the default flags 
         button17.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
         button17.grab_default()
-        # Show the button17.
         button17.show()
         self.all_button_list.append(button17)
         self.recovery_mode_button_list.append(button17)
 
-        # create a vertical separator.
         separator = gtk.VSeparator()
-        # Pack the separator into the container
         hbox.pack_start(separator, False, False, 10)
-        # Show the separator.
         separator.show()
 
 
-        # Create a vertical box.
         vbox = gtk.VButtonBox()
-        # Show the vertical box.
         vbox.show()
-        # Show the vertical box into the horizontal box.
         hbox.pack_start(vbox, False, False, 0)
 
-        # Can use the get_active_text method, passing this combobox into it to get
-        # the active text when relevant buttons are pressed.
-        # So, don't re-use the name!
         self.multipolecombobox = gtk.combo_box_new_text()
         self.multipolecombobox.append_text("E2")
         self.multipolecombobox.append_text("M1")
@@ -25637,9 +25511,6 @@ class main_gui:
         vbox.pack_start(self.multipolecombobox,False,False)
         self.multipolecombobox.show()
 
-        # Can use the get_active_text method, passing rulecombobox into it to get
-        # the active text when Add interband is called.
-        # So, don't re-use the name rulecombobox!
         self.rulecombobox = gtk.combo_box_new_text()
         self.rulecombobox.append_text("alaga")
         self.rulecombobox.append_text("kforbidden")
@@ -25647,11 +25518,10 @@ class main_gui:
         vbox.pack_start(self.rulecombobox,False,False)
         self.rulecombobox.show()
 
-        #newlabel = gtk.Label("Bands: I/F")
         newlabel = gtk.Label("Initial / final band")
         vbox.pack_start(newlabel)
         newlabel.show()
-        
+
         # Entry box for initial band number
         self.initial_band_entry = gtk.Entry()
         self.initial_band_entry.set_max_length(2)
@@ -25670,175 +25540,120 @@ class main_gui:
         button18 = gtk.Button("Add/change m.e.")
         self.button18_pointer = button18  # So that it can be forced active 
         button18.connect("clicked", self.add_me)
-        # pack the button18 
         vbox.pack_start(button18, False, False)
-        # Set the default flags 
         button18.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
         button18.grab_default()
-        # Show the button18.
         button18.show()
         self.all_button_list.append(button18)
 
         button19 = gtk.Button("Filter (delete) m.e.")
         self.button19_pointer = button19  # So that it can be forced active 
         button19.connect("clicked", self.filter_me)
-        # pack the button19 
         vbox.pack_start(button19, False, False)
-        # Set the default flags 
         button19.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
         button19.grab_default()
-        # Show the button19.
         button19.show()
         self.all_button_list.append(button19)
 
         button20 = gtk.Button("Fit parameters")
         self.button20_pointer = button20  # So that it can be forced active 
         button20.connect("clicked", self.define_fit_parameters)
-        # pack the button20 
         vbox.pack_start(button20, False, False)
-        # Set the default flags 
         button20.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
         button20.grab_default()
-        # Show the button20.
         button20.show()
         self.all_button_list.append(button20)
 
         button23 = gtk.Button("Add/delete expt")
         self.button23_pointer = button23  # So that it can be forced active 
         button23.connect("clicked", self.add_delete_experiment)
-        # pack the button23 
         vbox.pack_start(button23, False, False)
-        # Set the default flags 
         button23.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
         button23.grab_default()
-        # Show the button23.
         button23.show()
         self.all_button_list.append(button23)
 
         button21 = gtk.Button("Stopping power")
         self.button21_pointer = button21  # So that it can be forced active 
         button21.connect("clicked", self.examine_stopping_power)
-        # pack the button21 
         vbox.pack_start(button21, False, False)
-        # Set the default flags 
         button21.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
         button21.grab_default()
-        # Show the button21.
         button21.show()
         self.all_button_list.append(button21)
 
         button22 = gtk.Button("Define Ge det.")
         self.button22_pointer = button22  # So that it can be forced active 
         button22.connect("clicked", self.define_ge_detector)
-        # pack the button22 
         vbox.pack_start(button22, False, False)
-        # Set the default flags 
         button22.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
         button22.grab_default()
-        # Show the button22.
         button22.show()
         self.all_button_list.append(button22)
 
         button24 = gtk.Button("Attach/delete Ge dets.")
         self.button24_pointer = button24  # So that it can be forced active 
         button24.connect("clicked", self.attach_detectors)
-        # pack the button24 
         vbox.pack_start(button24, False, False)
-        # Set the default flags 
         button24.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
         button24.grab_default()
-        # Show the button24.
         button24.show()
         self.all_button_list.append(button24)
 
         button25 = gtk.Button("Import yields")
         self.button25_pointer = button25  # So that it can be forced active 
         button25.connect("clicked", self.import_yield_data)
-        # pack the button25 
         vbox.pack_start(button25, False, False)
-        # Set the default flags 
         button25.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
         button25.grab_default()
-        # Show the button25.
         button25.show()
         self.all_button_list.append(button25)
 
         button26 = gtk.Button("Write Gosia yld file")
         self.button26_pointer = button26  # So that it can be forced active 
         button26.connect("clicked", self.write_true_yields)
-        # pack the button26 
         vbox.pack_start(button26, False, False)
-        # Set the default flags 
         button26.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
         button26.grab_default()
-        # Show the button26.
         button26.show()
         self.all_button_list.append(button26)
 
         button28 = gtk.Button("Reactivate GUI")
         self.button28_pointer = button28  # So that it can be forced active at all times, in case an untrapped error leaves the GUI frozen.
         button28.connect("clicked", self.reactivate)
-        # pack the button28 
         vbox.pack_start(button28, False, False)
-        # Set the default flags 
         button28.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
         button28.grab_default()
-        # Show the button28.
         button28.show()
         self.all_button_list.append(button28)
 
         button29 = gtk.Button("Plot yields")
-        self.button29_pointer = button29  # So that it can be forced active 
+        self.button29_pointer = button29  # So that it can be forced active
         button29.connect("clicked", self.plot_yields)
-        # pack the button29 
         vbox.pack_start(button29, False, False)
-        # Set the default flags 
         button29.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
         button29.grab_default()
-        # Show the button29.
         button29.show()
         self.all_button_list.append(button29)
         self.recovery_mode_button_list.append(button29)
 
         button14 = gtk.Button("Help")
-        self.button14_pointer = button14  # So that it can be forced active 
+        self.button14_pointer = button14  # So that it can be forced active
         button14.connect("clicked", self.interactive_help)
-        # pack the button14 
         vbox.pack_start(button14, False, False)
-        # Set the default flags 
         button14.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
         button14.grab_default()
-        # Show the button14.
         button14.show()
         self.all_button_list.append(button14)
         self.recovery_mode_button_list.append(button14)
 
-        # create a vertical separator.
         separator = gtk.VSeparator()
-        # Pack the separator into the container
         box1.pack_start(separator, False, False, 0)
-        # Show the separator.
         separator.show()
 
-        # Create a new vertical box.
         box2 = gtk.VBox(False, 10)
-        # Set the border width of the box.
         box2.set_border_width(10)
-        # Pack the vertical box into the first created vertical box.
         box1.pack_start(box2, False, False, 0)   # changed second true to false
-        # Show the newly created vertical box.
         box2.show()
 
         # create a scrolled window.
@@ -25856,7 +25671,7 @@ class main_gui:
         self.textview.set_cursor_visible(False)
         # Trying to make this wide enough to read...
         self.textview.set_size_request(550,400)
-        # Retrieving a reference to a textbuffer from a textview. 
+        # Retrieving a reference to a textbuffer from a textview.
         self.textbuffer = self.textview.get_buffer()
         # Add the textview to the scrolled window.
         sw.add(self.textview)
@@ -25870,23 +25685,21 @@ class main_gui:
         # Pack the scrolled window into the second vertical box.
         box2.pack_start(sw)
         self.scrolled_window = sw
-        
+
         # hbox for bottom buttons
         hbox = gtk.HBox()
-        # pack the horizontal button box into the vertical box.
         box2.pack_start(hbox, False, False, 0)
-        # Show the horizontal button box.
         hbox.show()
 
-        # Don't reuse the name of this box, because it's neede for reading the selection
+        # Don't reuse the name of this box, because it's needed for reading the selection.
         self.gosiafunctioncombobox = gtk.combo_box_new_text()
         self.gosiafunctioncombobox.append_text("Make Ge det file")
         self.gosiafunctioncombobox.append_text("Integrated yields")
         self.gosiafunctioncombobox.append_text("Make corrected yields")
         #self.gosiafunctioncombobox.append_text("Estimate normalizations")
         self.gosiafunctioncombobox.append_text("Fit")  # meant to do the OP,MAP also, since there are no user parameters for OP,MAP
-        self.gosiafunctioncombobox.append_text("[Diagonal errors]") 
-        self.gosiafunctioncombobox.append_text("Correlated errors") 
+        self.gosiafunctioncombobox.append_text("[Diagonal errors]")
+        self.gosiafunctioncombobox.append_text("Correlated errors")
         #self.gosiafunctioncombobox.append_text("Quick point yields")
         self.gosiafunctioncombobox.append_text("Make simulated yields")
         self.gosiafunctioncombobox.append_text("Calculate lifetimes")
@@ -25895,7 +25708,7 @@ class main_gui:
         hbox.pack_start(self.gosiafunctioncombobox,False,False)
         self.gosiafunctioncombobox.show()
 
-        # Don't reuse the name of this box, because it's neede for reading the selection
+        # Don't reuse the name of this box, because it's needed for reading the selection.
         self.gosiaactioncombobox = gtk.combo_box_new_text()
         self.gosiaactioncombobox.append_text("View gosia input")
         self.gosiaactioncombobox.append_text("Save gosia input")
@@ -25906,26 +25719,18 @@ class main_gui:
         # Create a new button "run gosia input"
         button30 = gtk.Button("Go")
         button30.connect("clicked", self.gosia_go)
-        # pack the button30 
         hbox.pack_start(button30, False, False)
-        # Set the default flags 
         button30.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
         button30.grab_default()
-        # Show the button30.
         button30.show()
         self.all_button_list.append(button30)
 
         # Create a new button to clear the textview buffer.
         button33 = gtk.Button("Clear")
         button33.connect("clicked", self.clear_textview)
-        # pack the button33 
         hbox.pack_start(button33, False, False)
-        # Set the default flags 
         button33.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
         button33.grab_default()
-        # Show the button33.
         button33.show()
         self.all_button_list.append(button33)
 
@@ -25934,86 +25739,58 @@ class main_gui:
         # When the button31 is clicked call "close application" which quits
         # GTk.
         button31.connect("clicked", self.close_application)
-        # pack the button31 
         hbox.pack_end(button31, False, False)
-        # Set the default flags 
         button31.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
         button31.grab_default()
-        # Show the button.
         button31.show()
         self.all_button_list.append(button31)
         self.recovery_mode_button_list.append(button31)
-        
+
         if SCRIPT_MODE:
             # Create a new button to run a python script.
             button34 = gtk.Button("Script")
-            # Not sure this will work the way I expect...
             button34.connect("clicked", self.run_script)
-            # pack the button34 
             hbox.pack_end(button34, False, False)
-            # Set the default flags 
             button34.set_flags(gtk.CAN_DEFAULT)
-            # Grab the default
             button34.grab_default()
-            # Show the button34.
             button34.show()
             self.all_button_list.append(button34)
-        
+
 
         # Create a new button to let user give a command
         button32 = gtk.Button("Eval")
-        # Not sure this will work the way I expect...
         button32.connect("clicked", self.user_command)
-        # pack the button32 
         hbox.pack_start(button32, False, False)
-        # Set the default flags 
         button32.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
         button32.grab_default()
-        # Show the button32.
         button32.show()
         self.all_button_list.append(button32)
-        
+
         # Create a new button to view/edit logs
         button35 = gtk.Button("Log")
-        # Not sure this will work the way I expect...
         button35.connect("clicked", self.logs)
-        # pack the button35 
         hbox.pack_start(button35, False, False)
-        # Set the default flags 
         button35.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
         button35.grab_default()
-        # Show the button35.
         button35.show()
         self.all_button_list.append(button35)
-        
-        # Create a new button to view/edit logs
+
+        # Create a new button to display the most recent chi-squared value.
         button36 = gtk.Button("X^2")
-        # Not sure this will work the way I expect...
         button36.connect("clicked", self.chisq)
-        # pack the button36 
         hbox.pack_start(button36, False, False)
-        # Set the default flags 
         button36.set_flags(gtk.CAN_DEFAULT)
-        # Grab the default
         button36.grab_default()
-        # Show the button36.
         button36.show()
         self.all_button_list.append(button36)
-        
+
         if DEBUGGING_MODE:
             debugging_button = gtk.Button("DEBUG")
-            self.debugging_button_pointer = debugging_button  # So that it can be forced active 
+            self.debugging_button_pointer = debugging_button  # So that it can be forced active
             debugging_button.connect("clicked", self.top_level_testing)
-            # pack the debugging_button 
             hbox.pack_end(debugging_button, False, False)
-            # Set the default flags 
             debugging_button.set_flags(gtk.CAN_DEFAULT)
-            # Grab the default
             debugging_button.grab_default()
-            # Show the debugging_button.
             debugging_button.show()
             self.all_button_list.append(debugging_button)
 
@@ -26021,13 +25798,15 @@ class main_gui:
         window.show()
 
         if not nosplash:
-            welcome()   # run the splash screen.  
+            welcome()   # run the splash screen.
             while gtk.events_pending():
                 gtk.main_iteration()
             time.sleep(5)
             welcome(hide=True)
 
-        # Check to see if the GUI is in recovery mode.  If so, set active buttons as appropriate.
+        # Check to see if the GUI is in recovery mode.  If so, set active
+        # buttons as appropriate.
+
         if RECOVERY_MODE:
             self.set_recovery_mode(self)
 
@@ -26050,9 +25829,9 @@ class main_gui:
         # Display a getting-started tip.
         create_popup_tip("getting_started")
 
-        # Check for version updates or other messages.
-        # If result == False, then the server did not give the expected
-        # response.  Not much point in trying to notify Rochester.
+        # Check for version updates or other messages.  If result == False,
+        # then the server did not give the expected response.  Not much point
+        # in trying to notify Rochester.
         up = updater()
         result = up.report_all()
 
@@ -26065,13 +25844,13 @@ def minimum_beam_energy(beam_mass,target_mass,excitation_energy):
     """Calculates the minimum beam energy that can populate a state, given the energy of the state.
 
     by inverting the formula for maximum excitation energy used in Gosia:
-        ared = 1.0 + a1/a2 
-        emax = EP(lexp)/ared 
+        ared = 1.0 + a1/a2
+        emax = EP(lexp)/ared
 
     where a1, a2 and EP(lexp) are the beam mass, target mass and the beam
     energy for experiment number lexp, respectively.
 
-    EP = ared * emax 
+    EP = ared * emax
 
     Pass the excitation energy in keV.
     Returns a beam energy in MeV.
@@ -26091,8 +25870,8 @@ def maximum_excitation_energy(beam_mass,target_mass,beam_energy):
     """Calculates the maximum excitation energy that can be reached
 
     according to the same formula used in Gosia:
-        ared = 1.0 + a1/a2 
-        emax = EP(lexp)/ared 
+        ared = 1.0 + a1/a2
+        emax = EP(lexp)/ared
 
     where a1, a2 and EP(lexp) are the beam mass, target mass and the beam
     energy for experiment number lexp, respectively.
@@ -26113,7 +25892,7 @@ def maximum_excitation_energy(beam_mass,target_mass,beam_energy):
 
 
 def standard_p_gamma_events(I_passed,days_passed,A_passed,Gosia_yield_passed,gamma_efficiency_passed):
-    """Calculates the total number of p-gamma events detected in a beam run 
+    """Calculates the total number of p-gamma events detected in a beam run
     using the standard definition of efficiency.
 
     p_gamma_events(I,days,A,Gosia_yield,gamma_efficiency)
@@ -26136,13 +25915,13 @@ def standard_p_gamma_events(I_passed,days_passed,A_passed,Gosia_yield_passed,gam
     gamma_efficiency = float(gamma_efficiency_passed)  # [1]
     N_A = 6.02E+23                                     # [atoms per mol] (Avogadro's number)
 
-    total_beam_particles =  I * days * 1.0E-9 * 6.242E+18 * 3600. * 24. 
+    total_beam_particles =  I * days * 1.0E-9 * 6.242E+18 * 3600. * 24.
     detected_events      =  1.0E-30 * total_beam_particles * (N_A / A) * Gosia_yield * gamma_efficiency * 4. * math.pi
 
     return detected_events
 
 def p_gamma_events(I_passed,days_passed,A_passed,Gosia_yield_passed,gamma_efficiency_passed,delta_Omega_passed):
-    """Calculates the total number of p-gamma events detected in a beam run 
+    """Calculates the total number of p-gamma events detected in a beam run
 
     p_gamma_events(I,days,A,Gosia_yield,gamma_efficiency,delta_Omega)
 
@@ -26164,8 +25943,8 @@ def p_gamma_events(I_passed,days_passed,A_passed,Gosia_yield_passed,gamma_effici
     delta_Omega_Ge = float(delta_Omega_passed)         # [sr]
     N_A = 6.02E+23                                     # [atoms per mol] (Avogadro's number)
 
-    total_beam_particles =  I * days * 1.0E-9 * 6.242E+18 * 3600. * 24. 
-    detected_events      =  1.0E-30 * total_beam_particles * (N_A / A) * Gosia_yield * gamma_efficiency * delta_Omega_Ge 
+    total_beam_particles =  I * days * 1.0E-9 * 6.242E+18 * 3600. * 24.
+    detected_events      =  1.0E-30 * total_beam_particles * (N_A / A) * Gosia_yield * gamma_efficiency * delta_Omega_Ge
 
     return detected_events
 
@@ -26177,7 +25956,7 @@ def one_step_perturbation_cross_section(elambda_text,BElambda_passed,Z_proj_pass
 
     This only works for E2 and E1.
 
-    See Alder, Winther, _Coulomb_Excitation_ pg. 103.  
+    See Alder, Winther, _Coulomb_Excitation_ pg. 103.
 
     Syntax: one_step_perturbation_cross_section(elambda_text,BElambda,Z_proj,A_proj,Z_targ,A_targ,E_mean,E_excited_state)
 
@@ -26215,7 +25994,7 @@ def one_step_perturbation_cross_section(elambda_text,BElambda_passed,Z_proj_pass
 def winther_C_Elambda(elambda_text,Z_proj_passed,A_proj_passed,Z_targ_passed,A_targ_passed):
     """Calculates the Alder,Winther classical f function for E1 or E2 only in barns.
 
-    See Alder, Winther, _Coulomb_Excitation_ pg. 103.  
+    See Alder, Winther, _Coulomb_Excitation_ pg. 103.
 
     Syntax: winther_C_Elambda(elambda_text,Z_proj,A_proj,Z_targ,A_targ)
 
@@ -26232,7 +26011,7 @@ def winther_C_Elambda(elambda_text,Z_proj_passed,A_proj_passed,Z_targ_passed,A_t
         A_targ = float(A_targ_passed)
 
         C_Elambda = ((Z_proj**2 * A_proj) / 40.03) * (0.07199 * (1. + A_proj / A_targ) * Z_proj * Z_targ)**(-2. * l + 2.)
-        return C_Elambda 
+        return C_Elambda
     else:
         print "Error in winther_C_Elambda: multipole not allowed."
         return -1
@@ -26298,7 +26077,7 @@ def symmetrized_adiabaticity(Z_proj_passed,A_proj_passed,Z_targ_passed,A_targ_pa
 
 def final_kinetic_energy_for_one_step_coulex(A_proj_passed,A_targ_passed,E_mean_passed,E_excited_state_passed):
     """Returns the final kinetic energy of the beam after excitation to the excited state.
-    
+
     Syntax: final_kinetic_energy(A_proj,A_targ,E_mean,E_excited_state)
     where E_mean [MeV] is the mean beam energy as the projectile traverses the target.
     and E_excited_state is the energy of the excited state in keV!!!
@@ -26341,7 +26120,7 @@ def stddev(list_of_values):
 def bmlambda(spin,rme):
     """Calculates a reduced transition probability from a reduced matrix element
 
-    Syntax: bmlambda(spin,rme) 
+    Syntax: bmlambda(spin,rme)
 
     rme     - the reduced matrix element
     spin    - the spin of the initial state of the transition
@@ -26362,7 +26141,7 @@ def calc_wu(A,multipole_text):
     """
     # Convert multipole to lowercase.
     this_multipole_text = multipole_text.lower()
-  
+
     #Constants for calculating Weisskopf units [e,b,n.m.]
     wu_constant = {'e1': 6.445E-4,'e2': 5.940E-6,'e3': 5.940E-8,'e4': 6.285E-10,\
                    'e5': 6.929E-12,'m1': 1.790,'m2': 1.650E-2,'m3': 1.650E-4,\
@@ -26388,7 +26167,7 @@ def calc_wu(A,multipole_text):
 def time_reversal(I_a,I_b,multipole_text,a_to_b_matrix_element):
     """Calculates a time-reversed matrix element.
 
-    For a_to_b_matrix_element = <b|ML|a>, 
+    For a_to_b_matrix_element = <b|ML|a>,
     <a|EL|b> = (-)^(I_b+L-I_a)*<b|EL|a> and
     <a|ML|b> = (-)^(I_b+L-I_a+1)*<b|ML|a>
 
@@ -26406,7 +26185,7 @@ def time_reversal(I_a,I_b,multipole_text,a_to_b_matrix_element):
         sign_term = (-1)**int(round(I_b + L - I_a + 1))
 
     b_to_a_matrix_element = sign_term * a_to_b_matrix_element
-    return b_to_a_matrix_element 
+    return b_to_a_matrix_element
 
 def cgc(j1,m1,j2,m2,j3,m3):
     """Calculates a Clebsch-Gordan coefficient <j1 m1 j2 m2 | j3 m3>
@@ -26433,7 +26212,7 @@ def ned(aj,bj,cj,am,bm,cm):
     It fills a large 2d array each time it is called.  This can be changed by
     changing ned to a class and creating a single object of ned to reuse
     throughout the code, but the execution time is very small in Python,
-    possibly due to delayed garbage collection.  
+    possibly due to delayed garbage collection.
 
     Translated from ned.f by Arturo Quirantes, "A. Quirantes" in the
     literature.
@@ -26442,7 +26221,7 @@ def ned(aj,bj,cj,am,bm,cm):
 
     Some of the lines of code have the original fortran in comments next to
     them or preceding.
-    
+
     NED original header comments:
     C    ARTURO QUIRANTES SIERRA
     C    Department of Applied Physics, Faculty of Sciences
@@ -26450,7 +26229,7 @@ def ned(aj,bj,cj,am,bm,cm):
     C    http://www.ugr.es/local/aquiran/codigos.htm
     C    aquiran@ugr.es
     C
-    C    Last update: 20 May 2.003    
+    C    Last update: 20 May 2.003
 
     """
 
@@ -26459,7 +26238,7 @@ def ned(aj,bj,cj,am,bm,cm):
     # Since this creates an array of arbitrary size, we need to prevent the user
     # taking too much memory.
     if (zz+1)**2 > MAX2DARRAYSIZE:
-        return 'MAX2DARRAYSIZE violated in ned().' 
+        return 'MAX2DARRAYSIZE violated in ned().'
 
     q=numpy.zeros((zz+1,zz+1))     # numpy functions return data on demand, saving space and time.
     for i in range(1,zz+1):                                                     #    loop from 1 to zz
@@ -26489,7 +26268,7 @@ def ned(aj,bj,cj,am,bm,cm):
 
     if d <= 0.0:                                                                #    if (d) 10,10,20
         ld = min(ja,jb,jc,ma,mb,mc,la,lb,lc)  # integer                         #10  ld=min0(ja,jb,jc,ma,mb,mc,la,lb,lc)
-    else:                                     # does not exist  
+    else:                                     # does not exist
         return 0.0                            # zero if can't couple
 
     if ld > 0:                                                                  #    if (ld) 20,20,30
@@ -26536,7 +26315,7 @@ def sommerfeld_parameter(Z_proj_passed,A_proj_passed,Z_targ_passed,A_targ_passed
     See the Gosia manual or for convenient units Alder, Winther,
     _Electromagnetic_Excitation_, American Elsevier, New York (1975), page 270.
 
-    Syntax: 
+    Syntax:
     sommerfeld_parameter(Z_proj,A_proj,Z_targ,A_targ,E_mean),
     or sommerfeld_parameter(Z_proj,A_proj,Z_targ,A_targ,E_mean,E_excited_state,
     where E_mean is the mean beam energy [MeV] as the projectile traverses the target
@@ -26553,7 +26332,7 @@ def sommerfeld_parameter(Z_proj_passed,A_proj_passed,Z_targ_passed,A_targ_passed
     E_mean = float(E_mean_passed)   # Already in MeV
     if not E_excited_state_passed == None:
         # For excited state
-        E_excited_state = float(E_excited_state_passed)  
+        E_excited_state = float(E_excited_state_passed)
         sommerfeld = 0.157484 * (Z_proj * Z_targ * math.sqrt(A_proj)) / math.sqrt(final_kinetic_energy_for_one_step_coulex(A_proj,A_targ,E_mean,E_excited_state))
     else:
         # Ground state
@@ -26624,7 +26403,7 @@ def inelastic_scattering_tau(A_proj_passed,A_targ_passed,E_proj_lab_passed,Q_val
 def inelastic_scattering_tau_tilde(A_proj_passed,A_targ_passed,E_proj_lab_passed,Q_value):
 
     """Returns the inelastic value of the scattering parameter tau-tilde.
-        
+
         tau-tilde is defined in the Gosia manual, section 5.1.2
 
     NOTE:
@@ -26713,7 +26492,7 @@ def inelastic_lab_scattering_angle_to_lab_scattering_energy(A_proj_passed,A_targ
         Q_value is in MeV also!
 
     If forward=False, then the the backward center-of-mass solution is returned
-    for inverse kinematics.  Angles are given and returned in degrees.  
+    for inverse kinematics.  Angles are given and returned in degrees.
 
     If the requested angle is invalid, then an exception will be raised.  This
     must be trapped by the calling method.
@@ -26735,7 +26514,7 @@ def inelastic_lab_scattering_angle_to_lab_scattering_energy(A_proj_passed,A_targ
 
     E_scattering_lab = (A_targ / (A_proj + A_targ))**2 * (1.0 + tau**2 + 2.0 * tau * math.cos(math.radians(com_scattering_angle))) * E_tilde
 
-    return E_scattering_lab 
+    return E_scattering_lab
 
 def inelastic_lab_recoil_angle_to_lab_recoil_energy(A_proj_passed,A_targ_passed,theta_lab_passed,forward,E_proj_passed,Q_value):
     """Returns the final target recoil energy in the lab from the lab recoil angle
@@ -26903,11 +26682,11 @@ def inelastic_lab_recoil_angle_to_lab_scattering_angle(A_proj_passed,A_targ_pass
         Q_value is in MeV also!
 
 
-    Syntax: 
+    Syntax:
 
     theta_lab is the recoil (target) angle in degrees in the laboratory frame.
 
-    Angles are given and returned in degrees.  
+    Angles are given and returned in degrees.
 
     If the requested angle is invalid, then an exception will be raised.  This
     must be trapped by the calling method.
@@ -26941,7 +26720,7 @@ def inelastic_lab_recoil_angle_to_com_recoil_angle(A_proj_passed,A_targ_passed,t
 
 
     If forward=False, then the the backward center-of-mass solution is returned
-    for inverse kinematics.  Angles are given and returned in degrees.  
+    for inverse kinematics.  Angles are given and returned in degrees.
 
     If the requested angle is invalid, then an exception will be raised.  This
     must be trapped by the calling method.
@@ -27491,7 +27270,7 @@ def user_rtos():
     E_exc  = float(raw_input("Excitation energy [keV]: ")) / 1000.  # Converted to MeV for the cross section function
     print "Excitation energy taken as " + str(round(E_exc * 1000.,1)) + " KEV."
     theta_rec_lab = float(raw_input("Lab-frame target recoil angle in degrees: "))
-    if E_exc <> 0.:
+    if E_exc != 0.:
         block_print_with_line_breaks("For a non-zero Q-value there are TWO solutions (two lab scattering angles for any recoil angle).  See the Gosia manual section 5.1.  To obtain the low-recoil-energy solution for an inelastic collision, select \"f\".  The usual backward-lab-scattering solution is the default.  If you don't understand this, then the default will almost certainly give you the quantity you want.")
         forward_string = None
         while not forward_string in ["f","","b"]:
@@ -27628,7 +27407,7 @@ def user_lvsc():
 
     block_print_with_line_breaks("The plot shows lab-frame projectile scattering angle and target recoil angles (y) vs. the c.o.m. projectile angle in degrees.  The maximum scattering and recoil angles, respectively, are ")
 
-    print str(round(max_scat,3)) + " and  " + str(round( max_rec,3)) + " degrees.\n"
+    print str(round(max_scat,3)) + " and  " + str(round(max_rec,3)) + " degrees.\n"
 
     # Call the quick-plot function for gnuplot.
     quick_plot_n_sets(plot_dict)
@@ -27890,4 +27669,3 @@ if __name__ == "__main__":
 
     main_gui()   # Run the main gui menu
     main()
-
