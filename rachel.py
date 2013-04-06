@@ -14835,7 +14835,6 @@ class experimentmanager:
         try:
             weighted_mean_normalization = normalization_constant / sum_of_weight_factors
         except:
-            print "Error--there appear to be no calculated yields in memory.\nDid you integrate the yields?"
             return [None,None]
 
         # Return the internal experiment numbers to which this normalization
@@ -16139,7 +16138,8 @@ class experimentmanager:
 
                 experimental_normalization_constant = self.get_overall_normalization_for_experimental_yields(internal_experiment_number)[1]
                 if experimental_normalization_constant == None:
-                    print "No data in memory for experiment " + str(internal_experiment_number + 1) + "."
+                    print "No experimental data in memory for experiment " + str(internal_experiment_number + 1) + "."
+                    print "  This is ok, if you haven't loaded any experimental yields."
                     raw_input("Press enter to continue.")
 
             # Get the internal detector number that matches the polar and
@@ -16215,7 +16215,9 @@ class experimentmanager:
                             # Get the normalization on the calculated yields
                             # that gives the best fit to experimental data.
 
-                            this_yield = this_yield * experimental_normalization_constant
+                            # If there is no normalization constant, then don't renormalize!
+                            if not experimental_normalization_constant == None:
+                                this_yield = this_yield * experimental_normalization_constant
 
                         # If this particle angle is already in the dict, jog
                         # the point a little to make the plot nicer and to give
@@ -16525,7 +16527,9 @@ class experimentmanager:
                                 # yields that gives the best fit to
                                 # experimental data.
 
-                                this_yield = this_yield * experimental_normalization_constant
+                                # If there is no normalization constant, then don't renormalize!
+                                if not experimental_normalization_constant == None:
+                                    this_yield = this_yield * experimental_normalization_constant
 
                             calculated_yield_vs_spin[gosia_experiment_number][this_initial_spin] = this_yield
 
@@ -16817,7 +16821,9 @@ class experimentmanager:
                             # Save the calculated yield data and exit the innermost for loop.
                             if plot_experimental_yields:
                                 # Get the normalization on the calculated yields that gives the best fit to experimental data.
-                                calculated_yield = calculated_yield * experimental_normalization_constant
+                                # If there is no normalization constant, then don't renormalize!
+                                if not experimental_normalization_constant == None:
+                                    calculated_yield = calculated_yield * experimental_normalization_constant
 
                             # If this angle is already in the dict, jog
                             # the point a little to make the plot nicer and to give
@@ -17072,7 +17078,9 @@ class experimentmanager:
                             # Add this point.
                             if plot_experimental_yields:
                                 # Get the normalization on the calculated yields that gives the best fit to experimental data.
-                                calculated_yield = calculated_yield * experimental_normalization_constant
+                                # If there is no normalization constant, then don't renormalize!
+                                if not experimental_normalization_constant == None:
+                                    calculated_yield = calculated_yield * experimental_normalization_constant
                             calculated_yield_vs_phi_Ge[gosia_experiment_number][phi] = calculated_yield
                             calculated_yield_found   = True
                             break
@@ -17916,7 +17924,10 @@ class experimentmanager:
             # Get the weighted mean normalization of the experimental data.
             try:
                 experimental_normalization_constant = self.get_overall_normalization_for_experimental_yields(internal_experiment_number)[1]
-                skip_experiment = False
+                if experimental_normalization_constant == None:
+                    skip_experiment = True
+                else:
+                    skip_experiment = False
             except:
                 print "Not enough experimental data to generate a chi-squared report for experiment " + str(internal_experiment_number + 1) + "."
                 skip_experiment = True
