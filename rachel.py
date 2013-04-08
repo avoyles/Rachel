@@ -17924,15 +17924,15 @@ class experimentmanager:
             # Get the weighted mean normalization of the experimental data.
             try:
                 experimental_normalization_constant = self.get_overall_normalization_for_experimental_yields(internal_experiment_number)[1]
+                print experimental_normalization_constant  # DEBUGGING
                 if experimental_normalization_constant == None:
                     skip_experiment = True
                 else:
                     skip_experiment = False
+                expt_to_calc_normalizations.append(experimental_normalization_constant)
             except:
                 print "Not enough experimental data to generate a chi-squared report for experiment " + str(internal_experiment_number + 1) + "."
                 skip_experiment = True
-                chi_squared_for_experiment.append(None)
-                data_points_for_experiment.append(None)
                 expt_to_calc_normalizations.append(None)
             if not skip_experiment:
                 expt_to_calc_normalizations.append(experimental_normalization_constant)
@@ -18014,6 +18014,7 @@ class experimentmanager:
         for internal_experiment_number in range(number_of_experiments):
             data_points = data_points_for_experiment[internal_experiment_number]
             chi_squared = chi_squared_for_experiment[internal_experiment_number]
+            print internal_experiment_number # DEBUGGING
             expt_to_calc_normalization = expt_to_calc_normalizations[internal_experiment_number]
             if not data_points == None and not chi_squared == None and not expt_to_calc_normalization == None:
                 if not data_points == 0:
