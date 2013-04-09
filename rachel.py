@@ -17869,16 +17869,16 @@ class experimentmanager:
                         chisq_contribution = (measured - calculated)**2 / error**2
                         if DEBUGGING_MODE:
                             print level_key, calculated, measured, error, chisq_contribution
-                        chi_squared_spectroscopic += chisq_contribution 
+                        chi_squared_spectroscopic += chisq_contribution
                         number_of_spectroscopic_data_points += 1
-                        this_line = "Lifetime " + str(level_key) 
+                        this_line = "Lifetime " + str(level_key)
                         if len(this_line) > 55:
                             this_line += "\n" + " ".ljust(60)
                         else:
                             this_line = this_line.ljust(60)
                         this_line += str(round(chisq_contribution,3))
                         spect_lines.append(this_line)
-                        
+
 
         # The number of experiments for the chisq calculation and the report of
         # the worst discrepancies.
@@ -17924,7 +17924,6 @@ class experimentmanager:
             # Get the weighted mean normalization of the experimental data.
             try:
                 experimental_normalization_constant = self.get_overall_normalization_for_experimental_yields(internal_experiment_number)[1]
-                print experimental_normalization_constant  # DEBUGGING
                 if experimental_normalization_constant == None:
                     skip_experiment = True
                 else:
@@ -18014,7 +18013,6 @@ class experimentmanager:
         for internal_experiment_number in range(number_of_experiments):
             data_points = data_points_for_experiment[internal_experiment_number]
             chi_squared = chi_squared_for_experiment[internal_experiment_number]
-            print internal_experiment_number # DEBUGGING
             expt_to_calc_normalization = expt_to_calc_normalizations[internal_experiment_number]
             if not data_points == None and not chi_squared == None and not expt_to_calc_normalization == None:
                 if not data_points == 0:
