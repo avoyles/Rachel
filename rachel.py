@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION = "1.3.2"
+VERSION = "1.3.3"
 RECOVERY_MODE = False
 DEBUGGING_MODE = False
 SCRIPT_MODE = False
@@ -456,6 +456,8 @@ class updater:
 
         """
 
+        lines = []
+
         try:
             received = self.check_server()
             if not received:
@@ -468,7 +470,7 @@ class updater:
 
                 text = "A new version of Rachel is available.\nYou can download version " + self.version_dict["version"] + " from the Gosia Wiki:\n\nhttp://www-user.pas.rochester.edu/~gosia/mediawiki\n\n" + self.message
 
-                lines = block_print_with_line_breaks(text,line_length=60,silent=True,paragraphs=True)
+                lines.extend(block_print_with_line_breaks(text,line_length=60,silent=True,paragraphs=True))
                 create_dialog_popup({"text_lines":lines, "title":"Message from Rochester"})
 
             if "special message" in self.version_dict.keys():
@@ -478,9 +480,9 @@ class updater:
                     self.special_message = self.special_message.replace("LINEBREAK","\n")
                     text = self.special_message
 
-                    lines = block_print_with_line_breaks(text,line_length=60,silent=True,paragraphs=True)
+                    lines.extend(block_print_with_line_breaks(text,line_length=60,silent=True,paragraphs=True))
                     create_dialog_popup({"text_lines":lines, "title":"Update from Rochester"})
-                    return True
+                    #return True
 
             # Check that this file is not modified.
             list_text = self.version_dict["SHA512"]
@@ -547,7 +549,7 @@ class checksum:
         """
 
         if DEBUGGING_MODE:
-            print "Checksum of this executable: ",self.digest
+            print "\nChecksum of this executable: ",self.digest
         for one_hash in SHA512_HEX_list:
             if DEBUGGING_MODE:
                 print "Comparing to checksum " + one_hash,
