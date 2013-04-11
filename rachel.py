@@ -6166,7 +6166,7 @@ class nucleus:
         print "B(ML) points written to file rachel_bml.txt."
         raw_input("Press enter to quit the Plot B(ML) function and resume the GUI.")
         self.draw_level_scheme()
-            
+
 
     def plotalllevels(self,completelist):
         """Clears the pylab window and draws levels with text spin labels.
@@ -6292,7 +6292,7 @@ class nucleus:
         pylab.ylabel('Energy (keV)')
         pylab.draw()  # v. 2.0.0.beta: starting to get errors here if called from outside.
 
-        
+
     def draw_level_scheme(self):
         """Draw the level scheme, including "major couplings"
 
@@ -12245,15 +12245,14 @@ class experimentmanager:
 
         """
 
-        
         # Trace around the detector edges and record a dictionary of phi angles
         # for each theta meshpoint reference by its index in the meshpoint
         # list.  Overlay the exact shape on the downsampled shape:
 
-        plot_points = phi_theta_points  
+        plot_points = phi_theta_points
 
         # Get the exact minimum and maximum theta values.
-        minimum_theta = 181.  
+        minimum_theta = 181.
         maximum_theta = -1.
         for i in range(len(phi_theta_points) - 1):
             this_point = phi_theta_points[i]
@@ -13043,12 +13042,12 @@ class experimentmanager:
         try:
             temporary_data_storage.get(data_storage_key)
         except:
-            return -2  
+            return -2
 
         # Let the user examine plots by level number and magnetic substate and experiment number.
         while True:
             self.print_experiment_catalog()
-            gosia_experiment_number = prompt_number("Experiment number: ","i") 
+            gosia_experiment_number = prompt_number("Experiment number: ","i")
             if gosia_experiment_number == "quit":
                 return 0
             internal_experiment_number = gosia_experiment_number - 1
@@ -16088,7 +16087,7 @@ class experimentmanager:
         else:
             plot_absolute = False
             plot_experimental_yields = True
-            y_label = "yield"
+            y_label = "yield (arb units)"
 
         # Put all data in one file for gnuplot.  Otherwise, gnuplot colors get
         # confused.
@@ -16403,7 +16402,7 @@ class experimentmanager:
         else:
             plot_absolute = False
             plot_experimental_yields = True
-            y_label = "yield"
+            y_label = "yield (arb units)"
 
         # Put all data in one file for gnuplot.  Otherwise, gnuplot colors get
         # confused.
@@ -16741,7 +16740,7 @@ class experimentmanager:
         else:
             plot_absolute = False
             plot_experimental_yields = True
-            y_label = "yield"
+            y_label = "yield (arb units)"
 
         # Put all data in one file for gnuplot.  Otherwise, gnuplot colors get
         # confused.
@@ -16992,7 +16991,7 @@ class experimentmanager:
         else:
             plot_absolute = False
             plot_experimental_yields = True
-            y_label = "yield"
+            y_label = "yield (arb units)"
 
         # Put all data in one file for gnuplot.  Otherwise, gnuplot colors get
         # confused.
