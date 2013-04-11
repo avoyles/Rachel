@@ -25193,7 +25193,7 @@ class main_gui:
                     #block_print_with_line_breaks("user_integrated_rutherford_cross_section - Returns the integrated Rutherford cross section in mb in the lab frame for azimuthal symmetry only.")
                     block_print_with_line_breaks("user_com_energy - converts a lab-frame beam energy to the center of mass energy")
                     block_print_with_line_breaks("user_lab_energy - converts a c.o.m. beam energy to the lab-frame energy")
-                    block_print_with_line_breaks("user_stor  - returns the recoil (target) angle for a given projectile scattering angle (both lab frame)")
+                    #block_print_with_line_breaks("user_stor  - returns the recoil (target) angle for a given projectile scattering angle (both lab frame)")
                     block_print_with_line_breaks("user_stoc  - returns the scattering angle in the c.o.m. frame given the laboratory scattering angle")
                     block_print_with_line_breaks("user_rtos  - returns the projectile scattering angle for a given recoil (target) angle (both lab frame)")
                     block_print_with_line_breaks("user_scatmax - returns the maximum projectile scattering angle for a given beam, target pair.  Use this with the target-exit energy and Q-value to find the Q-dependent maximum recoil angle that will be accepted by Gosia.  (This is not arcin(Atarg/Abeam) for Q>0!)")
