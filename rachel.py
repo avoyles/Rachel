@@ -10389,7 +10389,7 @@ class gosia_shell:
         # Add the excited state for kinematics calculation, if it is set, or if
         # it must be the ground state for one or more experiments, because the
         # exit energy is too low for the Q-value of an excited state.
-        # 
+        #
         # For a stopped (or nearly stopped) beam, the Q-value needs to be zero.
         # This is equivalent to setting the NCM flag to 1.
         # In general, need to set the Q-value low enough that it can be excited at the exit energy.
@@ -10401,7 +10401,7 @@ class gosia_shell:
             this_maximum_Q_value = one_experiment.get_maximum_possible_Q_value()
             maximum_Q_values.append(this_maximum_Q_value)
         the_maximum_Q_value = min(maximum_Q_values)  # The LOWEST maximum!
-            
+
         # Arbitrary 100 keV maximum difference until full inelastic max Q-value calculation is ready.
         if (the_maximum_Q_value - current_Q_value) < 100.0:    # keV
             # We don't try to set any level number other than the ground state.
@@ -12750,7 +12750,7 @@ class experimentmanager:
 
         # Generate a list of angles in the range determined above.
         theta_values_list = list(numpy.linspace(0.1,theta_lab_max,51))
-        
+
 
         experiment_counter = 0
         self.delete_experiment(True)   # True means to delete all without interactive prompting.
@@ -20397,14 +20397,14 @@ class experiment:
         # line in the file, issue an error.
         with open(output_file,'r') as elast_output_file:
             all_elast_lines = elast_output_file.readlines()
-            
+
         if len(all_elast_lines) > 1:
             block_print_with_line_breaks("\nError: the call to elast did not produce the expected output.  The experiment cannot be generated properly.  (You can use the \"Undo\" button to undo this step if necessary.)  Check that elast is compiled, and that the proper path is in the .rachel_setup file.")
             return -1
 
         # Get the energy loss in the target.
         line_fields = all_elast_lines[0].split()
-        total_energy_loss = float(line_fields[0])  
+        total_energy_loss = float(line_fields[0])
         exit_energy = initial_beam_energy - total_energy_loss
 
         # Issue a warning to use SRIM for stopped beams.  We do not iterate to solve for the range here!
@@ -26957,6 +26957,33 @@ def inelastic_differential_scattering_cross_section_com(Z_proj_passed,A_proj_pas
 #  # end ACCURATE INELASTIC SCATTERING AND CROSS SECTION FUNCTIONS.  #
 #  ###################################################################
 
+def run_elast(target_atomic_number,target_mass,projectile_atomic_number,projectile_mass,beam_energy,append):
+
+    # Try to remove the elast output file, in case this fails and there
+    # was an output file remaining from a previous call.
+    remove_command = "rm " + output_file
+    # If the calling method requested overwriting the file, remove the original file.
+    if not append:
+        with open(".rachel_garbage","w") as garbage_file:
+            subprocess.call(remove_command,shell=True,stderr=garbage_file)  # (Redirect errors to the garbage file.)
+
+    target_string       = "\"1(" + str(target_atomic_number) + "," + str(target_mass) + ")\"" # Leading "1" means one component in target.
+    thickness_string    = str(self.parameter_dict["target_thickness"])
+    projectile_string   = "\"(" + str(projectile_atomic_number) + "," + str(projectile_mass) + ")\""
+    beam_energy_string  = format(beam_energy,".3f")  # rounded to the nearest keV.
+    command_line        = elast_command + " " + initial_command_line_options + " " + target_string + " " +\
+                          thickness_string + " " + projectile_string + " " + beam_energy_string
+
+    if append:
+        command_line += " >> "
+    else:
+        command_line += " > "
+    command_line += output_file
+
+    with open(".rachel_garbage","w") as garbage_file:
+        subprocess.call(command_line,shell=True,stderr=garbage_file)  # (Redirect errors to the garbage file.)
+
+    return 0
 
 def gaussian_smooth(equally_spaced_points,strippedXs=False,degree=5):  
     # This Gaussian smoothing routine is from 
