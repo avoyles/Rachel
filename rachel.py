@@ -792,6 +792,13 @@ def top_level_testing():
 
     """
 
+    print inelastic_lab_recoil_angle_to_lab_recoil_energy(136,194,40.,False,624.,1.0)
+
+    beta_vs_scattering_angle(theta_min = 20.0, theta_max = 85.0, theta_step = 1.0, target_atomic_number = 78, target_mass = 194, projectile_atomic_number = 54, projectile_mass = 136, forward = False, beam_energy = 624.0 - 9.47, E_exc = 0.0, target_thickness = 0.305)
+    return
+
+    run_elast(78,194,54,136,624,.610)
+
     # Load the session.
     setup_globals("reset")  # to make sure we don't have old data hanging around in the original objects
     unpickle_return_code,textview_summary = setup_globals(action="unpickle",force=True)
@@ -26957,53 +26964,128 @@ def inelastic_differential_scattering_cross_section_com(Z_proj_passed,A_proj_pas
 #  # end ACCURATE INELASTIC SCATTERING AND CROSS SECTION FUNCTIONS.  #
 #  ###################################################################
 
-def run_elast(target_atomic_number,target_mass,projectile_atomic_number,projectile_mass,beam_energy,append):
+def run_elast(target_atomic_number,target_mass,projectile_atomic_number,projectile_mass,beam_energy,target_thickness):
 
-    # Try to remove the elast output file, in case this fails and there
-    # was an output file remaining from a previous call.
-    remove_command = "rm " + output_file
-    # If the calling method requested overwriting the file, remove the original file.
-    if not append:
-        with open(".rachel_garbage","w") as garbage_file:
-            subprocess.call(remove_command,shell=True,stderr=garbage_file)  # (Redirect errors to the garbage file.)
+    target_atomic_number = int(target_atomic_number)
+    target_mass = int(target_mass)
+    projectile_atomic_number = int(projectile_atomic_number)
+    projectile_mass = int(projectile_mass)
+
+    output_file = "temp_rachel_elast_output_file.txt"
+    elast_command = GLOBAL_SETUP_DICT["ELAST_EXECUTABLE"]
+    initial_command_line_options = "-Qa 0 lp"
 
     target_string       = "\"1(" + str(target_atomic_number) + "," + str(target_mass) + ")\"" # Leading "1" means one component in target.
-    thickness_string    = str(self.parameter_dict["target_thickness"])
+    thickness_string    = str(target_thickness)
     projectile_string   = "\"(" + str(projectile_atomic_number) + "," + str(projectile_mass) + ")\""
     beam_energy_string  = format(beam_energy,".3f")  # rounded to the nearest keV.
     command_line        = elast_command + " " + initial_command_line_options + " " + target_string + " " +\
                           thickness_string + " " + projectile_string + " " + beam_energy_string
 
-    if append:
-        command_line += " >> "
-    else:
-        command_line += " > "
+    # print command_line
+
+    command_line += " > "
     command_line += output_file
 
     with open(".rachel_garbage","w") as garbage_file:
         subprocess.call(command_line,shell=True,stderr=garbage_file)  # (Redirect errors to the garbage file.)
 
+    with open(output_file,"r") as the_file:
+        output_line = the_file.readlines()[0]
+
+    # With these command line options, the output will have two floats only:
+    #    dE  dE/dx
+
+    fields = output_line.split()
+    dE   = float(fields[0])
+    dEdx = float(fields[1])
+
+    os.remove(output_file)
+
+
+    return dE, dEdx
+
+def beta_vs_scattering_angle(theta_min,theta_max,theta_step,target_atomic_number,target_mass,projectile_atomic_number,projectile_mass,forward,beam_energy,E_exc,target_thickness):
+    """
+
+    E_exc is the excitation energy (Q-value) in MeV.  MEV!!!
+
+    FOR NORMAL KINEMATICS, USE FORWARD = FALSE!!
+
+    """
+
+    print "FOR NORMAL KINEMATICS, USE FORWARD = FALSE!!"
+
+    theta_min = float(theta_min)
+    theta_max = float(theta_max)
+    theta_step = float(theta_step)
+    target_atomic_number = float(target_atomic_number)
+    target_mass = float(target_mass)
+    projectile_atomic_number = float(projectile_atomic_number)
+    projectile_mass = float(projectile_mass)
+    beam_energy = float(beam_energy)
+    E_exc = float(E_exc)
+    target_thickness = float(target_thickness)
+
+    print "\nUsing elast to calculate the stopping power."
+    print "\nscattering_angle exit_energy   beta  | recoil angle exitenergy beta_rec"
+
+    for scattering_angle in numpy.linspace(theta_min,theta_max,10.0 * int(theta_max - theta_min) + 1):
+
+        # Get the recoil angle
+        recoil_angle = inelastic_lab_scattering_angle_to_lab_recoil_angle(projectile_mass,target_mass,scattering_angle,forward,beam_energy,E_exc)
+
+        E_rec = inelastic_lab_recoil_angle_to_lab_recoil_energy(projectile_mass,target_mass,recoil_angle,forward,beam_energy,E_exc)
+
+        # Get the scattered energy.
+        E_scat = inelastic_lab_scattering_angle_to_lab_scattering_energy(projectile_mass,target_mass,scattering_angle,forward,beam_energy,E_exc)
+
+        # distance traveled in the target from the scatter point to exit (at scattering angle)
+        traversed_target_thickness = target_thickness / math.cos(math.radians(scattering_angle))
+
+        # distance traveled in the target from the scatter point to exit (at scattering angle)
+        recoil_traversed_target_thickness = target_thickness / math.cos(math.radians(recoil_angle))
+
+        # Use elast for now.  Can call SRIM server in a better version.
+        energy_loss, stopping_power = run_elast(target_atomic_number,target_mass,projectile_atomic_number,projectile_mass,E_scat,traversed_target_thickness)
+
+        exit_energy = E_scat - energy_loss
+
+        beta = 0.046 * math.sqrt(exit_energy / projectile_mass)
+
+        # Do the same for the recoiling target particle.
+        recoil_energy_loss, recoil_stopping_power = run_elast(target_atomic_number,target_mass,target_atomic_number,target_mass,E_rec ,recoil_traversed_target_thickness)
+
+        recoil_exit_energy = E_rec - recoil_energy_loss
+
+        if recoil_exit_energy > 0.0:
+            beta_rec = 0.046 * math.sqrt(recoil_exit_energy / target_mass)
+        else:
+            beta_rec = 0.0
+
+        print str(round(scattering_angle,2)).ljust(10) + str(round(exit_energy,1)).ljust(10) + str(round(beta,4)).ljust(10) + "    " + str(round(recoil_angle,2)).ljust(10) + str(round(recoil_exit_energy,1)).ljust(10) + str(round(beta_rec,4))
+
     return 0
 
-def gaussian_smooth(equally_spaced_points,strippedXs=False,degree=5):  
-    # This Gaussian smoothing routine is from 
+def gaussian_smooth(equally_spaced_points,strippedXs=False,degree=5):
+    # This Gaussian smoothing routine is from
     # http://www.swharden.com/blog/2008-11-17-linear-data-smoothing-in-python/
     # by Scott Harden, U. Florida
 
     equally_spaced_points = [equally_spaced_points[0]]*(degree-1) + equally_spaced_points + [equally_spaced_points[-1]]*degree
-    window=degree*2-1  
-    weight=numpy.array([1.0]*window)  
-    weightGauss=[]  
-    for i in range(window):  
-        i=i-degree+1  
-        frac=i/float(window)  
-        gauss=1/(numpy.exp((4*(frac))**2))  
-        weightGauss.append(gauss)  
-    weight=numpy.array(weightGauss)*weight  
-    smoothed=[0.0]*(len(equally_spaced_points)-window)  
-    for i in range(len(smoothed)):  
-        smoothed[i]=sum(numpy.array(equally_spaced_points[i:i+window])*weight)/sum(weight)  
-    return smoothed  
+    window=degree*2-1
+    weight=numpy.array([1.0]*window)
+    weightGauss=[]
+    for i in range(window):
+        i=i-degree+1
+        frac=i/float(window)
+        gauss=1/(numpy.exp((4*(frac))**2))
+        weightGauss.append(gauss)
+    weight=numpy.array(weightGauss)*weight
+    smoothed=[0.0]*(len(equally_spaced_points)-window)
+    for i in range(len(smoothed)):
+        smoothed[i]=sum(numpy.array(equally_spaced_points[i:i+window])*weight)/sum(weight)
+    return smoothed
 
 #######################################################################
 #  End of math functions.                                             #
