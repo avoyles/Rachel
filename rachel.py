@@ -497,7 +497,7 @@ class updater:
             identical = checker.verify_list(self.SHA512_list)
 
             if not identical:
-                text = "Warning:\nThe copy of Rachel you are using was either damaged or modified.\nYou should download the most recent version from the Gosia Wiki:\n\nhttp://www-user.pas.rochester.edu/~gosia/mediawiki\n\nIf you continue to see this error, please report the problem via the Gosia forum:\n\nhttp://www-user.pas.rochester.edu/~gosia/phpBB3/\n\n"
+                text = "Warning:\nThe copy of Rachel you are using was either damaged or modified, OR you are using a development version.\nIf you aren't intentionally using a development version, you should download the most recent version from the Gosia Wiki:\n\nhttp://www-user.pas.rochester.edu/~gosia/mediawiki\n\nIf you continue to see this error, and you don't know why, please report the problem via the Gosia forum:\n\nhttp://www-user.pas.rochester.edu/~gosia/phpBB3/\n\n"
                 lines = block_print_with_line_breaks(text,line_length=60,silent=True,paragraphs=True)
                 create_dialog_popup({"text_lines":lines, "title":"Could not verify Rachel executable"})
 
