@@ -792,6 +792,28 @@ def top_level_testing():
 
     """
 
+    # Load the session.
+    setup_globals("reset")  # to make sure we don't have old data hanging around in the original objects
+    unpickle_return_code,textview_summary = setup_globals(action="unpickle",force=True)
+
+    the_experiment_manager.parse_gosia_integrated_yields(tf=False,evaluate=False,cor_file_extension=None)
+
+    parameter_dict = \
+              { \
+                "days_of_beam":10.0, \
+                "beam_intensity":3.2e-7, \
+                "minimum_counts":1, \
+                "estimated_additional_error":0.05, \
+                "user_energy_threshold":50.0, \
+                "inspect_change_efficiency":False, \
+                "add_scatter":False, \
+              }
+
+    the_experiment_manager.write_simulated_yld_file(True,parameter_dict)
+
+    return
+
+
     print inelastic_lab_recoil_angle_to_lab_recoil_energy(136,194,40.,False,624.,1.0)
 
     beta_vs_scattering_angle(theta_min = 20.0, theta_max = 85.0, theta_step = 1.0, target_atomic_number = 78, target_mass = 194, projectile_atomic_number = 54, projectile_mass = 136, forward = False, beam_energy = 624.0 - 9.47, E_exc = 0.0, target_thickness = 0.305)
@@ -17416,7 +17438,7 @@ class experimentmanager:
         # Get the gosia output file name from the gosia shell.
         gosia_output_file_name = the_gosia_shell.get_base_file_name() + "." + FILE_DEF_DICT[22]["extension"]
 
-        # Read the gosia output file from disk.  
+        # Read the gosia output file from disk.
         with open(gosia_output_file_name,'r') as gosia_output_file:
             gosia_output_lines = gosia_output_file.readlines()
         # Save a copy of the last lines of the output, which might contain an error message.
@@ -17433,8 +17455,19 @@ class experimentmanager:
         try:
             # Loop to get all integrated yields for all experiments and all detectors
             for experiment_number in range(number_of_experiments):
+
+                experiment_number_string = str(experiment_number + 1)   # as a string in gosia's numbering system (beginning with 1)
+
+                # Get the integrated Rutherford cross section & total beam counts.
+                search_strings = ["INTEGRATED", "RUTHERFORD", "CROSS", "FOR", "EXP.", experiment_number_string]
+                rutherford_line_number = findinlist(gosia_output_lines,search_strings)
+                rutherford_line = gosia_output_lines[rutherford_line_number]
+                full_value_string = rutherford_line.split()[3]
+                value_string = full_value_string.split("=")
+                rutherford_cross_section = float(value_string[1])
+                self.allexperiments[experiment_number].set_integrated_rutherford_cross_section(rutherford_cross_section)
+
                 for detector_number in range(numbers_of_detectors[experiment_number]):
-                    experiment_number_string = str(experiment_number + 1)   # as a string in gosia's numbering system (beginning with 1)
                     detector_number_string = str(detector_number + 1)   # as a string in gosia's numbering system (beginning with 1)
                     # Find the header line for this experiment.
                     search_strings = ["EXPERIMENT",experiment_number_string,"DETECTOR",detector_number_string]
@@ -17532,10 +17565,10 @@ class experimentmanager:
                     # this is only a point-calculation evaluation run to find excited
                     # states.
                     if not evaluate:
-                        self.allexperiments[experiment_number].set_one_detector_calculated_yields(detector_number,detector_yields)  
+                        self.allexperiments[experiment_number].set_one_detector_calculated_yields(detector_number,detector_yields)
 
             if evaluate:
-                # Store the sets of excited states to 
+                # Store the sets of excited states to
                 self.excited_states = sets_of_excited_states
 
                 # If evaluate was set to true, then the lifetime data should follow
@@ -18313,7 +18346,7 @@ class experimentmanager:
             add_scatter = require_yes_no("Add Gaussian random scatter to data [y/n]? ")
 
         if add_scatter:
-            random.seed()  
+            random.seed()
 
         # Generate column headings with appropriate comments.
         if add_scatter:
@@ -18342,9 +18375,16 @@ class experimentmanager:
 
 
         for experiment_number in range(number_of_experiments):
+
             gosia_experiment_number = experiment_number + 1
-            target_thickness = self.allexperiments[experiment_number].get_parameter("target_thickness")
+
             A_target = self.allexperiments[experiment_number].A_target()
+
+            rutherford_cross_section = self.allexperiments[experiment_number].get_integrated_rutherford_cross_section()
+            rutherford_particle_counts = particle_counts_from_integrated_rutherford(beam_intensity,days_of_beam,A_target,rutherford_cross_section)
+            rutherford_line = "Integrated Rutherford cross section:       " + str(rutherford_cross_section) + " [mb*(mg/cm^2)] (See manual: OP,INTI)"
+            rutherford_counts_line = "Detected particle count (100% efficiency): " + str(rutherford_particle_counts)
+
             for detector_number in range(numbers_of_detectors[experiment_number]):
                 # Get a description of this experiment and Ge detector for output.
                 experiment_line = "\nExperiment " + str(experiment_number + 1)
@@ -18353,9 +18393,13 @@ class experimentmanager:
                 detector_line   = "Detector " + str(detector_number + 1)
                 detector_description   = self.allexperiments[experiment_number].Ge_detectors[detector_number].short_description() # summed DOmega for clusters; single-crystal DOmega for individual crystals
                 # Add this description to the output and text file lines.
-                
+
                 lines_to_write.append(experiment_line + "\n")
                 all_table_lines.append(experiment_line)
+                all_table_lines.append(rutherford_line)
+                all_table_lines.append(rutherford_counts_line)
+                lines_to_write.append(rutherford_line + "\n")
+                lines_to_write.append(rutherford_counts_line + "\n")
 
                 for line in experiment_description:
                     lines_to_write.append(line + "\n")
@@ -18433,7 +18477,7 @@ class experimentmanager:
                         # definition.  If None is returned, then it could not
                         # be calculated or came out 0 or negative using the
                         # user's parameters at this energy.
-                        absolute_efficiency = self.allexperiments[experiment_number].Ge_detectors[detector_number].return_absolute_efficiency(gamma_energy) 
+                        absolute_efficiency = self.allexperiments[experiment_number].Ge_detectors[detector_number].return_absolute_efficiency(gamma_energy)
                         if absolute_efficiency == None:
                             good_efficiency = False
                         else:
@@ -18450,7 +18494,7 @@ class experimentmanager:
                             if is_cluster:
                                 # Cluster detector
                                 estimated_count = standard_p_gamma_events(beam_intensity,days_of_beam,A_target,intensity,absolute_efficiency) \
-                                  * crystal_solid_angle / total_detector_solid_angle 
+                                  * crystal_solid_angle / total_detector_solid_angle
                             else:
                                 # Single crystal or 4pi single crystal
                                 estimated_count = standard_p_gamma_events(beam_intensity,days_of_beam,A_target,intensity,absolute_efficiency)
@@ -20421,7 +20465,7 @@ class experiment:
 
         # The check of maximum Q-value and setting of NCM is now done in
         # the_gosia_shell.generate_cont_lines() every time Gosia is called.
-        
+
         self.parameter_dict["E_exit"] = exit_energy  # Save the exit energy from the target
 
         # Generate a list of energies for stopping power in Gosia.
@@ -20435,13 +20479,13 @@ class experiment:
         # Read the output lines from elast.
         with open(output_file,'r') as elast_output_file:
             all_elast_lines = elast_output_file.readlines()
-            
+
         # Check that there are the expected number of lines in the output file.
         number_of_output_lines = len(all_elast_lines)
         if not number_of_output_lines == number_of_stopping_power_points:
             block_print_with_line_breaks("\nError: the call to elast did not produce the expected output.  The experiment cannot be generated properly.  (You can use the \"Undo\" button to undo this step if necessary.)  Check that elast is compiled, and that the proper path is in the .rachel_setup file.")
             return -1
-            
+
         # Step through the output lines, getting the stopping power for each
         # energy and adding the stopping power to the nested list.
 
@@ -20802,7 +20846,7 @@ class experiment:
 
     def get_stopping_power_lines(self):
         """Return the stopping power data in a list of 3 lines:
-        
+
         [NP,energy_points_line,stopping_powers_line]
         """
         NP = len(self.stopping_power_data[0])
@@ -20813,7 +20857,7 @@ class experiment:
         stopping_power_points_line = str(stopping_power_points).strip('[]')
         lines_for_gosia = [NP_line,energy_points_line,stopping_power_points_line]
         return lines_for_gosia
-        
+
 
     def set_parameter(self,parameter_name,parameter_value):
         """Sets a parameter in the parameter_dict.
@@ -20827,11 +20871,11 @@ class experiment:
 
 
     def get_full_parameter_dict(self):
-        
+
         return self.parameter_dict
 
     def get_parameter(self,parameter_name):
-        
+
         return self.parameter_dict[parameter_name]
 
 
@@ -20885,8 +20929,28 @@ class experiment:
 
         return theta_lab_projectile_mean 
 
+    def get_integrated_rutherford_cross_section(self):
+        """Returns the value stored from the last integration.
 
+        Should be in the Gosia units of mb*mg/cm^2
 
+        """
+
+        try:
+            return self.integrated_rutherford_cross_section
+        except:
+            # Value not set--probably the integration was not done yet.
+            return None
+
+    def set_integrated_rutherford_cross_section(self, cross_section):
+        """Stores the value stored from the last integration.
+
+        Should be in the Gosia units of mb*mg/cm^2
+
+        """
+
+        self.integrated_rutherford_cross_section = cross_section
+        return
 
     def set_one_detector_experimental_yields(self,internal_detector_number,yield_list):
         """Sets experimental yields of one detector only.
@@ -25891,6 +25955,27 @@ def standard_p_gamma_events(I_passed,days_passed,A_passed,Gosia_yield_passed,gam
     detected_events      =  1.0E-30 * total_beam_particles * (N_A / A) * Gosia_yield * gamma_efficiency * 4. * math.pi
 
     return detected_events
+
+def particle_counts_from_integrated_rutherford(I_passed,days_passed,A_passed,cross_section_passed):
+    """Calculates the total number of scattered particles in a beam run from
+    the integrated Rutherford cross section.
+
+    using "days" days of I [pnA] beam current, for a target of mass number A,
+    Rutherford cross section integrated by Gosia [mb*mg/cm^2].
+
+    """
+
+    # Convert to floats
+    I = float(I_passed)                                # [pnA]
+    days = float(days_passed)                          # [days] of beam run
+    A = float(A_passed)                                # [g/mol] mass number of target
+    cross_section = float(cross_section_passed)        # [mb*mg/cm^2]
+    N_A = 6.02E+23                                     # [atoms per mol] (Avogadro's number)
+
+    total_beam_particles   =  I * days * 1.0E-9 * 6.242E+18 * 3600. * 24.
+    total_scattered_counts =  1.0E-30 * total_beam_particles * (N_A / A) * cross_section
+
+    return total_scattered_counts
 
 def p_gamma_events(I_passed,days_passed,A_passed,Gosia_yield_passed,gamma_efficiency_passed,delta_Omega_passed):
     """Calculates the total number of p-gamma events detected in a beam run
