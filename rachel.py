@@ -800,8 +800,8 @@ def top_level_testing():
 
     parameter_dict = \
               { \
-                "days_of_beam":10.0, \
-                "beam_intensity":3.2e-7, \
+                "days_of_beam":1.0, \
+                "beam_intensity":1.0, \
                 "minimum_counts":1, \
                 "estimated_additional_error":0.05, \
                 "user_energy_threshold":50.0, \
@@ -18265,11 +18265,11 @@ class experimentmanager:
         if not all_parameters == {}:
             # Try to get all parameters from this dict; return an error if one or more are wrong.
             try:
-                days_of_beam                  = float(all_parameters["days_of_beam"]) 
-                beam_intensity                = float(all_parameters["beam_intensity"]) 
-                minimum_counts                = float(all_parameters["minimum_counts"]) 
-                estimated_additional_error    = float(all_parameters["estimated_additional_error"]) 
-                user_energy_threshold         = float(all_parameters["user_energy_threshold"]) 
+                days_of_beam                  = float(all_parameters["days_of_beam"])
+                beam_intensity                = float(all_parameters["beam_intensity"])
+                minimum_counts                = float(all_parameters["minimum_counts"])
+                estimated_additional_error    = float(all_parameters["estimated_additional_error"])
+                user_energy_threshold         = float(all_parameters["user_energy_threshold"])
                 inspect_change_efficiency     = all_parameters["inspect_change_efficiency"]
                 add_scatter                   = all_parameters["add_scatter"]
                 if not type(inspect_change_efficiency) == bool:
@@ -18302,6 +18302,8 @@ class experimentmanager:
             if days_of_beam == "quit":
                 print "Quitting."
                 return -1
+
+        time_in_seconds = 3600. * 24. * days_of_beam
 
         if interactive:
             beam_intensity = prompt_number("Estimated beam current [pnA]: ","f")
@@ -18382,8 +18384,10 @@ class experimentmanager:
 
             rutherford_cross_section = self.allexperiments[experiment_number].get_integrated_rutherford_cross_section()
             rutherford_particle_counts = particle_counts_from_integrated_rutherford(beam_intensity,days_of_beam,A_target,rutherford_cross_section)
+            particle_count_rate = rutherford_particle_counts / time_in_seconds # Hertz
+
             rutherford_line = "Integrated Rutherford cross section:       " + str(rutherford_cross_section) + " [mb*(mg/cm^2)] (See manual: OP,INTI)"
-            rutherford_counts_line = "Detected particle count (100% efficiency): " + str(rutherford_particle_counts)
+            rutherford_counts_line = "Detected particle count (100% efficiency): " + str(rutherford_particle_counts) + "  Rate: " + str(particle_count_rate) + " Hz"
 
             for detector_number in range(numbers_of_detectors[experiment_number]):
                 # Get a description of this experiment and Ge detector for output.
@@ -18499,7 +18503,6 @@ class experimentmanager:
                                 # Single crystal or 4pi single crystal
                                 estimated_count = standard_p_gamma_events(beam_intensity,days_of_beam,A_target,intensity,absolute_efficiency)
                             # Get the raw count rate in Hz:
-                            time_in_seconds = 3600. * 24. * days_of_beam
                             raw_count_rate = (estimated_count / time_in_seconds) # Hertz
                             estimated_count_error = math.sqrt(estimated_count)
                             # Calculate the fraction of incident gammas
@@ -18507,7 +18510,7 @@ class experimentmanager:
                             # "intrinsic efficiency."
                             fraction_detected = 4. * math.pi * absolute_efficiency / total_detector_solid_angle
 
-                            efficiency_corrected_count = estimated_count / fraction_detected 
+                            efficiency_corrected_count = estimated_count / fraction_detected
                             estimated_error = (estimated_count_error / estimated_count) * efficiency_corrected_count
                             estimated_error = efficiency_corrected_count * math.sqrt(estimated_additional_error**2 + (estimated_error/efficiency_corrected_count)**2)
 
@@ -18546,7 +18549,7 @@ class experimentmanager:
 
                                 # Add the entry for the gosia yld file.
                                 yield_entry = str(gosia_initial_level) + "  " + str(gosia_final_level) + "  " + str(gosia_yield) \
-                                  + "  " + str(gosia_estimated_error) 
+                                  + "  " + str(gosia_estimated_error)
                                 temporary_yld_file_lines.append(yield_entry)
 
                                 # Add this entry to be printed in the table for the
@@ -18556,13 +18559,13 @@ class experimentmanager:
 
                                 # The following constructs a new formatted table entry for the release version.
                                 transition_string          = initial_band_name.rjust(8) + " " +  str(initial_spin).rjust(4) + " " \
-                                  +  final_band_name.rjust(8) + " " +  str(final_spin).rjust(4) 
+                                  +  final_band_name.rjust(8) + " " +  str(final_spin).rjust(4)
                                 corrected_count_string     = format(efficiency_corrected_count,".3e").ljust(9) + "  " + format(estimated_error,".3e").ljust(9)
-                                gamma_energy_string        = str(round(gamma_energy,1)).rjust(6) 
+                                gamma_energy_string        = str(round(gamma_energy,1)).rjust(6)
                                 standard_efficiency_string = str(round(absolute_efficiency,5)).ljust(7)
-                                fraction_detected_string   = str(round(fraction_detected,5)).ljust(7) 
-                                raw_rate_string            = format(raw_count_rate,".3e").ljust(9) 
-                                raw_count_string           = format(estimated_count,".3e").ljust(9) + "  " + format(estimated_count_error,".3e").ljust(9) 
+                                fraction_detected_string   = str(round(fraction_detected,5)).ljust(7)
+                                raw_rate_string            = format(raw_count_rate,".3e").ljust(9)
+                                raw_count_string           = format(estimated_count,".3e").ljust(9) + "  " + format(estimated_count_error,".3e").ljust(9)
 
                                 formatted_table_entry =   transition_string          + 5 * " " \
                                                         + corrected_count_string     + 4 * " " \
