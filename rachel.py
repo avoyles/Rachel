@@ -18306,7 +18306,10 @@ class experimentmanager:
         time_in_seconds = 3600. * 24. * days_of_beam
 
         if interactive:
-            beam_intensity = prompt_number("Estimated beam current [pnA]: ","f")
+            print "Enter beam current as a number or expression, e.g.  1.0\n" + \
+                  "                                                or  1000. / 6.24e-9" + \
+                  " (1 pnA = 6.24e+9 p/s)"
+            beam_intensity = float(input("Estimated beam current [pnA]: "))
             if beam_intensity == "quit":
                 print "Quitting."
                 return -1
@@ -18386,8 +18389,11 @@ class experimentmanager:
             rutherford_particle_counts = particle_counts_from_integrated_rutherford(beam_intensity,days_of_beam,A_target,rutherford_cross_section)
             particle_count_rate = rutherford_particle_counts / time_in_seconds # Hertz
 
-            rutherford_line = "Integrated Rutherford cross section:       " + str(rutherford_cross_section) + " [mb*(mg/cm^2)] (See manual: OP,INTI)"
-            rutherford_counts_line = "Detected particle count (100% efficiency): " + str(rutherford_particle_counts) + "  Rate: " + str(particle_count_rate) + " Hz"
+            dose_lines = [ "Beam intensity: " + str(beam_intensity) + " pnA = " + format(beam_intensity * 6.24e9,".2e") + " p/s" ,\
+                              "Run: " + format(days_of_beam,".2g") + " days.  Total dose: " + format(days_of_beam * beam_intensity * 6.24e9,".3g") + " particles"]
+            rutherford_lines = ["Integrated Rutherford cross section:       " + format(rutherford_cross_section,".3g") + " [mb*(mg/cm^2)] (See manual: OP,INTI)",\
+                               "NOTE: The Rutherford cross section is energy dependent and is integrated over the beam energy range."]
+            rutherford_counts_line = "Detected particle count (100% efficiency): " + format(rutherford_particle_counts,".3g") + "  Rate: " + format(particle_count_rate,".3g") + " Hz"
 
             for detector_number in range(numbers_of_detectors[experiment_number]):
                 # Get a description of this experiment and Ge detector for output.
@@ -18398,12 +18404,12 @@ class experimentmanager:
                 detector_description   = self.allexperiments[experiment_number].Ge_detectors[detector_number].short_description() # summed DOmega for clusters; single-crystal DOmega for individual crystals
                 # Add this description to the output and text file lines.
 
-                lines_to_write.append(experiment_line + "\n")
                 all_table_lines.append(experiment_line)
-                all_table_lines.append(rutherford_line)
+                all_table_lines.extend(dose_lines)
+                all_table_lines.extend(rutherford_lines)
                 all_table_lines.append(rutherford_counts_line)
-                lines_to_write.append(rutherford_line + "\n")
-                lines_to_write.append(rutherford_counts_line + "\n")
+                for line in [experiment_line] + dose_lines + rutherford_lines + [rutherford_counts_line]:
+                    lines_to_write.append(line + "\n")
 
                 for line in experiment_description:
                     lines_to_write.append(line + "\n")
