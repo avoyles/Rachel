@@ -785,87 +785,14 @@ def close_last_dialog_popup():
 
 
 def top_level_testing():
-    """A testing method to call objects and methods that are not yet implemented in the GUI buttons.
+    """A testing method
 
-    This is constantly changing and should be moved to a different file for the
-    vcs.
+    Executes a specific script name that is not included in the distribution.
 
     """
 
-    # Load the session.
-    setup_globals("reset")  # to make sure we don't have old data hanging around in the original objects
-    unpickle_return_code,textview_summary = setup_globals(action="unpickle",force=True)
-
-    the_experiment_manager.parse_gosia_integrated_yields(tf=False,evaluate=False,cor_file_extension=None)
-
-    parameter_dict = \
-              { \
-                "days_of_beam":1.0, \
-                "beam_intensity":1.0, \
-                "minimum_counts":1, \
-                "estimated_additional_error":0.05, \
-                "user_energy_threshold":50.0, \
-                "inspect_change_efficiency":False, \
-                "add_scatter":False, \
-              }
-
-    the_experiment_manager.write_simulated_yld_file(True,parameter_dict)
-
-    return
-
-
-    print inelastic_lab_recoil_angle_to_lab_recoil_energy(136,194,40.,False,624.,1.0)
-
-    beta_vs_scattering_angle(theta_min = 20.0, theta_max = 85.0, theta_step = 1.0, target_atomic_number = 78, target_mass = 194, projectile_atomic_number = 54, projectile_mass = 136, forward = False, beam_energy = 624.0 - 9.47, E_exc = 0.0, target_thickness = 0.305)
-    return
-
-    run_elast(78,194,54,136,624,.610)
-
-    # Load the session.
-    setup_globals("reset")  # to make sure we don't have old data hanging around in the original objects
-    unpickle_return_code,textview_summary = setup_globals(action="unpickle",force=True)
-
-    the_gosia_shell.read_final_chi_squared_from_gosia()
-    the_gosia_shell.save_calculated_spectroscopic_data()
-    print "Generating report..."
-    the_experiment_manager.properly_weighted_chi_squared_report(include_spect=True)
-
-    return
-
-    # Check the version updater.
-    up = updater()
-    up.report_all()
-
-    return
-
-    # Load the session.
-    setup_globals("reset")  # to make sure we don't have old data hanging around in the original objects
-    unpickle_return_code,textview_summary = setup_globals(action="unpickle",force=True)
-
-    desc = the_experiment_manager.allexperiments[0].long_description()
-    pprint(desc)
-    desc = the_experiment_manager.allexperiments[1].long_description()
-    pprint(desc)
-
-    raw_input("Press enter.")
-
-    simulation_dict = { \
-                        "days_of_beam":5.0, \
-                        "beam_intensity":1.0, \
-                        "minimum_counts":10, \
-                        "estimated_additional_error":0.05, \
-                        "user_energy_threshold":50.0, \
-                        "inspect_change_efficiency":False, \
-                        "add_scatter":False, \
-                      }
-    the_experiment_manager.write_simulated_yld_file(force_write=False,all_parameters=simulation_dict)
-
-
-    # Load the session
-    #setup_globals("reset") # to make sure we don't have old data hanging around in the original objects
-    #unpickle_return_code,textview_summary = setup_globals("unpickle")
-
-    #call_rochester_srim_server(beam_Z=54, beam_mass=136, target_density=10., target_Z=72, target_name="hf", target_mass=178, initial_energy=650., target_thickness_or_exit_energy=50., fractional_padding_on_energy_meshpoints=0.01, number_of_meshpoints=10, thickness_or_exit_energy_flag="-t-")
+    rachel_debug_file = GLOBAL_SETUP_DICT["RACHEL_DIRECTORY"] + "/ignored_files/debug_button.py"
+    execfile(rachel_debug_file)
 
 def largest_float_on_this_machine():
     """Returns approximately the largest machine-size number on this machine.
