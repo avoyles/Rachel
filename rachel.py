@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-VERSION = "1.3.3"
+VERSION = "1.3.4"
 RECOVERY_MODE = False
 DEBUGGING_MODE = False
 SCRIPT_MODE = False
@@ -17304,10 +17304,9 @@ class experimentmanager:
                 Z_targ = Z_n
                 A_targ = A_n
 
-            # Calculate the differential Rutherford cross section line for this experiment in the lab frame at the mean scattering angle and energy.
-            # Old elastic approximation: differential_rutherford_cross_section = differential_rutherford(Z_proj,A_proj,Z_targ,A_targ,E_mean_lab,theta_lab_projectile_mean,forward_com_solution)
-
-            # Inelastic scattering cross section:
+            # Calculate the differential Rutherford cross section line for this
+            # experiment in the lab frame at the mean scattering angle and
+            # energy.  This is the inelastic scattering cross section.
             differential_rutherford_cross_section = inelastic_differential_scattering_cross_section(Z_proj,A_proj,Z_targ,A_targ,theta_lab_projectile_mean,forward_com_solution,E_mean_lab,Q_value)
 
             # Calculate the YNRM value for this experiment.  Differences in efficiencies of the Ge detectors are not treated here.
@@ -17378,21 +17377,24 @@ class experimentmanager:
         # parse the yields.  If there is an exception, then just print the
         # next-to-last line of the gosia output, which usually contains the
         # error message.
-        # July 13 2011: reactivated this try/except block.
+
         try:
             # Loop to get all integrated yields for all experiments and all detectors
             for experiment_number in range(number_of_experiments):
 
                 experiment_number_string = str(experiment_number + 1)   # as a string in gosia's numbering system (beginning with 1)
 
-                # Get the integrated Rutherford cross section & total beam counts.
-                search_strings = ["INTEGRATED", "RUTHERFORD", "CROSS", "FOR", "EXP.", experiment_number_string]
-                rutherford_line_number = findinlist(gosia_output_lines,search_strings)
-                rutherford_line = gosia_output_lines[rutherford_line_number]
-                full_value_string = rutherford_line.split()[3]
-                value_string = full_value_string.split("=")
-                rutherford_cross_section = float(value_string[1])
-                self.allexperiments[experiment_number].set_integrated_rutherford_cross_section(rutherford_cross_section)
+                # Get the integrated Rutherford cross section & total beam
+                # counts.  (The gosia call to evaluate which states are
+                # populated does not contain a Rutherford line.)
+                if not evaluate and not tf:
+                    search_strings = ["INTEGRATED", "RUTHERFORD", "CROSS", "FOR", "EXP.", experiment_number_string]
+                    rutherford_line_number = findinlist(gosia_output_lines,search_strings)
+                    rutherford_line = gosia_output_lines[rutherford_line_number]
+                    full_value_string = rutherford_line.split()[3]
+                    value_string = full_value_string.split("=")
+                    rutherford_cross_section = float(value_string[1])
+                    self.allexperiments[experiment_number].set_integrated_rutherford_cross_section(rutherford_cross_section)
 
                 for detector_number in range(numbers_of_detectors[experiment_number]):
                     detector_number_string = str(detector_number + 1)   # as a string in gosia's numbering system (beginning with 1)
@@ -17411,12 +17413,12 @@ class experimentmanager:
                         cor_file_lines.append("1 1 1 1 1 1 1 \n")
                         added_one_dummy_yield = False
                     while True:
-                        line_fields = gosia_output_lines[line_number].split() 
-                        if len(line_fields) < 6:  
+                        line_fields = gosia_output_lines[line_number].split()
+                        if len(line_fields) < 6:
                             # no more data in this detector block
                             break  # break out of the while loop for this detector
-                        initial_gosia_level_number = int(line_fields[0])  
-                        final_gosia_level_number   = int(line_fields[1])  
+                        initial_gosia_level_number = int(line_fields[0])
+                        final_gosia_level_number   = int(line_fields[1])
 
                         gosia_output_initial_spin = round(float(line_fields[2]),1)  # initial spin rounded to nearest half integer
                         gosia_output_final_spin   = round(float(line_fields[3]),1)  # final spin rounded to nearest half integer
@@ -17434,7 +17436,7 @@ class experimentmanager:
                         try:
                             calculated_yield = float(line_fields[4])
                         except:
-                            # Sometimes in point calculations, yields are printed with an insufficient format by gosia, 
+                            # Sometimes in point calculations, yields are printed with an insufficient format by gosia,
                             # e.g. instead of 0.10000E-103, it is printed as 0.10000-103.  Correct this number by inserting
                             # the E before the - sign
                             replace_for_plus = line_fields[4].replace("+","E+")
@@ -17450,7 +17452,7 @@ class experimentmanager:
 
 
                         if calculated_yield > calculated_lower_limit :    # Keep only measurable yields
-                            detector_yields.append([initial_band_name, initial_spin, final_band_name, final_spin, calculated_yield]) 
+                            detector_yields.append([initial_band_name, initial_spin, final_band_name, final_spin, calculated_yield])
                             # This addition to the sets of excited states has been
                             # moved here.  In some cases, uncoupled states are
                             # *listed* in the output, but they have a calculated
@@ -17480,12 +17482,12 @@ class experimentmanager:
                         line_number = line_number + 1
 
                     # Delete the earlier lines, so that e.g. expt 1, det 2 won't be confused with
-                    # expt 2, det 1 in the findinlist routine.  I should make a switch that forces 
+                    # expt 2, det 1 in the findinlist routine.  I should make a switch that forces
                     # the specified order of strings in findinlist.
                     # Need to delete up to the line containing the header
                     # EXPERIMENT N DETECTOR M to make sure E 1, D 2 is not
                     # found instead of E 2, D 1, for example.
-                    del gosia_output_lines[:experiment_line + 1]  
+                    del gosia_output_lines[:experiment_line + 1]
 
                     # Store the yields for this experiment
                     # Added this if statement.  We don't want to store the yields if
@@ -17517,7 +17519,7 @@ class experimentmanager:
                     level_key = investigated_nucleus.get_band_and_spin_from_gosia_level_number(gosia_level_number)
                     lifetime_in_ps = float(line_fields[1])
                     # If there is a finite lifetime only...
-                    if lifetime_in_ps > 0.:  
+                    if lifetime_in_ps > 0.:
                         # The lifetime calculated by Gosia will be returned as
                         # negative if it is too long to be calculated.
                         investigated_nucleus.levels[level_key].set_calculated_lifetime(lifetime_in_ps)
@@ -18234,7 +18236,7 @@ class experimentmanager:
 
         if interactive:
             print "Enter beam current as a number or expression, e.g.  1.0\n" + \
-                  "                                                or  1000. / 6.24e-9" + \
+                  "                                                or  1000. / 6.24e+9" + \
                   " (1 pnA = 6.24e+9 p/s)"
             beam_intensity = float(input("Estimated beam current [pnA]: "))
             if beam_intensity == "quit":
