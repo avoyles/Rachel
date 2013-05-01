@@ -12301,7 +12301,7 @@ class experimentmanager:
                 detectors_in_this_experiment = experiment_object.get_number_of_detectors()
                 this_warning_text = "Experiment " + str(gosia_experiment_number) + " has " + str(detectors_in_this_experiment) + " detectors."
                 warning_lines.append(this_warning_text)
-                
+
 
         # Loop over experiments to search for problems with the setup.
         for internal_experiment_number in range(number_of_experiments):
@@ -12377,7 +12377,6 @@ class experimentmanager:
         # Don't want too many pieces, or the yields will be below threshold.
         pieces = max(2 * int(max(float(MAXENERGYMESHPOINTS)/float(DEFAULT_ENERGY_MESHPOINTS),float(MAXTHETAMESHPOINTS)/float(DEFAULT_THETA_MESHPOINTS))),10)# The number of piecewise integrations (plus one)
 
-        
         self.print_experiment_catalog()
         while True:
             try:
@@ -12396,8 +12395,7 @@ class experimentmanager:
         percent_discrepancy_limit_for_reporting = prompt_number("Minimum % error in convergence for reporting: ","f")
         if percent_discrepancy_limit_for_reporting == "quit":
             return 0
-        
-        
+
         print "Start of test ti: ",get_system_time_stamp()
 
         # Save the gosia.gdt file to a temporary list
@@ -13682,16 +13680,16 @@ class experimentmanager:
         sommerfeld_line        = "Somm. param.             "
         ge_detector_line       = "# of Ge detectors*       "
         comment_line           = " *clusters counted as single detectors"
-                                                           
+
         low_sommerfeld = False  # Will be marked true if an experiment has a low Sommerfeld parameter.
         unsafe_energy  = False  # Will be marked true if an experiment has an energy above the Cline safe energy estimate.
         missing_ge_detectors = False
-                                                           
-        for i in range(self.getnumberofexperiments()):     
+
+        for i in range(self.getnumberofexperiments()):
             gosia_experiment_number = i + 1
             name_line = name_line + str(self.allexperiments[i].get_name()).ljust(column_spaces)
             experiment_number_line = experiment_number_line + str(gosia_experiment_number).ljust(column_spaces)
-            target_line    = target_line + str(round(self.allexperiments[i].get_parameter("target_thickness",),1)).ljust(column_spaces)
+            target_line    = target_line + str(round(self.allexperiments[i].get_parameter("target_thickness",),3)).ljust(column_spaces)
             theta_min_line = theta_min_line + str(round(self.allexperiments[i].get_parameter("theta_lab_min"),1)).ljust(column_spaces)
             theta_max_line = theta_max_line + str(round(self.allexperiments[i].get_parameter("theta_lab_max"),1)).ljust(column_spaces)
             phi_min_line   = phi_min_line + str(round(self.allexperiments[i].get_parameter("phi_1"),1)).ljust(column_spaces)
@@ -22882,7 +22880,7 @@ class main_gui:
             self.set_activation(self)
             print "Done."
             return 0
-            
+
 
         elif gosia_function == "Integrated yields" or gosia_function == "Fit" or \
           gosia_function == "Make corrected yields":
@@ -22908,7 +22906,7 @@ class main_gui:
                     # Call for OP,MAP first, in a separate calculation.  On
                     # some systems MAP and MINI can not be run in the same
                     # call.
-                    
+
                     gosia_shell_output = the_gosia_shell.generate("Map",gosia_action)
                     if gosia_shell_output == -1:
                         print "Gosia killed by user or cannot run Gosia.  Check for errors above."
@@ -22984,7 +22982,7 @@ class main_gui:
                 # because we can only get the deorientation calculation
                 # after a fit (of 0 steps).
                 print "Generating point-yield data for the deorientation calculation..."
-                the_gosia_shell.generate(function="Point yields",action="Run gosia input",tf=False,silent=True,release_for_correlated_errors=False,file_extension_substitution_dict = DEORIENTATION_FILE_DEF_DICT,make_dummy_cor_file=True)   
+                the_gosia_shell.generate(function="Point yields",action="Run gosia input",tf=False,silent=True,release_for_correlated_errors=False,file_extension_substitution_dict = DEORIENTATION_FILE_DEF_DICT,make_dummy_cor_file=True)
                 print "Generating a q-parameter map for the deorientation calculation..."
                 # Make a dummy map file.
                 the_gosia_shell.generate(function="Map",action="Run gosia input",tf=False,silent=True,release_for_correlated_errors=False,file_extension_substitution_dict = DEORIENTATION_FILE_DEF_DICT)
@@ -23273,7 +23271,7 @@ class main_gui:
         # Reactivate GUI buttons.
         self.set_activation(self)
 
-        
+
     def import_yield_data(self,widget):
 
         print_separator()
@@ -24778,11 +24776,11 @@ class main_gui:
                 # Reactivate GUI buttons.
                 self.set_activation(self)
             elif what == "tf":
-                ################################################################ 
+                ################################################################
                 # The bulk of the work was done here because of the undo/redo
                 # used to restore the original setup.  This is no longer
                 # necessary and this code should be moved into the expt mgr.
-                ################################################################ 
+                ################################################################
 
                 print "\nIf errors are found in this test, you should read the entries \"adiabaticity\""
                 print "and \"eccentricity\" using the Help button.\n"
