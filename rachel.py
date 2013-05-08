@@ -26788,7 +26788,20 @@ def inelastic_lab_scattering_angle_to_com_scattering_angle(A_proj_passed,A_targ_
 
     tau = inelastic_scattering_tau(A_proj,A_targ,E_proj,Q_value)
 
-    dtheta = math.degrees(math.asin(tau * math.sin(math.radians(theta_lab))))
+    try:
+        dtheta = math.degrees(math.asin(tau * math.sin(math.radians(theta_lab))))
+    except:
+        sin_theta_lab = math.sin(math.radians(theta_lab))
+        print "Domain error converting the scattering angle to the c.o.m. frame:"
+        print "  sin(theta_lab) = " + str(round(sin_theta_lab,3))
+        print "  tau            = " + str(round(tau,3))
+        print "  sin(theta_lab) * tau = " + str(round(sin_theta_lab * tau))
+        if sin_theta_lab * tau > 1.0:
+            print "tau is too large.  Try setting the kinematics state to the "
+            print "  ground state, or eliminating high-Q states.  The kinematics"
+            print "  state is set using option \"k\" in the Gosia Controls button menu."
+            raw_input("Press enter")
+        return None
 
     if forward or normal_kinematics:
         theta_com = theta_lab + dtheta
