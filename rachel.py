@@ -5021,7 +5021,7 @@ class nucleus:
         """
 
         # Change the gosia base-1 level number to the base-0 index used internally.
-        internal_level_number = gosia_level_number - 1  
+        internal_level_number = gosia_level_number - 1
 
         # Get the levels in the order that they would be sent to Gosia.
         level_list = self.get_sorted_unique_levels()
@@ -5439,7 +5439,7 @@ class nucleus:
         """
         print "highestbandnumber is not finished."
         return len(self.band_settings_list) + 1
-        
+
 
     def get_band_number_from_name(self,band_name):
         """Returns the band number from either a name or pseudonym.
@@ -9964,10 +9964,10 @@ class gosia_shell:
         "Fit" (OP,MINI)
         "Make Ge det file" (OP,GDET)
         etc.
-        
+
         The action specifies whether to return the gosia input file as text,
         run it, save it, etc.
-       
+
         For now, it puts all files that may or may not be used in OP,FILE.
         This can be optimized later to avoid empty files.
 
@@ -10015,7 +10015,7 @@ class gosia_shell:
 
 
         if function == "Integrated yields" or function == "Make simulated yields":
-            full_gosia_input = self.op_intg_input() 
+            full_gosia_input = self.op_intg_input()
         elif function == "Map":
             # The file name substitution dict is used when op,map is called for the deorientation calculation.
             full_gosia_input = self.op_mini_input(do_map_instead=True,file_name_substitution_dict=file_extension_substitution_dict)
@@ -10026,7 +10026,7 @@ class gosia_shell:
         elif function == "Calculate lifetimes":
             full_gosia_input = self.lifetimes_input()
         elif function == "Make corrected yields":
-            full_gosia_input = self.op_intg_input("corr")  
+            full_gosia_input = self.op_intg_input("corr")
         elif function == "Make Ge det file":
             full_gosia_input = self.op_gdet_input()
         elif function == "Point yields":
@@ -10676,7 +10676,7 @@ class gosia_shell:
 
     def lifetimes_input(self):
         """Generates an input for lifetimes only.
-        
+
         This uses one phoney experiment to calculate lifetimes.  It is done
         with phoney setup so that the user does not need to complete the setup
         to get lifetimes; it can be done as soon as the level scheme and a
@@ -10691,14 +10691,22 @@ class gosia_shell:
         # Get the nucleus information
         level_scheme_lines = investigated_nucleus.generate_gosia_input(fix_all = True)
 
-        # Get the EXPT section 
+        # Get the EXPT section
         # One dummy experiment with the real Z,A.
         Z = investigated_nucleus.get_value("Z")
         A = investigated_nucleus.get_value("A")
+        Z_targ_dummy = 92
+        A_targ_dummy = 238
+        # Calculate the minimum beam energy to excite all states.
+        highest_excitation_energy = investigated_nucleus.maximum_level_energy()
+        beam_energy = minimum_beam_energy(A,A_targ_dummy,highest_excitation_energy) + 1.0 # (add 1 MeV to avoid overflow)
         expt_header_line = "1 " + str(Z) + " " + str(A)
-        # Use a forward scattering angle to avoid exceeding a maximum scattering angle.
-        # Use something heavy to avoid inverse kinematics.
-        dummy_experiment = "92, 238, 100.0, 5.0, 1, 1, 0, 0.0, 360.0, 0, 1 "
+        # Estimate the maximum scattering angle for this dummy setup.
+        Q_value = highest_excitation_energy / 1000.0 # Convert to MeV for the scattering angle calculation.
+        max_angle = inelastic_maximum_scattering_angle(A,A_targ_dummy,beam_energy,Q_value)
+        scattering_angle = 0.99 * max_angle # Something close to the maximum.
+        # Use something heavy to avoid inverse kinematics.  Use beam excitation on a heavy target.
+        dummy_experiment = str(-1 * Z_targ_dummy) + ", " + str(A_targ_dummy) + ", " + str(beam_energy) + ", " + str(scattering_angle) + ", 1, 1, 0, 0.0, 360.0, 0, 1 "
         expt_lines = [\
                       "EXPT",\
                       expt_header_line,\
@@ -10754,7 +10762,6 @@ class gosia_shell:
                       "OP,POIN",\
                       "0,0"\
                      ]
- 
 
         # Put together the full input
         full_gosia_input = op_file_lines
@@ -22844,7 +22851,7 @@ class main_gui:
                 print_error_block("You need a level scheme and matrix to calculate lifetimes.")
                 self.set_activation(self)
                 return -1
-                
+
             # Write a dummy gdt file.
             if gosia_action == "Run gosia input":
                 with open("gosia.rachel_dummy_gdt_file","w") as dummy_gdt_file:
