@@ -4683,21 +4683,38 @@ class nucleus:
                         lower_E2_final_spin   = final_spin
 
                         # Try to find the E2 transition matrix element directly below.
-
+                        lower_E2_matrix_element_found = False
                         try:
+                            # This will fail with an exception if the key is
+                            # not found, because the method will return None,
+                            # not giving enough values to unpack.
+                            master_primary_initial_band, dummy = \
+                              self.get_primary_level_key_from_pseudonym((initial_band_name, lower_E2_initial_spin))
+                            master_primary_final_band,   dummy = \
+                              self.get_primary_level_key_from_pseudonym((final_band_name, initial_spin))
+                            if (2, master_primary_initial_band, lower_E2_initial_spin, \
+                              master_primary_final_band, lower_E2_final_spin) \
+                              in self.matrix_data.keys():
+                                lower_E2_matrix_element_found = True
+                            else:
+                                lower_E2_matrix_element_found = False
+                        except:
+                            lower_E2_matrix_element_found = False
+
+                        if lower_E2_matrix_element_found:
                             # The desired E2 transition below exists.  Couple this static moment to it.
                             matrix_element_object.set_is_dependent()
-                            matrix_element_object.set_master_initial_band_name(initial_band_name)
-                            matrix_element_object.set_master_final_band_name(final_band_name)
+                            matrix_element_object.set_master_initial_band_name(master_primary_initial_band)
+                            matrix_element_object.set_master_final_band_name(master_primary_final_band)
                             matrix_element_object.set_master_initial_spin(lower_E2_initial_spin)
                             matrix_element_object.set_master_final_spin(lower_E2_final_spin)
                             matrix_element_object.set_master_multipole_string("E2")
-                            matrix_element_description = self.format_one_matrix_element(initial_band_name=initial_band_name,\
-                              initial_spin=initial_spin,final_band_name=final_band_name,final_spin=final_spin,\
+                            matrix_element_description = self.format_one_matrix_element(initial_band_name=master_primary_initial_band,\
+                              initial_spin=initial_spin,final_band_name=master_primary_final_band,final_spin=final_spin,\
                               multipole_text=multipole_text,value=current_value)
                             print matrix_element_description
                             print "  This static moment is now coupled to the E2 transition below."
-                        except:
+                        else:
                             # The matrix element was not found.
                             # Just leave this static moment as it was.
                             matrix_element_description = self.format_one_matrix_element(initial_band_name=initial_band_name,\
@@ -4985,7 +5002,7 @@ class nucleus:
             return this_band_number + 1  # Returns the band number starting from 1 for the display.
         except:
             return -1
-        
+
 
     def get_value(self,what):
         """Returns simple information from nuclear data.
@@ -5069,7 +5086,7 @@ class nucleus:
         matrix_keys_in_gosia_order = []
         for sorting_key in sorting_keys:
             matrix_keys_in_gosia_order.append(matrix_sorting_dict[sorting_key])
-            
+
 
         return matrix_keys_in_gosia_order
 
@@ -5081,7 +5098,7 @@ class nucleus:
         the proper order, then reduces this list to a list of level key tuples.
 
         """
-        
+
         sorted_unique_levels = self.get_sorted_unique_levels()
 
         # Unzip the level entries into four tuples: band names, spins, parities, energies.
@@ -5147,7 +5164,7 @@ class nucleus:
         except:
             # The requested band number must be out of range.  Return None.
             return None
-            
+
     def get_band_number_from_primary_name(self,band_name):
         """Returns the band number or None if it can't be found.
 
@@ -5268,27 +5285,35 @@ class nucleus:
                 master_initial_gosia_level = self.lookup_gosia_level_by_band_spin(master_initial_band_name,master_initial_spin)
                 master_final_gosia_level   = self.lookup_gosia_level_by_band_spin(master_final_band_name,master_final_spin)
 
-                # Get r1 and r2, which are in this case the initial and final
-                # gosia level indices to define which master this dependent
-                # matrix element is coupled to.
-                r1 = master_initial_gosia_level
-                # Set the appropriate prefix on r2 if this matrix element is
-                # coupled to a master of another multipole.  Otherwise, r2 is
-                # simply the final level number of the master matrix element.
-                if multipole_code == master_multipole_number:
-                    r2 = master_final_gosia_level
+                # In case of a bug in setting master / dependents...
+                if None in [master_initial_gosia_level, master_final_gosia_level]:
+                    # The master does not exist!  Revert this dependent to "fixed."
+                    r1 = 1
+                    r2 = 1
+                    comment = "   ! fixed"
                 else:
-                    # Add master multipole code n so that r2 reads "n0#", where # 
-                    # is the final state of the master (or "n##" for two-digit 
-                    # level number)
-                    r2 = 100*master_multipole_number + master_final_gosia_level
 
-                # Get the master's multipole text ("E2", "M1", etc.) to comment the coupling.
-                master_multipole_text = REVERSE_MULTIPOLE[master_multipole_number]
+                    # Get r1 and r2, which are in this case the initial and final
+                    # gosia level indices to define which master this dependent
+                    # matrix element is coupled to.
+                    r1 = master_initial_gosia_level
+                    # Set the appropriate prefix on r2 if this matrix element is
+                    # coupled to a master of another multipole.  Otherwise, r2 is
+                    # simply the final level number of the master matrix element.
+                    if multipole_code == master_multipole_number:
+                        r2 = master_final_gosia_level
+                    else:
+                        # Add master multipole code n so that r2 reads "n0#", where #
+                        # is the final state of the master (or "n##" for two-digit
+                        # level number)
+                        r2 = 100 * master_multipole_number + master_final_gosia_level
 
-                # Add a comment describing which master this dependent is coupled to.
-                comment = "   ! coupled to <" + str(master_final_gosia_level) + "||" \
-                  + master_multipole_text + "||" + str(master_initial_gosia_level) + ">"
+                    # Get the master's multipole text ("E2", "M1", etc.) to comment the coupling.
+                    master_multipole_text = REVERSE_MULTIPOLE[master_multipole_number]
+
+                    # Add a comment describing which master this dependent is coupled to.
+                    comment = "   ! coupled to <" + str(master_final_gosia_level) + "||" \
+                      + master_multipole_text + "||" + str(master_initial_gosia_level) + ">"
 
             elif self.matrix_data[matrix_element_key].get_is_master():
                 # It is a master matrix element.  Set r1 and r2 to the lower and upper limits.
@@ -5431,7 +5456,7 @@ class nucleus:
             if active_status or include_inactive_levels:
                 number_of_bands += 1
 
-        return number_of_bands 
+        return number_of_bands
 
     def highestbandnumber(self):
         """Return the highest number of all bands in memory.
@@ -5499,7 +5524,7 @@ class nucleus:
                 # band settings list.  It may be a pseudonym, but this is not
                 # handled here.
                 return -1
-                
+
 
     def setbandinfo(self,band,what,value):
         """Set information about a band.
@@ -5527,7 +5552,7 @@ class nucleus:
 
         Later on, there should be a button to just fix/free a master.  This would
         keep the limits in memory, so the fixed/free status can be quickly turned
-        on or off.  This will take some work, because gosia does not understand 
+        on or off.  This will take some work, because gosia does not understand
         when a free matrix element is coupled to a fixed matrix element.
 
         This could be done while preserving limits and couplings by just
@@ -5646,13 +5671,13 @@ class nucleus:
                 break # out of the for loop
 
         return they_are_coupled
-            
+
     def prompt_for_matrix_element(self):
         """ Prompts the user to define a matrix element.
 
-        Returns the matrix element key as a tuple. 
+        Returns the matrix element key as a tuple.
 
-        If the initial or final level cannot be found, return None.  
+        If the initial or final level cannot be found, return None.
 
         This does NOT check for the existence of the matrix element itself, so
         that this method can be used more widely.
@@ -5704,7 +5729,7 @@ class nucleus:
 
         matrix_element_key = (multipole_code,initial_primary_band_name,initial_spin,final_primary_band_name,final_spin)
 
-        return matrix_element_key 
+        return matrix_element_key
 
     def user_set_masters(self):
         """Prompts the user to set master matrix elements.
@@ -5745,7 +5770,7 @@ class nucleus:
             self.display_coupling_information()
             # Return None to tell the GUI not to save undo information.
             return None
-            
+
         elif option == "u":
             # Unset one or more masters (return them to fixed matrix elements).
             fix_all = yes_no_prompt("Fix all [y/N]? ",False)
@@ -5897,7 +5922,7 @@ class nucleus:
             return None
 
         else:
-            # error.  return -1 for now.  
+            # error.  return -1 for now.
             return -1
 
 
@@ -6172,9 +6197,9 @@ class nucleus:
             #    level_color = "r"  # show in red if not yet established as isomer/populated.
 
             spinparity = levelspin+levelparity # concatenate the spin-parity for the text label
-            self.plotalevel(levelenergy,levelband,spinparity,level_color) # use band number as position 
+            self.plotalevel(levelenergy,levelband,spinparity,level_color) # use band number as position
         pylab.ion()
-        
+
     def drawanarrow(self,x1,y1,x2,y2,arrowlabel="",requestedcolor=LEVELCOLOR):
         """Draws a generic arrow with a label and color.
 
@@ -6212,7 +6237,7 @@ class nucleus:
 
 
     def set_axes_nicely(self,nbands,maxenergy):
-        """Makes space for interband m.e. arrows below zero energy 
+        """Makes space for interband m.e. arrows below zero energy
 
         """
         plt.figure(LEVELSCHEMEFIGURE,figsize=LSFIGSIZE)
@@ -6252,7 +6277,7 @@ class nucleus:
     def draw_level_scheme(self):
         """Draw the level scheme, including "major couplings"
 
-        This does not create the window.  
+        This does not create the window.
 
         This draws the levels with spin-parity labels and puts on single
         "major" arrows for the sets of matrix elements.
@@ -6379,7 +6404,7 @@ class nucleus:
     def drawinterbandarrow(self,initialband,finalband,yposition,text):
         """Draws a "major" arrow representing coupling between two bands.
 
-        Need to figure out where to put pylab.draw() for best speed and 
+        Need to figure out where to put pylab.draw() for best speed and
         adequate updating.
         """
         self.drawanarrow(initialband,yposition,finalband,yposition,text,INTRINSICARROWCOLOR)
@@ -6399,7 +6424,7 @@ class nucleus:
         final_energy   = self.get_level_information(final_level_key,'energy')
         initial_band_number = self.get_band_number_for_display(initial_band_name)
         final_band_number   = self.get_band_number_for_display(final_band_name)
-        self.drawanarrow(initial_band_number,initial_energy,final_band_number,final_energy,label,color) 
+        self.drawanarrow(initial_band_number,initial_energy,final_band_number,final_energy,label,color)
 
         return 0
 
@@ -6832,8 +6857,8 @@ class nucleus:
                         for pseudonym in this_line_fields[4:]:
                             corrected_pseudonym = pseudonym.strip()
                             this_level_band_names.append(corrected_pseudonym)
-                        
-                    # Now update the level data with the new level. 
+
+                    # Now update the level data with the new level.
                     # The call to def add_a_level can take a list of strings in
                     # the band_names field to add aliases on creation of the
                     # level.
@@ -6841,7 +6866,7 @@ class nucleus:
                     #self.add_a_level(band_names = this_band_name, spin = this_spin, parity = this_parity, energy = this_energy)
                     self.add_a_level(band_names = this_level_band_names, spin = this_spin, parity = this_parity, energy = this_energy)
 
-                        
+
                     levels_read = levels_read + 1
                     print "Added ",this_spin,this_parity," level at ",this_energy,"keV to band ",this_band_name,"."
             else:
@@ -6872,7 +6897,7 @@ class nucleus:
 
     def read_ags_file_level_scheme(self,nameofagsfile=""):
         """This reads a standard Radware ags level scheme (not gls!).
-        
+
         July 14 2011: This is being changed to a new method to read levels into
         the new level class.
 
@@ -7114,10 +7139,10 @@ class nucleus:
 
         print "Guessed K values for all new bands.  They can be changed later."
         return 0
-            
+
     def askallkvalues(self):
-        """Ask the user for a K value for each band.  
-        
+        """Ask the user for a K value for each band.
+
         Eventually need checks that they make physical sense.
 
         Default values can be guessed from existing levels, but the graphical
@@ -7140,7 +7165,7 @@ class nucleus:
                     kvalue = abs(kvalue)
 
                 self.bandk[bandnumber] = kvalue
-            
+
 
     def number_of_matrix_elements(self):
         """Returns the total number of matrix elements.
@@ -7150,7 +7175,7 @@ class nucleus:
 
     def indexmatrixelement(self,multipolenumber,li,lf):
         """Finds the position in the matrix element list if the matrix element exists.
-        
+
         If it does not exist, returns -1 (integer).  Takes a number (the gosia code
         number) for multipole.
         """
@@ -7291,14 +7316,14 @@ class nucleus:
             del self.matrix_data[i]
             return 0
         else:
-            return -2  # Note that this is not supposed to be an error. 
+            return -2  # Note that this is not supposed to be an error.
                        # It means the matrix element didn't exist.
                        # deletematrixelement can be used to delete one "if" it exists.
 
 
     def spin_parity_allowed_transition(self,multipole_text,initial_state,final_state):
         """This will return true if the matrix element is allowed; false otherwise.
-        
+
         multipole_text   is a string, e.g. "e2", "M1"
         initial_state    is a state key, e.g. ("gsb",0.0)
         final_state      is a state key, e.g. ("gam",2.0)
@@ -7343,8 +7368,8 @@ class nucleus:
             return False
 
         return True  # if no problems above, then it is allowed
-    
-    
+
+
     def add_matrix_element(self,multipole_string = None, initial_band_name = None, \
         final_band_name = None, initial_spin = None, final_spin = None, value = None):
         """Add one fixed matrix element to the matrix.
@@ -7352,8 +7377,8 @@ class nucleus:
         Master or dependent information cannot be set here.  That information
         can be set in another method under construction.
 
-        multipole_string is one of 
-          'e1','e2','e3','e4','e5','e6','m1','m2'  or 
+        multipole_string is one of
+          'e1','e2','e3','e4','e5','e6','m1','m2'  or
           'E1','E2','E3','E4','E5','E6','M1','M2'
 
         The matrix element will be added if there appears to be room in Gosia's
@@ -7386,7 +7411,7 @@ class nucleus:
             print  "Maximum of ",MAXIMUM_NUMBER_OF_MATRIX_ELEMENTS," matrix elements reached."
             return "Maximum of ",MAXIMUM_NUMBER_OF_MATRIX_ELEMENTS," matrix elements reached."
 
-                
+
     def add_complete_matrix(self):
         """Prompts the user for EM parameters and adds all K-allowed matrix elements.
 
@@ -7488,7 +7513,7 @@ class nucleus:
                         self.add_alaga("e1",initial_band_number,final_band_number,None,None,e1_parameter_dict)
                         print "Adding E3 matrix elements from band " + str(initial_band_number) + " to band " + str(final_band_number)
                         self.add_alaga("e3",initial_band_number,final_band_number,None,None,e3_parameter_dict)
-                        
+
         return 0
 
 
@@ -7496,7 +7521,7 @@ class nucleus:
         """Add a set of interband matrix elements from one band to another
 
         Must go from low-numbered band to high-numbered band.  The order is
-        reversed if necessary in this module.  
+        reversed if necessary in this module.
 
         Rule is one of alaga, mikhailov, etc.
 
@@ -7578,7 +7603,7 @@ class nucleus:
 
         multipole_text is a string, 'e2', or 'E2' or 'm1' or 'M1', (E4 or E6 also)
 
-        Here, the levels must be coupled from lower to higher spin.  When the 
+        Here, the levels must be coupled from lower to higher spin.  When the
         levels are written out, they must be sorted from low- to high-spin, as
         in the latest getgoing version.
 
@@ -7824,7 +7849,7 @@ class nucleus:
                             comment = "M_2 term = " + str(M_2_term) + ", M_3 term = " + str(M_3_term)
                             formatted_text = self.format_one_matrix_element(initial_band_name = initial_band_name,initial_spin = initial_spin,\
                               final_band_name = final_band_name, initial_K = initial_K, final_K = final_K, final_spin = final_spin, \
-                              multipole_text = multipole_text, value = reduced_matrix_element, comment = comment) 
+                              multipole_text = multipole_text, value = reduced_matrix_element, comment = comment)
                             matrix_element_counter += 1
 
         # Don't need to redraw; the add_inter_band method does that.
@@ -8065,7 +8090,7 @@ class nucleus:
                             comment = "M_2 term = " + str(M_2_term) + ", M_3 term = " + str(M_3_term)
                             formatted_text = self.format_one_matrix_element(initial_band_name = initial_band_name,initial_spin = initial_spin,\
                               final_band_name = final_band_name, initial_K = initial_K, final_K = final_K, final_spin = final_spin, \
-                              multipole_text = multipole_text, value = reduced_matrix_element, comment = comment) 
+                              multipole_text = multipole_text, value = reduced_matrix_element, comment = comment)
                             matrix_element_counter += 1
 
         # Don't need to redraw; the add_inter_band method does that.
@@ -8206,7 +8231,7 @@ class nucleus:
                             comment = "M_2 term = " + str(M_2_term) + ", M_3 term = " + str(M_3_term)
                             formatted_text = self.format_one_matrix_element(initial_band_name = initial_band_name,initial_spin = initial_spin,\
                               final_band_name = final_band_name, initial_K = initial_K, final_K = final_K, final_spin = final_spin, \
-                              multipole_text = multipole_text, value = reduced_matrix_element, comment = comment) 
+                              multipole_text = multipole_text, value = reduced_matrix_element, comment = comment)
                             print formatted_text
                             matrix_element_counter += 1
 
@@ -8527,7 +8552,7 @@ class nucleus:
         """Deletes a band from the level scheme
 
         We use an existing band number here, so that we don't need to consider
-        aliases.  
+        aliases.
 
         """
 
@@ -8575,7 +8600,7 @@ class nucleus:
         for one_matrix_key in self.matrix_data.keys():
             # Get the (band name, spin) keys of the initial and final states of
             # the m.e. entry.
-            initial_level_key = (one_matrix_key[1],one_matrix_key[2])  
+            initial_level_key = (one_matrix_key[1],one_matrix_key[2])
             final_level_key   = (one_matrix_key[3],one_matrix_key[4])
             if (initial_level_key in all_deleted_level_keys) or (final_level_key in all_deleted_level_keys):
                 del self.matrix_data[one_matrix_key]
@@ -8676,7 +8701,7 @@ class nucleus:
         block_print_with_line_breaks("After swapping bands, matrix elements have been time-reversed for the new ordering of states.  This is necessary to send them in the correct order to Gosia.  You might want to examine the limits on any \"master\" matrix elements to check that they were properly corrected for time-reversal.",70)
 
         return 0
-        
+
     def set_matrix_keys_to_primary_levels(self):
         """Changes any references to level pseudonyms in the matrix keys to primary levels.
 
@@ -8705,8 +8730,8 @@ class nucleus:
                 # Get the matrix element object to re-key it.
                 matrix_element_object = self.matrix_data[matrix_key]  # using the original key to be deleted below.
                 # Replace this key with a new key using primary band names.
-                new_initial_band_name, new_initial_spin = primary_initial_level_key 
-                new_final_band_name, new_final_spin     = primary_final_level_key 
+                new_initial_band_name, new_initial_spin = primary_initial_level_key
+                new_final_band_name, new_final_spin     = primary_final_level_key
                 new_matrix_key = (multipole_code, new_initial_band_name, new_initial_spin, new_final_band_name, new_final_spin)
                 # Add the matrix element object with the new key.
                 self.matrix_data[new_matrix_key] = matrix_element_object
@@ -8865,7 +8890,7 @@ class nucleus:
                 dependent_keys.append(matrix_key)
 
         return dependent_keys
-            
+
     def is_dependent_on(self,master_matrix_key,possible_dependent_key):
         """Returns True if the matrix element possible_dependent_key is dependent on the master.
 
@@ -8925,10 +8950,10 @@ class nucleus:
 
     def add_dependencies_silent(self,master_key,rules_list):
         """Silent version for future upgrade.
-        
+
         Uses the rules for spins, bands, master matrix element, etc. given in
         the rules list to select the matrix elements to be coupled, and
-        to define the master.  
+        to define the master.
 
         master_key = (multipole_code,initial_band_name,initial_spin,final_band_name,final_spin)
                  is the identity of the matrix element to which all matrix elements
@@ -9029,10 +9054,10 @@ class nucleus:
 
     def add_dependencies(self,master_key=None):
         """Defines the matrix elements to be coupled in a gosia fit.
-        
+
         Uses the rules for spins, bands, master matrix element, etc. given in
         the rules list to select the matrix elements to be coupled, and
-        to define the master.  
+        to define the master.
 
         master_key = (multipole_code,initial_band_name,initial_spin,final_band_name,final_spin)
                  is the identity of the matrix element to which all matrix elements
@@ -9334,7 +9359,7 @@ class nucleus:
             # The level cannot be found.  Return None.
             return None
 
-    ## ***New in version -59*** ##
+
     def add_a_level(self,band_names = [],spin = None, parity = None, energy = None):
         """Adds a level.
 
@@ -9478,7 +9503,7 @@ class gosia_shell:
 
     Polls the experiment manager, nucleus, detector manager objects for gosia
     input information as needed and generates a gosia input, which can be
-    saved, displayed, passed to gosia, etc.  
+    saved, displayed, passed to gosia, etc.
 
     """
 
@@ -9493,11 +9518,11 @@ class gosia_shell:
         self.saved_user_experiments = False
         self.saved_user_nucleus = False
         # The following four weights are new in version 2.0.0 beta.
-        self.lifetime_weight = 1.      
+        self.lifetime_weight = 1.
         self.branching_weight = 1.
         self.matrix_element_weight = 1.
         self.mixing_ratio_weight = 1.
-        self.number_of_magnetic_substates = DEFAULT_MAGNETIC_SUBSTATES 
+        self.number_of_magnetic_substates = DEFAULT_MAGNETIC_SUBSTATES
         self.number_of_magnetic_substates_for_minimization = 1
         self.vac_control_dict = {}  # An empty dict until the user enters non-default values.
 
@@ -10262,7 +10287,7 @@ class gosia_shell:
             file_numbers_line = file_number_string + "," + status_string + "," + format_string
             # append the file info into the op file list
             op_file_strings.extend([file_numbers_line,full_file_name])
-                         
+
         # Finish op,file with the 0,0,0 termination code
         op_file_strings.append("0,0,0")
         return op_file_strings
@@ -10384,7 +10409,7 @@ class gosia_shell:
 
     def op_star_input(self,output_options = {}):
             """Generate an OP,STAR input
-            
+
             Poll the nucleus for level scheme information, the experiment
             manager for experiment info, etc., for gosia.
 
@@ -10445,10 +10470,10 @@ class gosia_shell:
             full_gosia_input.extend(["OP,EXIT"," "])
 
             return full_gosia_input
-            
+
     def op_poin_input(self,ncm_override=False,amplitudes=False,IFL=0,file_extension_substitution_dict={},YLIM=0):
             """Generate an OP,POIN input
-            
+
             Poll the nucleus for level scheme information, the experiment
             manager for experiment info, etc., for gosia.
 
@@ -10464,7 +10489,7 @@ class gosia_shell:
             # Get the nucleus information
             level_scheme_lines = investigated_nucleus.generate_gosia_input()
 
-            # Get the EXPT section 
+            # Get the EXPT section
             expt_lines = the_experiment_manager.generate_expt()
 
             # Get the CONT block
@@ -10511,11 +10536,11 @@ class gosia_shell:
             full_gosia_input.extend(["OP,EXIT"," "])
 
             return full_gosia_input
-            
+
 
     def op_intg_input(self,op_corr=False):
             """Generate an OP,INTG input
-            
+
             Poll the nucleus for level scheme information, the experiment
             manager for experiment info, etc., for gosia.
 
@@ -10529,7 +10554,7 @@ class gosia_shell:
             # Get the nucleus information
             level_scheme_lines = investigated_nucleus.generate_gosia_input()
 
-            # Get the EXPT section 
+            # Get the EXPT section
             expt_lines = the_experiment_manager.generate_expt()
 
             # Get the CONT block
@@ -10572,7 +10597,7 @@ class gosia_shell:
             full_gosia_input.extend(["OP,EXIT"," "])
 
             return full_gosia_input
-            
+
     def op_mini_input(self,do_map_instead=False,file_name_substitution_dict={}):
             """Generates OP,MINI *or* OP,MAP input.
 
@@ -10591,7 +10616,7 @@ class gosia_shell:
             # Get the nucleus information
             level_scheme_lines = investigated_nucleus.generate_gosia_input()
 
-            # Get the EXPT section 
+            # Get the EXPT section
             expt_lines = the_experiment_manager.generate_expt()
 
             # Get the CONT block
@@ -10848,7 +10873,7 @@ class gosia_shell:
         # Get the nucleus information
         level_scheme_lines = investigated_nucleus.generate_gosia_input()
 
-        # Get the EXPT section 
+        # Get the EXPT section
         expt_lines = the_experiment_manager.generate_expt()
 
         # Get the CONT block
@@ -10875,11 +10900,11 @@ class gosia_shell:
             correlated_error_lines = ["OP,RE,F",\
                                 "OP,ERRO",\
                                 op_erro_arguments_line,\
-                                "OP,EXIT"] 
+                                "OP,EXIT"]
         else:
             correlated_error_lines = ["OP,ERRO",\
                                 op_erro_arguments_line,\
-                                "OP,EXIT"] 
+                                "OP,EXIT"]
 
         full_gosia_input = op_file_lines
         full_gosia_input.extend(level_scheme_lines)
@@ -10902,7 +10927,7 @@ class gosia_shell:
         # Get the nucleus information
         level_scheme_lines = investigated_nucleus.generate_gosia_input()
 
-        # Get the EXPT section 
+        # Get the EXPT section
         expt_lines = the_experiment_manager.generate_expt()
 
         # Get the CONT block
@@ -11783,7 +11808,7 @@ class experimentmanager:
         measured_mixing_lines    = []
         measured_me_lines        = []
         measured_lifetime_lines  = []
-        
+
         if not len(self.branching_data) == 0:
             branching_header_line = str(len(self.branching_data)) + " " + str(branching_data_weight)
             measured_branching_lines = [branching_header_line]
@@ -11794,7 +11819,7 @@ class experimentmanager:
                 final_gosia_level_number_2 = investigated_nucleus.lookup_gosia_level_by_band_spin(final_band_name_2,final_spin_2)
                 this_line = str(initial_gosia_level_number) + " " +  str(final_gosia_level_number_1) + " " + \
                   str(initial_gosia_level_number) + " " + str(final_gosia_level_number_2) + " " + \
-                  str(r) + " " + str(delta_r) 
+                  str(r) + " " + str(delta_r)
                 measured_branching_lines.append(this_line)
         else:
             measured_branching_lines = ["0,0"]
@@ -11804,7 +11829,7 @@ class experimentmanager:
             for one_datum in self.lifetime_data:
                 initial_band_name, initial_spin, tau, delta_tau = one_datum
                 initial_gosia_level_number = investigated_nucleus.lookup_gosia_level_by_band_spin(initial_band_name,initial_spin)
-                this_line = str(initial_gosia_level_number) + " " + str(tau) + " " + str(delta_tau) 
+                this_line = str(initial_gosia_level_number) + " " + str(tau) + " " + str(delta_tau)
                 measured_lifetime_lines.append(this_line)
         else:
             measured_lifetime_lines = ["0,0"]
@@ -11815,7 +11840,7 @@ class experimentmanager:
                 initial_band_name, final_band_name, initial_spin, final_spin, mixing_ratio, error = one_datum
                 initial_gosia_level_number = investigated_nucleus.lookup_gosia_level_by_band_spin(initial_band_name,initial_spin)
                 final_gosia_level_number = investigated_nucleus.lookup_gosia_level_by_band_spin(final_band_name,final_spin)
-                this_line = str(initial_gosia_level_number) + " " +  str(final_gosia_level_number) + " " + str(mixing_ratio) + " " + str(error) 
+                this_line = str(initial_gosia_level_number) + " " +  str(final_gosia_level_number) + " " + str(mixing_ratio) + " " + str(error)
                 measured_mixing_lines.append(this_line)
         else:
             measured_mixing_lines = ["0,0"]
@@ -11874,7 +11899,7 @@ class experimentmanager:
             # arbitrary detector shape defined by user.  Same method for now.
             list_of_meshpoints = list(numpy.linspace(theta_lab_min,theta_lab_max,number_of_meshpoints))
             return list_of_meshpoints
-            
+
 
     def reset_optimum_angular_meshpoints(self,all=False,internal_experiment_number=None):
         """Resets the optimum number of theta meshpoints for all experiments.
@@ -14817,7 +14842,7 @@ class experimentmanager:
         # Begin the list of lines for gosia with "EXPT".
         expt_lines = ["EXPT"]
 
-        # Get the number of experiments.  In the end, we may have to 
+        # Get the number of experiments.  In the end, we may have to
         # select based on whether they are "selected" or not.
         number_of_experiments = self.getnumberofexperiments()
 
@@ -14905,7 +14930,7 @@ class experimentmanager:
             else:
                 # Just look up the one the user chose in defining the experiment.
                 I_kin = self.allexperiments[experiment_number].get_parameter("I_kin")
-                
+
             # Decide on appropriate +/- sign flag for the Zn entry.  If the beam
             # is excited, then it gets a negative-sign flag; otherwise positive.
             if not excited_target:
@@ -14914,7 +14939,7 @@ class experimentmanager:
 
             # Construct the EXPT line for this experiment (experiment_number)
             line_list = [Z_n, A_n, E_mean, theta_lab_mean, M_c, M_a, I_ax, phi_1, phi_2, I_kin, LN]
-            line = str(line_list).strip('[]')   # Turn line_list into a comma-delimited string with 
+            line = str(line_list).strip('[]')   # Turn line_list into a comma-delimited string with
                                                 # the list brackets removed.
             expt_lines.append(line)
 
