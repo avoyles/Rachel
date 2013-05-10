@@ -4517,9 +4517,25 @@ class nucleus:
 
                 if is_transition:
 
-                    # It's not a static moment.
-                    self.drawanarrow(initial_band_number,initial_energy,\
-                      final_band_number,final_energy,label,color)
+                    # It's not a static moment.  Stagger the position for E2
+                    # dI=1/2 and M1, in-band only.
+                    if initial_band_number == final_band_number:
+                        # In-band only.
+                        if "E2" in label:
+                            if final_spin - initial_spin == 2:
+                                # dI = 2 in the middle
+                                stagger = 0.0
+                            else:
+                                # dI = 1 on the left
+                                stagger = -LEVELWIDTH / 2.0
+                        elif "M1" in label:
+                            # M1 on the right, but not over the spin labels.
+                            stagger = 0.75 * (LEVELWIDTH / 2.0)
+
+                    else:
+                        stagger = 0.0
+                    self.drawanarrow(initial_band_number + stagger, initial_energy,\
+                      final_band_number + stagger, final_energy, label, color)
 
                 else:
 
@@ -4544,7 +4560,7 @@ class nucleus:
 
                 # Only prompt for the next one if the user didn't select all.
                 try:
-                    choice = raw_input("Continue (yes,no or show all)[Y/n/a]: ")
+                    choice = raw_input("Continue (yes, no or show all)[Y/n/a]: ")
                     choice = choice.lower().strip()[0]
                 except:
                     # User just hit enter.  Default to yes.
