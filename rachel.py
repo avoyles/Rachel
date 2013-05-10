@@ -384,24 +384,23 @@ LEVELWIDTH                                = 0.5
 LEVELCOLOR                                = 'k'                             # color of levels
 RMEARROWCOLOR                             = 'r'                             # color of dependent matrix elements
 MASTERMECOLOR                             = 'g'                             # color of master matrix elements
-FIXEDMECOLOR                              = 'k'                             # color of intrinsic m.e. arrows (band-->band)
-INTRINSICARROWCOLOR                       = 'b'
+FIXEDMECOLOR                              = 'k'                             # color of fixed m.e. (not varied in fit)
+INTRINSICARROWCOLOR                       = 'b'                             # color of intrinsic m.e. arrows (band-->band)
 SPINLABELFONTSIZE                         = 8
-LEVELSCHEMEFIGURE                         = 1                               # default size in inches for the level scheme figure
-LSFIGSIZE                                 = (10,8)
-                                                                            # factor in M1 matrix elements
-M1CONSTANT                                = math.sqrt(3. / (4. * math.pi))  # Constant for the differential cross section formulas in mb,MeV.
-RUTHERFORD_CONSTANT                       = 1.29596
-                                                                            # Calculated yields lower than this limit
-CALCULATED_YIELD_LOWER_LIMIT              = 1.0E-10                         # (in mb*(mg/cm^2)/sr in integrated
+LEVELSCHEMEFIGURE                         = 1
+LSFIGSIZE                                 = (10,8)                          # default size in inches for the level scheme figure
+M1CONSTANT                                = math.sqrt(3. / (4. * math.pi))  # factor in M1 matrix elements
+RUTHERFORD_CONSTANT                       = 1.29596  # Constant for the differential cross section formulas in mb,MeV.
+
+CALCULATED_YIELD_LOWER_LIMIT              = 1.0E-10                         # Calculated yields lower than this limit
+                                                                            # (in mb*(mg/cm^2)/sr in integrated
                                                                             # yields), will not be read from Gosia
                                                                             # calculations.  This also applies to
-                                                                            # simulated yield data.
+                                                                            # simulated yield data.                     
 
-                                                                            # A globally accessible dictionary of help strings. This will be read from a file.
-HELP_DICTIONARY                           = {}                              # A globally accessible dictionary of tips strings for popup help. This will be read from a file.
-TIPS_DICTIONARY                           = {}                              # The text editor to be called from the GUI.
-DEFAULT_EDITOR_COMMAND                    = "vim"
+HELP_DICTIONARY                           = {}
+TIPS_DICTIONARY                           = {}
+DEFAULT_EDITOR_COMMAND                    = "vim"                           # The text editor to be called from the GUI.
 
 DEFAULT_EFFICIENCY_PARAMETERS = [5.7021, 4.83491, 0., 6.20016, -6.06E-01, -5.36E-03, 4.5934, 0.000219]
 #                                A       B        C   D        E          F          G       N
@@ -6057,7 +6056,7 @@ class nucleus:
         high_y_plot_limit = max_y + 0.1 * y_span
         low_x_plot_limit = min_x - 0.1 * x_span
         high_x_plot_limit = max_x + 0.1 * x_span
-        
+
         plt.title(title)
         plt.xlabel(x_label)
         plt.ylabel(y_label)
@@ -6256,7 +6255,7 @@ class nucleus:
 
         plt.figure(LEVELSCHEMEFIGURE,figsize=LSFIGSIZE)
         plt.annotate(arrowlabel, xy=(x2,y2),  xycoords='data',
-                xytext=(x1,y1), textcoords='data',
+                xytext=(x1 - LEVELWIDTH / 4.0,y1), textcoords='data',
                 arrowprops=dict(arrowstyle="->",color=requestedcolor)
                 )
 
