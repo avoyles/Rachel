@@ -4374,8 +4374,6 @@ class nucleus:
 
         # Each element of the list will be a dict:
         # {"master key":(2,"g","a",2.0,4.0),
-        # "master value":3.28,
-        # "dependent keys":[(key 1), (key 2)...],
         # "drawing data":[[False, label, initial band number, initial_spin, initial energy...]]
         #                   ^--True means arrow; False means static moment
         # The drawing data will be used for a fast display loop.
@@ -4497,6 +4495,7 @@ class nucleus:
                 this_dict["number of dependents"] = number_of_dependents
                 fit_parameters.append(copy.deepcopy(this_dict))
 
+        masters_only = False # (Show dependents as well.)
         # Drawing loop.
         for one_set in fit_parameters:
 
@@ -4514,6 +4513,10 @@ class nucleus:
                     color = MASTERMECOLOR
                 else:
                     color = RMEARROWCOLOR
+
+                if masters_only and i > 0:
+                    # Skip to the next master.
+                    continue
 
                 if is_transition:
 
@@ -4560,7 +4563,7 @@ class nucleus:
 
                 # Only prompt for the next one if the user didn't select all.
                 try:
-                    choice = raw_input("Continue (yes, no or show all)[Y/n/a]: ")
+                    choice = raw_input("Continue ([y]es, [n]o, [m]asters or show [a]ll)[Y/n/m/a]: ")
                     choice = choice.lower().strip()[0]
                 except:
                     # User just hit enter.  Default to yes.
@@ -4574,6 +4577,11 @@ class nucleus:
                     self.draw_level_scheme()
                 elif choice == "a":
                     # Set step to false so that it will continue drawing without further prompting.
+                    step = False
+                elif choice == "m":
+                    # Set step to false so that it will continue drawing without further prompting.
+                    # Show only masters:
+                    masters_only = True
                     step = False
                 else:
                     # Act as though the user hit "y".
