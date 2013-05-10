@@ -380,9 +380,9 @@ NUCLEAR_DATA_FILE_NAME = "rachel_nuclear_data.txt"
 PROMPTSTRING = "~ "
 
 # Graphics parameters for the level scheme in matplotlib.
-LEVELWIDTH                                = 0.5                             # color of levels
-LEVELCOLOR                                = 'k'                             # color of individual reduced matrix element arrows
-RMEARROWCOLOR                             = 'r'                             # color of master matrix elements
+LEVELWIDTH                                = 0.5
+LEVELCOLOR                                = 'k'                             # color of levels
+RMEARROWCOLOR                             = 'r'                             # color of dependent matrix elements
 MASTERMECOLOR                             = 'g'                             # color of master matrix elements
 FIXEDMECOLOR                              = 'k'                             # color of intrinsic m.e. arrows (band-->band)
 INTRINSICARROWCOLOR                       = 'b'
@@ -3765,7 +3765,7 @@ class nucleus:
 
         """
 
-        units_string = UNITS_DICT[multipole_text]
+        units_string = UNITS_DICT[multipole_text[:2]]
         text = "<\"" + final_band_name + "\" I = " + str(final_spin)
         if not final_K == None:
             text = text + ", K = " + str(final_K)
@@ -4369,7 +4369,17 @@ class nucleus:
         all_matrix_keys = self.get_all_matrix_keys_in_gosia_order()
 
         # Cycle through the matrix element keys, picking out masters.  For each
-        # master, get all of its dependents.
+        # master, get all of its dependents.  Add the master/dependent data to
+        # a list to plot afterward.  This improves the display speed.
+        fit_parameters = []
+
+        # Each element of the list will be a dict:
+        # {"master key":(2,"g","a",2.0,4.0),
+        # "master value":3.28,
+        # "dependent keys":[(key 1), (key 2)...],
+        # "drawing data":[[False, label, initial band number, initial_spin, initial energy...]]
+        #                   ^--True means arrow; False means static moment
+        # The drawing data will be used for a fast display loop.
 
         block_print_with_line_breaks("The master is shown in green, and any dependents are shown in red.  The master is marked with a \"^\" if it hit the upper limit, or a \"v\" if it hit the lower limit in the last fit.  The fit is probably not at a true minimum if any limits were hit.",60)
 
@@ -4378,97 +4388,100 @@ class nucleus:
             is_master = matrix_object.get_is_master()
             if is_master:
 
-                # Make a new "queue" for output.  Printing in the loop is slowing everything down.
+                this_dict                 = {}
+                this_dict["master key"]   = matrix_key
+                this_dict["drawing data"] = []
 
+                # Text to display for this parameter.  This will be added to the dict when it is complete.
                 output_lines = []
 
                 # Get the master's matrix element information.
-
-                master_multipole_number, master_initial_band_name, master_initial_spin, master_final_band_name, master_final_spin = matrix_key
+                master_multipole_number, master_initial_band_name, master_initial_spin, \
+                  master_final_band_name, master_final_spin = matrix_key
                 master_multipole_text = REVERSE_MULTIPOLE[master_multipole_number]
 
                 # Get the level keys for the initial and final states of the master.
-
                 master_initial_level_key = (master_initial_band_name,master_initial_spin)
                 master_final_level_key   = (master_final_band_name,master_final_spin)
                 master_initial_energy    = self.get_level_information(master_initial_level_key,'energy')
+                master_final_energy      = self.get_level_information(master_final_level_key,'energy')
+
+                # Convert band name to band number.
+                master_initial_band_number = self.get_band_number_for_display(master_initial_band_name)
+                master_final_band_number   = self.get_band_number_for_display(master_final_band_name)
+
+                if master_initial_level_key == master_final_level_key:
+                    is_transition = False
+                else:
+                    is_transition = True
 
                 # Get matrix element information for display:
-
                 master_value = matrix_object.get_current_value()
                 master_upper_limit = matrix_object.get_upper_limit()
                 master_lower_limit = matrix_object.get_lower_limit()
 
                 # Get all of the keys of dependents on this master.
-
                 dependent_matrix_keys = self.get_all_dependent_matrix_keys(matrix_key)
 
                 # First, see if the master has hit the limits.  If it has, add a mark to the label text.
-
                 hit_upper_limit = matrix_object.hit_upper_limit()
                 hit_lower_limit = matrix_object.hit_lower_limit()
 
                 if hit_upper_limit:
-                    multipole_and_limit_hit = master_multipole_text + "^"
-                    limit_comment = "HIT LOWER LIMIT."
+                    limit_marker      = "^"
+                    limit_comment     = "HIT UPPER LIMIT."
                 elif hit_lower_limit:
-                    multipole_and_limit_hit = master_multipole_text + "v"
-                    limit_comment = "HIT UPPWER LIMIT."
+                    limit_marker      = "v"
+                    limit_comment     = "HIT LOWER LIMIT."
                 else:
-                    multipole_and_limit_hit = master_multipole_text
-                    limit_comment = ""
+                    limit_marker      = ""
+                    limit_comment     = ""
 
-                # Draw the master.  Use False for faster drawing.
-
-                if not master_initial_level_key == master_final_level_key:
-
-                    # It's not a static moment.
-
-                    self.drawonetransition(master_initial_band_name,master_final_band_name,\
-                      master_initial_spin,master_final_spin,'g',multipole_and_limit_hit,False)
-                else:
-
-
-                    self.drawstaticmoment(master_initial_band_name, master_initial_energy, 'g', multipole_and_limit_hit, False)
-
-                # Print the master description.
-
+                # Create the master description text.
                 master_formatted_text = self.format_one_matrix_element(initial_band_name = master_initial_band_name,\
                   initial_spin = master_initial_spin, final_band_name = master_final_band_name, final_spin = master_final_spin,\
                   multipole_text = master_multipole_text, value = master_value, comment = limit_comment)
                 output_lines.append(master_formatted_text)
-                limits_text = "    Fit limits: " + str(master_lower_limit) + "," + str(master_upper_limit) + ".  Dependent matrix elements:"
+                limits_text = "    Fit limits: " + str(master_lower_limit) + "," + str(master_upper_limit)
                 output_lines.append(limits_text)
 
+                # Add the master to the drawing data first.  The drawing loop expects the master first.
+                this_dict["drawing data"].append([is_transition, limit_marker + master_multipole_text, master_initial_band_number, \
+                  master_initial_spin, master_initial_energy, master_final_band_number, \
+                  master_final_spin, master_final_energy])
+
                 # Now cycle through all matrix elements dependent on this master and print, display them.
-
                 number_of_dependents = 0
-
-                # Turn off interactive updating for faster drawing.
-
-                pylab.ioff()
                 for dependent_matrix_key in dependent_matrix_keys:
                     dependent_matrix_object = self.matrix_data[dependent_matrix_key]
 
                     # Get the dependent's matrix element information.
-
                     dependent_multipole_number, dependent_initial_band_name, dependent_initial_spin, \
                       dependent_final_band_name, dependent_final_spin = dependent_matrix_key
                     dependent_multipole_text = REVERSE_MULTIPOLE[dependent_multipole_number]
 
-                    # Get the level keys for the initial and final states of the master.
+                    # Convert band name to band number.
+                    dependent_initial_band_number = self.get_band_number_for_display(dependent_initial_band_name)
+                    dependent_final_band_number   = self.get_band_number_for_display(dependent_final_band_name)
 
+                    # Get the level keys for the initial and final states of the master.
                     dependent_initial_level_key = (dependent_initial_band_name,dependent_initial_spin)
                     dependent_final_level_key   = (dependent_final_band_name,dependent_final_spin)
                     dependent_initial_energy    = self.get_level_information(dependent_initial_level_key,'energy')
+                    dependent_final_energy      = self.get_level_information(dependent_final_level_key,'energy')
+                    if not dependent_initial_level_key == dependent_final_level_key:
+                        is_transition = True
+                    else:
+                        is_transition = False
 
                     # Get matrix element information for display:
                     dependent_value = dependent_matrix_object.get_current_value()
 
-                    # Print the dependent description.
+                    # Format the dependent description.
                     dependent_formatted_text = self.format_one_matrix_element(initial_band_name = dependent_initial_band_name,\
                       initial_spin = dependent_initial_spin, final_band_name = dependent_final_band_name, final_spin = dependent_final_spin,\
                       multipole_text = dependent_multipole_text, value = dependent_value)
+
                     # Indent the dependents.
                     dependent_formatted_text = "    " + dependent_formatted_text
                     output_lines.append(dependent_formatted_text)
@@ -4476,50 +4489,83 @@ class nucleus:
                     # Increment the number of dependents for reporting.
                     number_of_dependents += 1
 
-                    # Now plot the dependent on the level scheme window.
-                    if not dependent_initial_level_key == dependent_final_level_key:
-                        # It's not a static moment
-                        # Use False for faster drawing.
-                        self.drawonetransition(dependent_initial_band_name,dependent_final_band_name,\
-                          dependent_initial_spin,dependent_final_spin,'r',dependent_multipole_text,False)
+                    # Add this to the plot data for the drawing loop.
+                    this_dict["drawing data"].append([is_transition, dependent_multipole_text, dependent_initial_band_number, \
+                      dependent_initial_spin, dependent_initial_energy, dependent_final_band_number, \
+                      dependent_final_spin, dependent_final_energy])
 
-                        # self.drawanarrow(1,306,3,random.random()*1000.,"","r") # This is very fast.
-                    else:
-                        # Use False for faster drawing.
-                        self.drawstaticmoment(dependent_initial_band_name, dependent_initial_energy, 'r', dependent_multipole_text, False)
+                this_dict["output lines"]         = output_lines
+                this_dict["number of dependents"] = number_of_dependents
+                fit_parameters.append(copy.deepcopy(this_dict))
 
+        # Drawing loop.
+        for one_set in fit_parameters:
+
+            output_lines = one_set["output lines"]
+            number_of_dependents = one_set["number of dependents"]
+
+            for i in range(len(one_set["drawing data"])):
+
+                this_arrow_data = one_set["drawing data"][i]
+                is_transition, label, initial_band_number, initial_spin, initial_energy, \
+                  final_band_number, final_spin, final_energy = this_arrow_data
+
+                # The first one is the master.
+                if i == 0:
+                    color = MASTERMECOLOR
+                else:
+                    color = RMEARROWCOLOR
+
+                if is_transition:
+
+                    # It's not a static moment.
+                    self.drawanarrow(initial_band_number,initial_energy,\
+                      final_band_number,final_energy,label,color)
+
+                else:
+
+                    # Static moment.
+                    x_position = initial_band_number - LEVELWIDTH/2.
+                    plt.scatter(x_position,initial_energy,s=25,c=color,marker=(0,3,0))
+
+
+            # Print the summary of this set:
+            print output_lines[0]  # bracket notation and value
+            print output_lines[1]  # fit limit information
+            if number_of_dependents > 0:
+                print "  Matrix elements dependent on this master:"
+            for one_line in output_lines[2:]:
+                print one_line
+            if number_of_dependents == 0:
+                print "    (This master has no dependents.)"
+            print "--------------------------------------------------------------------------------"
+            if step:
                 # Force an update of the drawing.
                 self.set_axes_nicely(self.number_of_bands(),self.maximum_level_energy())
-                # Print the summary of this set:
-                for one_line in output_lines:
-                    print one_line
-                if number_of_dependents == 0:
-                    print "    (This master has no dependents.)"
-                print "--------------------------------------------------------------------------------"
-                if step:
-                    # Only prompt for the next one if the user didn't select all.
-                    try:
-                        choice = raw_input("Continue (yes,no or show all)[Y/n/a]: ")
-                        choice = choice.lower().strip()[0]
-                    except:
-                        # User just hit enter.  Default to yes.
-                        choice == "y"
 
-                    if choice == "n":
-                        print "Quitting."
-                        return 0
-                    elif choice == "y":
-                        # Clear the level scheme again.
-                        self.draw_level_scheme()
-                    elif choice == "a":
-                        # Set step to false so that it will continue drawing without further prompting.
-                        step = False
-                    else:
-                        # Act as though the user hit "y".
-                        # Clear the level scheme again.
-                        self.draw_level_scheme()
+                # Only prompt for the next one if the user didn't select all.
+                try:
+                    choice = raw_input("Continue (yes,no or show all)[Y/n/a]: ")
+                    choice = choice.lower().strip()[0]
+                except:
+                    # User just hit enter.  Default to yes.
+                    choice == "y"
 
-        print "These are the only fit parameters specified."
+                if choice == "n":
+                    print "Quitting."
+                    return 0
+                elif choice == "y":
+                    # Clear the level scheme again.
+                    self.draw_level_scheme()
+                elif choice == "a":
+                    # Set step to false so that it will continue drawing without further prompting.
+                    step = False
+                else:
+                    # Act as though the user hit "y".
+                    # Clear the level scheme again.
+                    self.draw_level_scheme()
+
+        print "No more fit parameters."
         print "Finished."
 
         return 0
