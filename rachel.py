@@ -22888,7 +22888,7 @@ class main_gui:
 
         gosia_function = self.get_active_text(self.gosiafunctioncombobox)
         gosia_action = self.get_active_text(self.gosiaactioncombobox)
-   
+
         #deactivate all button presses while this runs.
         self.set_deactivation(self,self.all_button_list)
         while gtk.events_pending():
@@ -22907,7 +22907,7 @@ class main_gui:
                 self.set_activation(self)
                 undo.save("Estimate normalizations")
                 return 0
-        
+
         except:
             print "The Gosia function and action must be selected to the left of the Go button."
             self.set_activation(self)
@@ -23149,7 +23149,7 @@ class main_gui:
                         the_experiment_manager.read_experimental_yields()
                     else:
                         print "User cancelled the simulation.  Yield data were not changed."
-                        
+
                     # Save the undo information.
                     undo.save("Adjust simulation parameters")
 
@@ -23533,7 +23533,7 @@ class main_gui:
             # Reactivate GUI buttons.
             self.set_activation(self)
             return -1
-        
+
     # Callback for "add/change m.e. "
     def add_me(self,widget):
 
@@ -23881,7 +23881,7 @@ class main_gui:
             self.set_activation(self)
             print "Done."
             return -1
-            
+
 
 
     def chisq(self,widget):
@@ -24037,7 +24037,7 @@ class main_gui:
                             undo.save(undo_information)
                         else:
                             undo.save("Delete band (failed)")
-                            
+
                         investigated_nucleus.draw_level_scheme()
                     else:
                         print "Finished."
@@ -24051,7 +24051,7 @@ class main_gui:
             # Reactivate GUI buttons.
             self.set_activation(self)
             return -1
-        
+
     def swap_bands(self,widget):
 
         print_separator()
@@ -24062,7 +24062,7 @@ class main_gui:
             gtk.main_iteration(False)
 
         try:
-            try:  
+            try:
                 # Ask for both band numbers and convert to integer type
                 initial_band_number = int(self.initial_band_entry.get_text())
                 final_band_number = int(self.final_band_entry.get_text())
@@ -24087,7 +24087,7 @@ class main_gui:
             # Reactivate GUI buttons.
             self.set_activation(self)
             return -1
-        
+
     def define_ge_detector(self,widget):
 
         print_separator()
@@ -24246,14 +24246,14 @@ class main_gui:
                     try:
                         return_code = the_experiment_manager.delete_experiment()
                         if return_code == 0:
-                            undo.save("Delete experiment(s)")  
+                            undo.save("Delete experiment(s)")
                         else:
-                            undo.save("Delete experiment(s) (failed)")  
+                            undo.save("Delete experiment(s) (failed)")
                         # Reactivate GUI buttons.
                         self.set_activation(self)
                     except:
                         print "Experiment manager error."
-                        undo.save("Delete experiment(s) (failed)")  
+                        undo.save("Delete experiment(s) (failed)")
                         # Reactivate GUI buttons.
                         self.set_activation(self)
                         return -1
@@ -24285,7 +24285,7 @@ class main_gui:
             # Reactivate GUI buttons.
             self.set_activation(self)
             return -1
-        
+
     def reactivate(self,widget):
         # Log this reactivation, since there was probably an exception.
         # Try to get part of the traceback info to log.
@@ -24405,7 +24405,7 @@ class main_gui:
         while gtk.events_pending():
             gtk.main_iteration(False)
         try:
-            try:  
+            try:
                 # Ask for band number and convert to integer type
                 band = int(raw_input("Band number? "))
             except:  # if error, then cancel the operation
@@ -24433,7 +24433,7 @@ class main_gui:
             # Reactivate GUI buttons.
             self.set_activation(self)
             return -1
-        
+
     def merge_bands(self,widget):
 
         print_separator()
@@ -24480,7 +24480,7 @@ class main_gui:
             # Reactivate GUI buttons.
             self.set_activation(self)
             return -1
-        
+
     def gosia_controls(self,widget):
         """Allows the user to set some of the switches in the Gosia CONT block.
 
@@ -24686,7 +24686,7 @@ class main_gui:
                             vac_parameter_dict["x"] = x
                         except:
                             print "x left at default value of 0.6."
-                            
+
                         return_code = the_gosia_shell.set_vac_parameters(vac_parameter_dict)
                         if return_code == 0:
                             undo.save("Set custom vacuum deorientation parameters")
@@ -24735,14 +24735,16 @@ class main_gui:
             except:
                 # User probably hit return without typing a choice.
                 print "Quitting."
+                undo.save("Set Gosia controls (failed)")
                 # Reactivate GUI buttons.
                 self.set_activation(self)
 
         except:
+            undo.save("Set Gosia controls (failed)")
             # Reactivate GUI buttons.
             self.set_activation(self)
             return -1
-        
+
     def tools(self,widget):
         """Various advanced tools for the user.
 
@@ -25039,7 +25041,7 @@ class main_gui:
 
                     else:
                         print "lambda out of range."
-                
+
             elif what == "ka":
                 return_code = investigated_nucleus.add_complete_matrix()
                 if return_code == 0:
@@ -25126,7 +25128,7 @@ class main_gui:
                 # Reactivate GUI buttons.
                 self.set_activation(self)
 
-            
+
     def examine_stopping_power(self,widget):
         """Allows the user to examine and modify stopping power data.
 
@@ -25134,7 +25136,7 @@ class main_gui:
 
         print_separator()
 
-        
+
         #deactivate all button presses while this runs.
         self.set_deactivation(self,self.all_button_list)
         while gtk.events_pending():
@@ -25294,7 +25296,7 @@ class main_gui:
                     print "Returning to GUI."
                     # Reactivate GUI buttons.
                     self.set_activation(self)
-                    break 
+                    break
                 elif user_expression.strip() == "functions":
 
                     block_print_with_line_breaks("The following commands take prompted input for common calculations.  All functions below are accurate for elastic or inelastic scattering.  Quantities are symmetrized over the entrance and exit velocities as appropriate.\n")
