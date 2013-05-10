@@ -9891,7 +9891,7 @@ class gosia_shell:
                 # User hit return to quit (or typed a non-numeric character).
                 self.print_minimization_parameters(True)
                 print "Done."
-                return -1
+                return None
 
             # User entered a parameter number.  Find it in the number-->name
             # dictionary, and allow the user to change it.
@@ -23409,7 +23409,7 @@ class main_gui:
         print "       all experiments and detectors from a single file."
         print "       This replaces all yield data in memory."
         print " al    Auto-load yield data into detectors."
-        print " fl    FULLY automatic loading of all yield data (NEW)." 
+        print " fl    FULLY automatic loading of all yield data (NEW)."
         print "       This uses systematic file names.  Refer to the "
         print "       file naming system after selecting \"fl.\""
         try:
@@ -23918,13 +23918,14 @@ class main_gui:
         try:
             return_code = investigated_nucleus.user_set_masters()
 
-            if return_code == 0:
-                undo.save("Define fit parameters")
-            elif return_code < 0:
+            if return_code == -1:  # None can be returned as well.
                 undo.save("Define fit parameters (failed)")
+            elif return_code == None:
+                # Returned None.  User probably did nothing.  Save anyway.
+                undo.save("Define fit parameters")
             else:
-                # e.g. returned None.  Don't save.
-                pass
+                undo.save("Define fit parameters")
+
             # Reactivate GUI buttons.
             self.set_activation(self)
             return return_code
@@ -23934,7 +23935,7 @@ class main_gui:
             undo.save("Define fit parameters (failed)")
             self.set_activation(self)
             return -1
-            
+
 
     def plot_bml(self,widget):
 
@@ -24721,7 +24722,9 @@ class main_gui:
                     return_code = the_gosia_shell.set_minimization_parameters_interactive()
                     # Reactivate GUI buttons.
                     self.set_activation(self)
-                    if return_code == 0:
+                    if return_code == None:
+                        undo.save("Set minimization parameters")
+                    elif return_code == 0:
                         undo.save("Set minimization parameters")
                     else:
                         undo.save("Set minimization parameters (failed)")
