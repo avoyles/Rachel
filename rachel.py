@@ -4619,8 +4619,8 @@ class nucleus:
 
             couple_static = yes_no_prompt("If E2 static moments are selected, couple to E2 transition below [Y/n]? ",True)
 
-        # Step through all matrix elements.  For matrix elements that meet all 
-        # of the selection criteria in rules_list, set their coupling to the 
+        # Step through all matrix elements.  For matrix elements that meet all
+        # of the selection criteria in rules_list, set their coupling to the
         # indices of the master, using the appropriate gosia code, or fix them as requested.
         for matrix_key in self.matrix_data.keys():
             # Extract all of the variables that might be referenced in the rules_list.
@@ -4689,6 +4689,11 @@ class nucleus:
                     self.matrix_data[matrix_key].set_is_fixed()
                     # We don't delete the upper and lower limits.  This can be used
                     # as a basis to unlock them later.
+                    matrix_element_description = self.format_one_matrix_element(initial_band_name=initial_band_name,\
+                      initial_spin=initial_spin,final_band_name=final_band_name,final_spin=final_spin,\
+                      multipole_text=multipole_text,value=current_value)
+                    print matrix_element_description
+                    print "  This matrix element is now fixed (not a fit parameter)."
             else:
                 # The choice was to set the matrix element as a master.
                 if selected:
