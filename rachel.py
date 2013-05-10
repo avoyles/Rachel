@@ -6252,10 +6252,14 @@ class nucleus:
         color defaults to LEVELCOLOR
 
         """
+        if len(arrowlabel) == 3:
+            horizontal_label_offset = LEVELWIDTH / 2.0
+        else:
+            horizontal_label_offset = 0.0
 
         plt.figure(LEVELSCHEMEFIGURE,figsize=LSFIGSIZE)
         plt.annotate(arrowlabel, xy=(x2,y2),  xycoords='data',
-                xytext=(x1 - LEVELWIDTH / 4.0,y1), textcoords='data',
+                xytext=(x1 - horizontal_label_offset, y1), textcoords='data',
                 arrowprops=dict(arrowstyle="->",color=requestedcolor)
                 )
 
