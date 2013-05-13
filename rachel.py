@@ -11648,7 +11648,7 @@ class experimentmanager:
 
 
         # Zero the nuclear data.  This will only be included if it's still in the data file on disk.
-        self.branching_data = []  
+        self.branching_data = []
         self.lifetime_data  = []
         self.mixing_data    = []
         self.measured_matrix_data = []
@@ -11658,7 +11658,10 @@ class experimentmanager:
                 nuclear_data_file_lines = nuclear_data_file.readlines()
             print "  READ NEW NUCLEAR DATA FILE."
         except:
-            print "  NO NEW NUCLEAR_DATA DATA FILE FOUND.  (This is ok.)"
+            print "  NO NUCLEAR_DATA DATA FILE FOUND.  (This is ok.)"
+            print "  NUCLEAR SPECTROSCOPIC DATA WILL NOT BE INCLUDED"
+            print "  IN FIT.  See rachel_nuclear_data.txt in the"
+            print "  example files."
             empty_data_lines = ["0,0" for n in range(4)]
             return empty_data_lines
 
