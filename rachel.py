@@ -2725,7 +2725,6 @@ class matrix_element:
         else:
             return False
 
-
     def calculate_number_of_user_parameters(self):
         """ This is preparation for parametric fitting.
 
@@ -7667,6 +7666,14 @@ class nucleus:
             else:
                 print errcode
                 return -1
+        elif rule == 'random':
+            errcode = self.add_random(multipoletext,bandnumber1,bandnumber2,low_spin_limit,high_spin_limit)
+            if errcode == 0:
+                self.draw_level_scheme()
+                return 0
+            else:
+                print errcode
+                return -1
         else:
             print "add_inter_band : rule not implemented yet"
             return "add_inter_band : rule not implemented yet"
@@ -8053,6 +8060,127 @@ class nucleus:
         # Don't need to redraw; the add_inter_band method does that.
 
         return 0   # No errors are returned at present.
+
+    def add_random(self,multipole_text,bandnumber1,bandnumber2,low_spin_limit=None,high_spin_limit=None):
+        """Adds random interband matrix elements
+
+        using a uniform sample.  Optionally sets fit limits for the set.
+
+        """
+
+        random.seed()
+
+        # A counter for non-zero matrix elements added.  (Matrix elements that are identically zero are skipped.)
+        matrix_element_counter = 0
+
+        # Get the band name from the band number.  Band names have been checked in def add_inter_band.
+        requested_initial_band_name = self.get_primary_band_name_from_band_number(bandnumber1)
+        requested_final_band_name   = self.get_primary_band_name_from_band_number(bandnumber2)
+
+        # Capitalize the multipole text "e2" --> "E2".
+        multipole_text = multipole_text.upper()
+
+        l = MULTIPOLE_LAMBDA[multipole_text]    # lambda
+        print "lambda = ",l
+
+        minimum_requested = prompt_number("Minimum value: ","f")
+        if minimum_requested == "quit":
+            return 0
+        maximum_requested = prompt_number("Maximum value: ","f")
+        if maximum_requested == "quit":
+            return 0
+        # Put in order.
+        minimum_requested, maximum_requested = min(minimum_requested, maximum_requested), max(minimum_requested, maximum_requested)
+
+        lower_fit_limit = prompt_number("Lower limit for fitting (or \"q\" to skip): ","f")
+        if lower_fit_limit == "quit":
+            add_limits = False
+        else:
+            add_limits = True
+
+        if add_limits:
+            upper_fit_limit = prompt_number("Upper limit for fitting (or \"q\" to skip): ","f")
+            if upper_fit_limit == "quit":
+                add_limits = False
+            else:
+                pass
+
+        if add_limits:
+            lower_fit_limit, upper_fit_limit  = min(lower_fit_limit, upper_fit_limit), max(lower_fit_limit, upper_fit_limit)
+            # Make sure that the fit limits exceed the random value limits.
+            lower_fit_limit = min(lower_fit_limit, minimum_requested)
+            upper_fit_limit = max(upper_fit_limit, maximum_requested)
+
+
+        # Get all the level keys sorted by band name, then spin.    This is
+        # important to prevent adding a matrix element <b||E2||a> and a second
+        # one <a||E2||b>.
+        all_level_keys = self.get_sorted_unique_level_keys()
+
+        # Instead of checking the K value of the band, we will check
+        # the K value of each level, so that different K values can be assigned
+        # to each state.
+
+        for i in range(self.number_of_levels()):
+            initial_level_key       = all_level_keys[i]
+            initial_level_object    = self.levels[initial_level_key]
+            initial_band_name = initial_level_key[0]
+            initial_spin      = initial_level_key[1]
+            initial_K         = initial_level_object.get_K()
+            for j in range(self.number_of_levels()):
+                final_level_key = all_level_keys[j]
+                final_level_object = self.levels[final_level_key]
+                final_band_name = final_level_key[0]
+                final_spin      = final_level_key[1]
+                final_K         = final_level_object.get_K()
+                if initial_band_name == requested_initial_band_name and final_band_name == requested_final_band_name:
+                    # The initial and final bands of these states match.
+                    # If this pair of levels belongs to the correct pair of
+                    # bands, in correct order (bandnumber1 --> bandnumber2)...
+                    # K allowed / forbidden is ignored for random matrix elements.
+                    if self.spin_parity_allowed_transition(multipole_text,initial_level_key,final_level_key):
+
+                        reduced_matrix_element = random.uniform(minimum_requested, maximum_requested)
+
+                        # Put the matrix element into the data.  Check that it is
+                        # within requested spin limits, if spin limits were
+                        # requested.
+                        should_add_this_one = True
+                        if not low_spin_limit == None:
+                            if initial_spin < low_spin_limit:
+                                should_add_this_one = False
+                        if not high_spin_limit == None:
+                            if initial_spin > high_spin_limit:
+                                should_add_this_one = False
+
+                        # Only put it in if it is not identically 0 and within
+                        # initial spin limits if requested.
+                        if not reduced_matrix_element == 0.0 and should_add_this_one:
+                            self.add_matrix_element(multipole_string = multipole_text, initial_band_name = initial_band_name,\
+                              final_band_name = final_band_name,initial_spin = initial_spin, final_spin = final_spin,\
+                              value = reduced_matrix_element)
+                            # Print the matrix element added.
+                            comment = "Generated by random."
+                            formatted_text = self.format_one_matrix_element(initial_band_name = initial_band_name,initial_spin = initial_spin,\
+                              final_band_name = final_band_name, initial_K = initial_K, final_K = final_K, final_spin = final_spin, \
+                              multipole_text = multipole_text, value = reduced_matrix_element, comment = comment)
+                            print formatted_text
+                            if add_limits:
+                                # Find the matrix element by its key:
+                                this_key = (MULTIPOLE[multipole_text], requested_initial_band_name, initial_spin, \
+                                            requested_final_band_name, final_spin)
+                                # Add fit limits and make it a master.
+                                self.matrix_data[(this_key)].set_is_master(True)
+                                self.matrix_data[(this_key)].set_lower_limit(lower_fit_limit)
+                                self.matrix_data[(this_key)].set_upper_limit(upper_fit_limit)
+
+                            matrix_element_counter += 1
+
+        print "Added ",matrix_element_counter," matrix elements."
+        # Don't need to redraw; the add_inter_band method does that.
+
+        return 0   # No errors are returned at present.
+
 
 
     def add_kforb_silent(self,multipole_text,bandnumber1,bandnumber2,parameter_dict,low_spin_limit=None,high_spin_limit=None):
@@ -23536,7 +23664,7 @@ class main_gui:
             # Reactivate GUI buttons.
             self.set_activation(self)
             return -1
-        
+
     # Callback for "add/change m.e. "
     def add_me(self,widget):
 
@@ -23575,7 +23703,7 @@ class main_gui:
                     block_print_with_line_breaks("NOTE: For a consistent phase convention, always add interband m.e. from LEFT to RIGHT (lower to higher band number).")
                     print "Spin limits can be applied to the initial and final states."
                     if yes_no_prompt("Apply spin limits (y/N)? ",False):
-                        # Ask the user for spin 
+                        # Ask the user for spin
                         low_spin_limit = prompt_number("Lower limit for initial (lower-spin) state: ","r")
                         if low_spin_limit   == "quit":
                             return 0
@@ -23628,7 +23756,8 @@ class main_gui:
                     print "Rule selected: " + thisrule
                     print "Multipole selected: " + thismultipole
                     print "Bands selected:     " + str(initial_band_number) + " --> " + str(final_band_number)
-                    block_print_with_line_breaks("NOTE: For a consistent phase convention, always add in-band matrix elements from lower to higher ENERGY and interband m.e. from LEFT to RIGHT (lower to higher band number).  Rachel may refuse to add matrix elements in the wrong order for Gosia, so that the phase conventions can be understood.")
+                    if not thisrule == "random":
+                        block_print_with_line_breaks("NOTE: For a consistent phase convention, always add in-band matrix elements from lower to higher ENERGY and interband m.e. from LEFT to RIGHT (lower to higher band number).  Rachel may refuse to add matrix elements in the wrong order for Gosia, so that the phase conventions can be understood.")
                     print "Spin limits can be applied to the INITIAL band."
                     if yes_no_prompt("Apply spin limits (y/N)? ",False):
                         # Ask the user for spin
@@ -25602,6 +25731,7 @@ class main_gui:
         self.rulecombobox.append_text("alaga")
         self.rulecombobox.append_text("kforbidden")
         self.rulecombobox.append_text("mikhailov")
+        self.rulecombobox.append_text("random")
         vbox.pack_start(self.rulecombobox,False,False)
         self.rulecombobox.show()
 
