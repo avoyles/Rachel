@@ -396,7 +396,7 @@ CALCULATED_YIELD_LOWER_LIMIT              = 1.0E-10                         # Ca
                                                                             # (in mb*(mg/cm^2)/sr in integrated
                                                                             # yields), will not be read from Gosia
                                                                             # calculations.  This also applies to
-                                                                            # simulated yield data.                     
+                                                                            # simulated yield data.
 
 HELP_DICTIONARY                           = {}
 TIPS_DICTIONARY                           = {}
@@ -2950,7 +2950,7 @@ class matrix_element:
 
 
 class level:
-    """A new class for nuclear levels.  
+    """A new class for nuclear levels.
 
     Each object of this class will hold a small amount of information, such as
 
@@ -11369,7 +11369,7 @@ class experimentmanager:
     """Manages all instances of class experiment
 
     Only one object of this should be created.  Since only MAXEXPERIMENTS are
-    allowed in gosia, only this many can be selected at output time.  
+    allowed in gosia, only this many can be selected at output time.
 
     This object holds the set of states that can be populated.  This could be
     moved to the nucleus class, but the experiment definition has something to
@@ -12765,7 +12765,7 @@ class experimentmanager:
         # Sort yields by initial, final state number
         yield_set[i].sort()
 
-    
+
         # Make a list of all the transitions that have a yield above the
         # threshold from the experiment with the longest list of yields.
         maximum_transitions = 0
@@ -13275,7 +13275,7 @@ class experimentmanager:
                 omega_list.append(omega)
                 #Q_symmetrized.append((all_data_before[i][1] + all_data_after[i][1]) / 2.)
                 #this_Q = sign * all_data_before[i][1]  # making at least some of the Q values positive.
-                this_Q = abs(all_data_before[i][1])  
+                this_Q = abs(all_data_before[i][1])
                 Q_before.append(this_Q)  # Absolute value!
                 #Q_after.append(all_data_after[i][1])
 
@@ -13300,7 +13300,7 @@ class experimentmanager:
             if not nonzero:
                 return -1
 
-            with open(plot_data_file_name,"w") as plot_data_file: 
+            with open(plot_data_file_name,"w") as plot_data_file:
                 plot_data_file.writelines(lines_to_write)
             print "Data for this plot were written to the file \"" + plot_data_file_name + "\"."
 
@@ -13967,7 +13967,7 @@ class experimentmanager:
             if this_E_beam - this_safe_energy > 1.0:
                 unsafe_energy = True
                 E_beam_line    = E_beam_line    + "!" + str(this_E_beam).ljust(column_spaces-1)
-            else: 
+            else:
                 E_beam_line    = E_beam_line    +  str(this_E_beam).ljust(column_spaces)
             E_exit_line    = E_exit_line    +  str(this_E_exit).ljust(column_spaces)
             safe_energy_line = safe_energy_line + str(this_safe_energy).ljust(column_spaces)
@@ -14006,7 +14006,7 @@ class experimentmanager:
         create_dialog_popup({"text_lines":lines_to_display,"title":"Experiment Catalog"})
 
         return 0
-            
+
     def examine_setup_interactive(self):
         """Prompts the user repeatedly to display setup of experiments.
 
@@ -17497,7 +17497,7 @@ class experimentmanager:
         get normalizations for the desired solution.
 
         See the YNRM section of the manual pages on OP,YIEL.  This ignores
-        differences in efficiency for now.  
+        differences in efficiency for now.
 
         These constants are passed to the experiment objects.
 
@@ -22503,7 +22503,7 @@ def setup_globals(action=None,pickle_file_name=None,force=False,rotate=False):
 
     The pickle_file_name is optional.  If it is included, then force can be set
     to True, so that no "are  you sure" prompts will be given.
-    
+
     action "reset" is to prepare for an undo/redo operation.  It keeps the undo
     object, but destroys the others (as much as Python can destroy).
 
@@ -22621,7 +22621,7 @@ def setup_globals(action=None,pickle_file_name=None,force=False,rotate=False):
                         restored_version = pickle.load(picklefile)
                         if not force:
                             version_text = "This session is from version "+str(restored_version)+".\nCheck upgrade information in the control panel."
-                            print version_text 
+                            print version_text
                     except:
                         if not force:
                             version_string = "\nNO VERSION NUMBER FOUND IN SESSION FILE.\nEither the session file is corrupted, or pre-dates the release version.  If you cannot repair the file, then you will have to start a new session."
