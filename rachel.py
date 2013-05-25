@@ -525,7 +525,6 @@ class checksum:
                 lines = the_file.readlines()
 
         except:
-            print "err here"
             self.ok = False
 
         concat_lines = ""
@@ -537,7 +536,6 @@ class checksum:
             self.h.update(concat_lines)
             self.digest = self.h.hexdigest()
         except:
-            print "err here 2"
             self.ok = False
 
     def verify_list(self, SHA512_HEX_list):
@@ -22955,7 +22953,7 @@ class main_gui:
     """
 
     # Callbacks for the main_gui buttons follow.
-    
+
     def set_deactivation(self,widget,button_pointers):
 
         # Flush the input buffer, so that accidental keystrokes don't go into the next prompt.
@@ -22974,7 +22972,7 @@ class main_gui:
             button_list = self.recovery_mode_button_list
         else:
             button_list = self.all_button_list
-            
+
         for one_button in button_list:
             one_button.set_sensitive(True)
 
@@ -23019,7 +23017,7 @@ class main_gui:
 
         gosia_function = self.get_active_text(self.gosiafunctioncombobox)
         gosia_action = self.get_active_text(self.gosiaactioncombobox)
-   
+
         #deactivate all button presses while this runs.
         self.set_deactivation(self,self.all_button_list)
         while gtk.events_pending():
