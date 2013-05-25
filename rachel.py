@@ -10431,7 +10431,7 @@ class gosia_shell:
                 the_experiment_manager.parse_deorientation_coefficients(lifetimes = True, deorientation = False)
 
             elif function == "Make simulated yields":
-                # If the function was to make simulated yields, then save yields 
+                # If the function was to make simulated yields, then save yields
                 # to a yield (*.yld) file and read into GUI memory, if the user chooses.
                 self.all_integrated_yields = the_experiment_manager.parse_gosia_integrated_yields()
                 print "Calculated yields are stored in the GUI memory now."
@@ -13434,8 +13434,8 @@ class experimentmanager:
         experiment_parameter_dict = self.allexperiments[48].get_full_parameter_dict()
         # Detector 0 should give as good a test as any, because it is  the convergence
         # of the Coulex point calculations that are expected to diverge.
-        all_calculated_yields_48 = self.allexperiments[48].get_calculated_yields(0)  
-        all_calculated_yields_2 = self.allexperiments[2].get_calculated_yields(0)  
+        all_calculated_yields_48 = self.allexperiments[48].get_calculated_yields(0)
+        all_calculated_yields_2 = self.allexperiments[2].get_calculated_yields(0)
         if len(all_calculated_yields_48) > len(all_calculated_yields_2):
             all_calculated_yields = all_calculated_yields_48
         else:
@@ -23278,7 +23278,7 @@ class main_gui:
                         the_experiment_manager.read_experimental_yields()
                     else:
                         print "User cancelled the simulation.  Yield data were not changed."
-                        
+
                     # Save the undo information.
                     undo.save("Adjust simulation parameters")
 
@@ -25026,6 +25026,7 @@ class main_gui:
 
                 print "\nIf errors are found in this test, you should read the entries \"adiabaticity\""
                 print "and \"eccentricity\" using the Help button.\n"
+                raw_input("This test may fail for cluster detectors.\nA bug-fix is on the way...\nPress Enter")
                 the_experiment_manager.save_current_experiments()
                 print "Saved your currently defined experiments."
                 print ""
