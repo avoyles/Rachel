@@ -8648,7 +8648,6 @@ class nucleus:
                                 second_term = 0
                             reduced_matrix_element = math.sqrt(2.*initial_spin+1.) * (first_term + second_term)
 
-                                
                         # Put the matrix element into the data.
                         # If spin limits were requested, then only add ones where the initial spin is within the limits.
                         should_add_this_one = True
@@ -9698,8 +9697,7 @@ class nucleus:
         for one_key in all_level_keys:
             set_of_all_band_names.add(one_key[0])
         list_of_all_band_names = list(set_of_all_band_names)
-        return list_of_all_band_names 
-        
+        return list_of_all_band_names
 
 
 class gosia_shell:
@@ -11238,7 +11236,7 @@ class gosia_shell:
             branching_header_line_number = branching_header_line_numbers[0]
         else:
             ok = False
-            
+
         # Read from here until a line starts with a number.  If a line starts with a letter, quit the search.
         while ok:
             branching_header_line_number += 1
@@ -11312,7 +11310,7 @@ class gosia_shell:
                 if not CALCDELTA == None:
                     initial_band_1, initial_spin_1 = investigated_nucleus.get_band_and_spin_from_gosia_level_number(NS1)
                     final_band_1,   final_spin_1   = investigated_nucleus.get_band_and_spin_from_gosia_level_number(NF1)
-                    self.calculated_mixing_data_from_last_fit[(initial_band_1, initial_spin_1, final_band_1, final_spin_1)] = CALCDELTA 
+                    self.calculated_mixing_data_from_last_fit[(initial_band_1, initial_spin_1, final_band_1, final_spin_1)] = CALCDELTA
             except:
                 ok = False
 
@@ -15098,20 +15096,24 @@ class experimentmanager:
                     theta_lab_crit = inelastic_maximum_scattering_angle(A_proj,A_targ,E_mean,Q_value)
 
                     # From this, get the corresponding target angle.  Close to
-                    # the critical angle, we can choose arbitrarily one solution
-                    # or the other (False, in this case).
-                    # Try to get the recoil angle corresponding to the maximum scattering angle.
+                    # the critical angle, we can choose arbitrarily one
+                    # solution or the other (False, in this case).  Try to get
+                    # the recoil angle corresponding to the maximum scattering
+                    # angle.
 
-                    # This can cause overflows, so we iterate this, changing the scattering angle slightly until we don't get an overflow.
+                    # This can cause overflows, so we iterate this, changing
+                    # the scattering angle slightly until we don't get an
+                    # overflow.
+
                     theta_iterate = theta_lab_crit
                     while True:
                         try:
-                            theta_recoil_crit = inelastic_lab_scattering_angle_to_lab_recoil_angle(A_proj,A_targ,theta_iterate,False,E_mean,Q_value)
+                            theta_recoil_crit = inelastic_lab_scattering_angle_to_lab_recoil_angle(\
+                                                  A_proj,A_targ,theta_iterate,False,E_mean,Q_value)
                             break # Found a value that didn't overflow.
                         except:
                             # Lower the angle by a tiny bit.
                             theta_iterate = 0.99999 * theta_iterate
-                            
 
                     # Get the mean TARGET angle.
                     theta_targ_max = self.allexperiments[experiment_number].get_parameter("theta_lab_max")
@@ -20931,7 +20933,7 @@ class experiment:
 
         # Set the new exit energy for this experiment.
         elif exit_energy_is_known:
-            new_exit_energy = target_thickness_or_exit_energy 
+            new_exit_energy = target_thickness_or_exit_energy
             found_stopped_beam = False
         else:
             # Target thickness was known, and the Rochester server should have returned the calculated exit energy.
@@ -20939,7 +20941,7 @@ class experiment:
             found_stopped_beam = False
 
         # The gosia shell will set the NCM flag properly for stopped beams, so we don't change it from 0 here.
-        self.parameter_dict["E_exit"] = new_exit_energy 
+        self.parameter_dict["E_exit"] = new_exit_energy
 
         # Now save the new stopping power data to this experiment.
         new_beam_energies   = copy.deepcopy(all_stopping_power_data["energies"])
