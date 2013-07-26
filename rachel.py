@@ -10293,7 +10293,7 @@ class gosia_shell:
             # Run the calculation
             command_line = GLOBAL_SETUP_DICT["GOSIA_EXECUTABLE"] + " < " + gosia_input_file_name + " > rachel_temp_file"
             if DEBUGGING_MODE or function == "Fit":
-                command_line = GLOBAL_SETUP_DICT["GOSIA_EXECUTABLE"] + " < " + gosia_input_file_name 
+                command_line = GLOBAL_SETUP_DICT["GOSIA_EXECUTABLE"] + " < " + gosia_input_file_name
             if not silent:
                 if function == "Integrated yields" or function == "Make corrected yields" or function == "Fit" or \
                   function == "[Diagonal errors]" or function == "Correlated errors" or function == "Make simulated yields":
@@ -10371,7 +10371,7 @@ class gosia_shell:
                     print "\nProcessing cannot continue properly due to the error above.\n"
                 return error_code
 
-            # If this was an op,gdet run, then call the_detector_manager to see if 
+            # If this was an op,gdet run, then call the_detector_manager to see if
             # file 9 needs modification (e.g. for 4pi arrays).
             if function == "Make Ge det file":
                 the_detector_manager.retouch_gdt_file()
@@ -21201,13 +21201,13 @@ class experiment:
         """Returns calculated (integrated) yields read by experimentmanager from the gosia output.
 
         Does not properly treat band pseudonyms, but it can be used safely with this in mind.
-        
+
         SOME FUNCTIONS STILL USE THIS CORRECTLY, BUT IT SHOULD EVENTUALLY BE REMOVED.
 
         """
         the_detector = self.Ge_detectors[internal_detector_number]
         calculated_yield_list = the_detector.return_calculated_yields()
-        return calculated_yield_list 
+        return calculated_yield_list
 
     def get_experimental_yields(self,internal_detector_number):
         """Returns experimental yields in memory.
@@ -21345,7 +21345,7 @@ class experiment:
         return renormalized_yields
 
 class detectormanager:
-    """Manages the database of physical detector types.  
+    """Manages the database of physical detector types.
 
     These are the physically unique detectors, with different geometries or
     distances from the target, as well as special types, e.g. 4pi arrays.
