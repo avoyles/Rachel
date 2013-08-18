@@ -1757,7 +1757,7 @@ def call_rochester_srim_server(beam_Z=None, beam_mass=None, target_density=None,
                 line = page_lines[stopping_power_line_number]
                 line_fields = line.split()
                 if not len(line_fields) == 2:
-                    # No more data 
+                    # No more data
                     more_data = False
                 else:
                     # Looks like another line of stopping power data.
@@ -2993,7 +2993,7 @@ class level:
         # Try to understand the spin by converting it to a float rounded to the
         # nearest tenth.
         try:
-            self.spin = round(float(spin),1)        
+            self.spin = round(float(spin),1)
         except:
             return  # Leaving is_valid set to False.
 
@@ -4933,9 +4933,9 @@ class nucleus:
 
         try:
             self.initial_band_name_for_normalization
-            self.initial_spin_for_normalization 
+            self.initial_spin_for_normalization
             self.final_band_name_for_normalization
-            self.final_spin_for_normalization   
+            self.final_spin_for_normalization
         except:
             # It has not been set.  Set the default (state 1-->0).
 
@@ -5030,7 +5030,7 @@ class nucleus:
     def get_all_levels_list_in_display_order(self,include_inactive_bands):
         """Returns all levels in a list in the order in which they should be displayed.
 
-        The returned data are in a list of the format 
+        The returned data are in a list of the format
             [[band_number_for_display, energy, spin, parity, band_name, can_be_excited],...]
 
         The band number is not permanent.  The user may reorder the bands.
@@ -5199,7 +5199,7 @@ class nucleus:
 
         for one_key in self.levels.keys():
             band_name, spin = one_key
-            if band_name in primary_band_names:  
+            if band_name in primary_band_names:
                 # If it isn't a pseudonym for another band.
                 level_object = self.levels[one_key]  # This is the basis for deselecting individual levels as well as getting parity, etc.
                 band_number = self.get_band_number_for_display(band_name)
@@ -5210,7 +5210,7 @@ class nucleus:
         # Now that we have all levels, we can sort by band number, then spin:
         level_sorting_list.sort()
 
-        # Now, in the sorted order, make a list of 
+        # Now, in the sorted order, make a list of
         # [[band_name, spin, parity, energy],[""],...]
         output_level_list = []
         for one_level in level_sorting_list:
@@ -5410,7 +5410,7 @@ class nucleus:
 
             # Formatting for readability:
             this_line = str(initial_gosia_level).ljust(2) + ' ' + str(final_gosia_level).ljust(3) + \
-              ' ' + str(matrix_element_value).ljust(16) + ' ' + str(r1).ljust(16) + ' ' + str(r2).ljust(16) 
+              ' ' + str(matrix_element_value).ljust(16) + ' ' + str(r1).ljust(16) + ' ' + str(r2).ljust(16)
             this_line = this_line.ljust(58) # justify to line up the comment fields
             this_line = this_line + comment
             output_lines.append(this_line)
@@ -5515,7 +5515,7 @@ class nucleus:
         """Return the number of bands in memory.
 
         """
-        
+
         number_of_bands = 0
         for one_entry in self.band_settings_list:
             try:
@@ -5645,7 +5645,7 @@ class nucleus:
             # When master is found, set it to fixed.
             if matrixelementidentity == "all":
                 matrixelement = self.matrix_data[i]
-                matrixelement[4] = 1  
+                matrixelement[4] = 1
                 matrixelement[5] = 1
                 matrixelement[6] = "Fixed"
                 self.matrix_data[i] = matrixelement
@@ -5693,7 +5693,7 @@ class nucleus:
                 matrixelement[5] = r2
                 matrixelement[6] = "master"
                 self.matrix_data[i] = matrixelement
-                return 0  # no error 
+                return 0  # no error
 
         # If not found in self.matrix_data, return an error.
         return "setmatrixelement error - not found"
@@ -5792,7 +5792,7 @@ class nucleus:
             return None
 
         multipole_text = ""
-        while not multipole_text in MULTIPOLE.keys(): 
+        while not multipole_text in MULTIPOLE.keys():
             multipole_text = raw_input("Multipole (E1...E6 or M1, M2): ")
 
         # Get the Gosia multipole code number used to key the matrix.
@@ -6058,7 +6058,7 @@ class nucleus:
         max_y = max(y_tuple)
         min_x = min(x_tuple)
         min_y = min(y_tuple)
-        
+
         for i in range(len(xy_points) - 1):
             x = xy_points[i][0]
             y = xy_points[i][1]
@@ -6158,7 +6158,7 @@ class nucleus:
                 spinlist.append(initial_spin)
                 blist.append(bmlambda(initial_spin,current_value))
 
-        # Get the Weisskopf estimate for this multipolarity in the downward 
+        # Get the Weisskopf estimate for this multipolarity in the downward
         # direction (spin lambda --> spin 0).
 
         weisskopf = calc_wu(self.A,requested_multipole_text)
@@ -6167,8 +6167,8 @@ class nucleus:
         x_min = min(spinlist) - 1.
         x_max = max(spinlist) + 1.
 
-        # Draw a line at the Weisskopf estimate (for decays, but this is 
-        # still helpful).  The x limits from above are used to set the 
+        # Draw a line at the Weisskopf estimate (for decays, but this is
+        # still helpful).  The x limits from above are used to set the
         # beginning and end of the line.
 
         wxlist = [x_min,x_max]
@@ -6256,7 +6256,7 @@ class nucleus:
             # The following population and lifetime checks are made the first
             # time that gosia is called for a fit calculation, so they may not
             # be defined yet.  If they are not defined, the levels are drawn in
-            # red.  
+            # red.
             #try:
             if not the_experiment_manager.is_populated(level_key):
                 level_color = "r"
@@ -6337,10 +6337,10 @@ class nucleus:
         bandlabels = tuple(bandlist)
 
         plt.xticks(numpy.arange(nbands + ASMIDGE),bandlabels)
-        plt.ylim(-maxenergy/5., 1.1*maxenergy)   # a little extra head room and room 
+        plt.ylim(-maxenergy/5., 1.1*maxenergy)   # a little extra head room and room
                                                  # for interband arrows at the bottom.
-        plt.xlim(0., nbands + 1.1)  # Add a little extra to round nbands up to next 
-                                    # integer, so that enough space is allowed for 
+        plt.xlim(0., nbands + 1.1)  # Add a little extra to round nbands up to next
+                                    # integer, so that enough space is allowed for
                                     # the full level scheme.
         title_string = "Z = " + str(self.Z) + ",  A = " + str(self.A) + ". K values are for the band heads."
         #pylab.title('Level Scheme Window')
@@ -6391,7 +6391,7 @@ class nucleus:
             levelband = 1   # int
             level_color = "r"
             spinparity = ""
-            self.plotalevel(levelenergy,levelband,spinparity,level_color) # use band number as position 
+            self.plotalevel(levelenergy,levelband,spinparity,level_color) # use band number as position
             pylab.text(0.75,500.,"No level data in memory.")
             pylab.ion()
             self.set_axes_nicely(1,1000.)
@@ -6420,7 +6420,7 @@ class nucleus:
             nlevels_label_color = 'r'
         else:
             nlevels_label_color = 'g'
-        if temporary_number_of_me > MAXIMUM_NUMBER_OF_MATRIX_ELEMENTS: 
+        if temporary_number_of_me > MAXIMUM_NUMBER_OF_MATRIX_ELEMENTS:
             nme_label_color = 'r'
         else:
             nme_label_color = 'g'
@@ -6455,7 +6455,7 @@ class nucleus:
             x2 = float(band_number_2)
             # textlabel is the "description" field in the major couplings,
             # which will be the multipole text for now ("E2", "M1", etc.)
-            textlabel = this_coupling[3]  
+            textlabel = this_coupling[3]
             if band_number_1 == band_number_2:   # if in-band
                 # Only going to be E2 or M1.  If it's E2, put it higher than M1
                 if multipole_code == 2:   # E2
@@ -6463,7 +6463,7 @@ class nucleus:
                 else:                      # M1
                     y = 0.90 * highlim
                 self.addtxtlabel(x1-LEVELWIDTH/2.,y,textlabel)  # start at left edge of band
-            else:     
+            else:
                 # Interband.  Draw arrow below the digram and put label on it:
                 # initial band, final band, y position, no text label
                 self.drawinterbandarrow(x1,x2,currentyposition,'')
@@ -6749,7 +6749,7 @@ class nucleus:
                 formatted_text = self.format_one_matrix_element(initial_band_name = initial_band_name,initial_spin = initial_spin,\
                   final_band_name = final_band_name, final_spin = final_spin, multipole_text = multipole_text, \
                   value = reduced_matrix_element, initial_K = initial_K, final_K = final_K, comment = "")
-                formatted_text = formatted_text.strip().ljust(90) 
+                formatted_text = formatted_text.strip().ljust(90)
                 full_line = formatted_text + comment + error_comment
                 matrix_element_printing_dict[(initial_spin,final_spin)] = full_line
                 # Set the appropriate color for a master/dependent/fixed matrix element.
@@ -6811,9 +6811,9 @@ class nucleus:
         e.g.
 
         32 71                 # some nucleus
-        ground 1.5 - 0.       
+        ground 1.5 - 0.
         ground 3.5 - 100.     # not so sure about this state
-        side   2.5 + 250.   
+        side   2.5 + 250.
 
         August 2011:  This format still needs to be modified so that a 5th,
         6th, etc.  non-comment field can contain other band names to create
@@ -6915,7 +6915,7 @@ class nucleus:
 
                 # Add this to the level scheme if there were no "skip_line" flags.
                 if not skip_line:
-                    # If this band name has not yet been encountered in the file, 
+                    # If this band name has not yet been encountered in the file,
                     # add this band name and number to the dict and add new band information.
                     while this_band_name in old_band_names:
                         # Add an "x" repeatedly to the end of the band name to make it unique.
@@ -6954,7 +6954,7 @@ class nucleus:
 
         # Call the method to add the new band names to the display and the
         # order for Gosia.
-        self.add_bands(new_band_names) 
+        self.add_bands(new_band_names)
 
         # Guess all K values.  (This eliminates the need to type them into the file.)
         self.guess_all_k_values()
@@ -7124,7 +7124,7 @@ class nucleus:
             # Note that in Radford's ags file library, he sometimes puts the
             # parity symbol on the left, sometimes on the right, hence .strip
             # instead of .rstrip
-            try: 
+            try:
                 spintext = agsfilelines[linenumber].split()[3].strip('+-')  # Strip pluses and minuses from the spin text
                 if "/" in spintext:  # half-integer spin
                     fractionformspin = spintext.partition('/')
@@ -7165,7 +7165,7 @@ class nucleus:
 
         # Call the method to add the new band names to the display and the
         # order for Gosia.
-        self.add_bands(new_band_names) 
+        self.add_bands(new_band_names)
 
         # Since K is generally not given in the AGS files, we will not try to
         # get K from the AGS file all K values (for unknown new bands)
@@ -7202,7 +7202,7 @@ class nucleus:
                 # If the spin of this level is less than the current K
                 # value.
                 temporary_band_K_dictionary[this_band_name] = this_spin
-                
+
         # Now go through all levels that did not already have a K value, and
         # change their K values to the guesses from above.
         for one_level_key in self.levels:
@@ -7273,7 +7273,7 @@ class nucleus:
               ib == 1               (initial band is 1)
               fb == 2 or fb == 3    (final band is 2 or 3)
               ml == 7               (multipolarity is M1)
-              
+
         """
 
         print "Enter rules to select the matrix elements to be DELETED."
@@ -7384,7 +7384,7 @@ class nucleus:
         Returns 0 if the matrix element was successfully deleted;
                -2 if it didn't exist in the first place
         """
-        
+
         i = self.indexmatrixelement(multipolenumber,li,lf)            # index of the one to be removed
         if i > -1:  # if it exists
             # Note: "try" would not work here!  del a[-1] deletes the first from the right end!
@@ -7568,7 +7568,7 @@ class nucleus:
                     print "Adding M1 matrix elements in band " + str(initial_band_number)
                     self.add_in_band("M1",initial_band_number,m1_in_band_parameter_dict)
                 else:
-                    # The initial and final bands are different.  
+                    # The initial and final bands are different.
                     # Get the parities of the initial and final bands.
                     level_keys_in_initial_band = self.get_all_level_keys_in_band_name(all_band_names[initial_band_number-1])  # uses internal numbering
                     level_keys_in_final_band   = self.get_all_level_keys_in_band_name(all_band_names[final_band_number-1])    # uses internal numbering
@@ -7625,7 +7625,7 @@ class nucleus:
             bandnumber1 = temp
             print "Reversing the band numbers for a consistent phase convention."
             print "Add the matrix elements from band ", bandnumber1, " to band ", bandnumber2, "."
-            
+
         try:
             initial_band_name = self.get_primary_band_name_from_band_number(bandnumber1)
         except:
@@ -7637,7 +7637,7 @@ class nucleus:
             print "add_inter_band error: final band number is invalid."
 
         full_description += " band " + initial_band_name + " --" + multipoletext + "--> " + final_band_name + ", "
-        full_description += rule 
+        full_description += rule
         investigated_nucleus.notes.append_log("procedure_log",full_description)
 
         if rule == 'alaga':
@@ -7695,7 +7695,7 @@ class nucleus:
                                                           "gr"
                                                           "b"
 
-        
+
         """
 
         # Add a description of what was done for the logs.
@@ -7722,7 +7722,7 @@ class nucleus:
         if not band_name in all_band_names:
             print "Band name not found in add_in_band."
             return -1
-        
+
         # Get all the level keys sorted by band name, then spin.    This is
         # important to prevent adding a matrix element <b||E2||a> and a second
         # one <a||E2||b>.
@@ -7755,7 +7755,7 @@ class nucleus:
                         print "Warning:  State ",initial_level_key," has K = ",initial_K,", and state ",final_level_key," has K = ",final_K
                         print "  Be sure that you want different K values in one band."
                         K_warning = True
-                        
+
                     if self.spin_parity_allowed_transition(multipole_text,initial_level_key,final_level_key):  # If this is spin-parity allowed
                         # The Clebsch-Gordan coupling is now made more general for a possible K change in the band!
                         coupling = ned(initial_spin,l,final_spin,initial_K,final_K - initial_K,final_K)
@@ -7782,7 +7782,7 @@ class nucleus:
                                     decoupling_term = b*(-1)**(initial_spin + 0.5)*2.0**(-0.5)*decoupling_clebsch
                                     reduced_matrix_element = m1factors * (gkgr*(initial_K*coupling - decoupling_term) +\
                                       gr*math.sqrt(initial_spin*(initial_spin+1.))*kronecker(initial_spin,final_spin))
-                                else: 
+                                else:
                                     reduced_matrix_element = m1factors * (gkgr*(initial_K*coupling) + \
                                       gr*math.sqrt(initial_spin*(initial_spin+1.))*kronecker(initial_spin,final_spin))
                                 # Only add the matrix element if it is not identically 0 and the initial spin is within the spin limits, if limits were set.
@@ -7877,7 +7877,7 @@ class nucleus:
         # the K value of each level, so that different K values can be assigned
         # to each state.
 
-        for i in range(self.number_of_levels()):    
+        for i in range(self.number_of_levels()):
             initial_level_key       = all_level_keys[i]
             initial_level_object    = self.levels[initial_level_key]
             initial_band_name = initial_level_key[0]
@@ -7900,7 +7900,7 @@ class nucleus:
                             normalization = 1.0
 
                         # Here we use a Clebsch-Gordan term for K-allowed, slightly different from that of 4-98.
-                        coupling = ned(initial_spin,l,final_spin,initial_K,final_K-initial_K,final_K) 
+                        coupling = ned(initial_spin,l,final_spin,initial_K,final_K-initial_K,final_K)
                         # Get the M_2 term in B&M 4-98.
                         M_2_term = M_2 * (final_spin*(final_spin + 1.0) - (initial_spin * (initial_spin + 1.0)))
                         # If the initial K value is 1/2, then add the M_3 term from B&M 4-98.
@@ -7924,7 +7924,7 @@ class nucleus:
 
                         # Only put it in if it is not identically 0 and within
                         # initial spin limits if requested.
-                        if not reduced_matrix_element == 0.0 and should_add_this_one:  
+                        if not reduced_matrix_element == 0.0 and should_add_this_one:
                             self.add_matrix_element(multipole_string = multipole_text, initial_band_name = initial_band_name,\
                               final_band_name = final_band_name,initial_spin = initial_spin, final_spin = final_spin,\
                               value = reduced_matrix_element)
@@ -7983,7 +7983,7 @@ class nucleus:
         M_3 = prompt_number("M_3 = ","f")
         if M_3 == "quit":
             return 0
-        
+
         # Get all the level keys sorted by band name, then spin.    This is
         # important to prevent adding a matrix element <b||E2||a> and a second
         # one <a||E2||b>.
@@ -7995,7 +7995,7 @@ class nucleus:
 
         print "\nCheck below for unintended changes in K.\n"
 
-        for i in range(self.number_of_levels()):    
+        for i in range(self.number_of_levels()):
             initial_level_key       = all_level_keys[i]
             initial_level_object    = self.levels[initial_level_key]
             initial_band_name = initial_level_key[0]
@@ -8018,7 +8018,7 @@ class nucleus:
                             normalization = 1.0
 
                         # Here we use a Clebsch-Gordan term for K-allowed, slightly different from that of 4-98.
-                        coupling = ned(initial_spin,l,final_spin,initial_K,final_K-initial_K,final_K) 
+                        coupling = ned(initial_spin,l,final_spin,initial_K,final_K-initial_K,final_K)
                         # Get the M_2 term in B&M 4-98.
                         M_2_term = M_2 * (final_spin*(final_spin + 1.0) - (initial_spin * (initial_spin + 1.0)))
                         # If the initial K value is 1/2, then add the M_3 term from B&M 4-98.
@@ -8042,7 +8042,7 @@ class nucleus:
 
                         # Only put it in if it is not identically 0 and within
                         # initial spin limits if requested.
-                        if not reduced_matrix_element == 0.0 and should_add_this_one:  
+                        if not reduced_matrix_element == 0.0 and should_add_this_one:
                             self.add_matrix_element(multipole_string = multipole_text, initial_band_name = initial_band_name,\
                               final_band_name = final_band_name,initial_spin = initial_spin, final_spin = final_spin,\
                               value = reduced_matrix_element)
@@ -8050,7 +8050,7 @@ class nucleus:
                             comment = "M_2 term = " + str(M_2_term) + ", M_3 term = " + str(M_3_term)
                             formatted_text = self.format_one_matrix_element(initial_band_name = initial_band_name,initial_spin = initial_spin,\
                               final_band_name = final_band_name, initial_K = initial_K, final_K = final_K, final_spin = final_spin, \
-                              multipole_text = multipole_text, value = reduced_matrix_element, comment = comment) 
+                              multipole_text = multipole_text, value = reduced_matrix_element, comment = comment)
                             print formatted_text
                             matrix_element_counter += 1
 
@@ -8210,11 +8210,11 @@ class nucleus:
         else:
             M_3 = 0.0
 
-        # See if a maximum was requested.  
+        # See if a maximum was requested.
 
         if "maximum_bml_wu" in parameter_dict.keys():
             maximum_bml_wu = parameter_dict["maximum_bml_wu"]
-            saturation_limit = True  
+            saturation_limit = True
             maximum_bml = maximum_bml_wu * calc_wu(self.get_value("A"),multipole_text)  # Maximum B(ML) allowed in e,b,n.m.
         else:
             saturation_limit = False
@@ -8228,7 +8228,7 @@ class nucleus:
         # the K value of each level, so that different K values can be assigned
         # to each state.
 
-        for i in range(self.number_of_levels()):    
+        for i in range(self.number_of_levels()):
             initial_level_key       = all_level_keys[i]
             initial_level_object    = self.levels[initial_level_key]
             initial_band_name = initial_level_key[0]
@@ -8253,7 +8253,7 @@ class nucleus:
                             normalization = 1.0
 
                         # Here the C.G. coefficient is exactly that of B&M 4-98 for K-forbidden transitions in general.
-                        coupling = ned(initial_spin,l,final_spin,final_K-l,l,final_K) 
+                        coupling = ned(initial_spin,l,final_spin,final_K-l,l,final_K)
 
                         # Get the M_2 term in B&M 4-98.
                         M_2_term = M_2 * (final_spin*(final_spin + 1.0) - (initial_spin * (initial_spin + 1.0)))
@@ -8263,18 +8263,18 @@ class nucleus:
                         else:
                             M_3_term = 0.
                         reduced_matrix_element = normalization * math.sqrt(2.*initial_spin+1.) * coupling \
-                          * (M_1 + M_2_term + M_3_term) * factorial_term(initial_spin,initial_K,n) 
+                          * (M_1 + M_2_term + M_3_term) * factorial_term(initial_spin,initial_K,n)
 
                         if saturation_limit:
                             # If a saturation limit is to be applied to the matrix elements, then check it now.
                             bml = reduced_matrix_element**2 / (2.*initial_spin + 1.)       # B(ML) in excitation direction
-                            # Use the minimum of the magnitude of the matrix element or the saturation limit 
+                            # Use the minimum of the magnitude of the matrix element or the saturation limit
                             # with the sign calculated above, in either case (preserve phase calculated by
                             # model).
                             if bml > maximum_bml:
                                 maximum_matrix_element = math.sqrt(maximum_bml*(2.*initial_spin + 1.))
                                 reduced_matrix_element = math.copysign(maximum_matrix_element,reduced_matrix_element)
-                        
+
                         # Put the matrix element into the data.
                         # Check that it is within requested spin limits, if spin limits were requested.
                         should_add_this_one = True
@@ -8286,7 +8286,7 @@ class nucleus:
                                 should_add_this_one = False
                         # Only put it in if it is not identically 0 and within
                         # initial spin limits if requested.
-                        if not reduced_matrix_element == 0.0 and should_add_this_one:  
+                        if not reduced_matrix_element == 0.0 and should_add_this_one:
                             self.add_matrix_element(multipole_string = multipole_text, initial_band_name = initial_band_name,\
                               final_band_name = final_band_name,initial_spin = initial_spin, final_spin = final_spin,\
                               value = reduced_matrix_element)
@@ -8353,7 +8353,7 @@ class nucleus:
         # will be used as an upper limit.
         try:
             maximum_bml_wu = float(string_maximum_bml)
-            saturation_limit = True  
+            saturation_limit = True
             maximum_bml = maximum_bml_wu * calc_wu(self.get_value("A"),multipole_text)  # Maximum B(ML) allowed in e,b,n.m.
         except:
             saturation_limit = False
@@ -8369,7 +8369,7 @@ class nucleus:
 
         block_print_with_line_breaks("\nCheck below for unintended changes in K.\n\nThe Clebsch-Gordan terms depend only on the K value of the final band, as in B&M equation 4-95.",70)
 
-        for i in range(self.number_of_levels()):    
+        for i in range(self.number_of_levels()):
             initial_level_key       = all_level_keys[i]
             initial_level_object    = self.levels[initial_level_key]
             initial_band_name = initial_level_key[0]
@@ -8394,7 +8394,7 @@ class nucleus:
                             normalization = 1.0
 
                         # Here the C.G. coefficient is exactly that of B&M 4-98 for K-forbidden transitions in general.
-                        coupling = ned(initial_spin,l,final_spin,final_K-l,l,final_K) 
+                        coupling = ned(initial_spin,l,final_spin,final_K-l,l,final_K)
 
                         # Get the M_2 term in B&M 4-98.
                         M_2_term = M_2 * (final_spin*(final_spin + 1.0) - (initial_spin * (initial_spin + 1.0)))
@@ -8404,18 +8404,18 @@ class nucleus:
                         else:
                             M_3_term = 0.
                         reduced_matrix_element = normalization * math.sqrt(2.*initial_spin+1.) * coupling \
-                          * (M_1 + M_2_term + M_3_term) * factorial_term(initial_spin,initial_K,n) 
+                          * (M_1 + M_2_term + M_3_term) * factorial_term(initial_spin,initial_K,n)
 
                         if saturation_limit:
                             # If a saturation limit is to be applied to the matrix elements, then check it now.
                             bml = reduced_matrix_element**2 / (2.*initial_spin + 1.)       # B(ML) in excitation direction
-                            # Use the minimum of the magnitude of the matrix element or the saturation limit 
+                            # Use the minimum of the magnitude of the matrix element or the saturation limit
                             # with the sign calculated above, in either case (preserve phase calculated by
                             # model).
                             if bml > maximum_bml:
                                 maximum_matrix_element = math.sqrt(maximum_bml*(2.*initial_spin + 1.))
                                 reduced_matrix_element = math.copysign(maximum_matrix_element,reduced_matrix_element)
-                        
+
                         # Put the matrix element into the data.
                         # Check that it is within requested spin limits, if spin limits were requested.
                         should_add_this_one = True
@@ -8427,7 +8427,7 @@ class nucleus:
                                 should_add_this_one = False
                         # Only put it in if it is not identically 0 and within
                         # initial spin limits if requested.
-                        if not reduced_matrix_element == 0.0 and should_add_this_one:  
+                        if not reduced_matrix_element == 0.0 and should_add_this_one:
                             self.add_matrix_element(multipole_string = multipole_text, initial_band_name = initial_band_name,\
                               final_band_name = final_band_name,initial_spin = initial_spin, final_spin = final_spin,\
                               value = reduced_matrix_element)
@@ -8576,7 +8576,7 @@ class nucleus:
 
         print "\nCheck below for unintended changes in K.\n"
 
-        for i in range(self.number_of_levels()):    
+        for i in range(self.number_of_levels()):
             initial_level_key       = all_level_keys[i]
             initial_level_object    = self.levels[initial_level_key]
             initial_band_name = initial_level_key[0]
@@ -8591,7 +8591,7 @@ class nucleus:
                 if initial_band_name == requested_initial_band_name and final_band_name == requested_final_band_name:    # The initial and final bands of these states match.
                     # Mark the signature term not needed, unless it is found to be needed below.
                     signature_term_needed = False
-                    # if this pair of levels belong to correct pair of bands, in correct order 
+                    # if this pair of levels belong to correct pair of bands, in correct order
                     # (bandnumber1 --> bandnumber2) same as (i --> j)
                     if self.spin_parity_allowed_transition(multipole_text,initial_level_key,final_level_key):
                         # This transition is spin-parity allowed.
@@ -8603,7 +8603,7 @@ class nucleus:
                             else:
                                 normalization = math.sqrt(2.)
 
-                            coupling = ned(initial_spin,l,final_spin,0,final_K,final_K) 
+                            coupling = ned(initial_spin,l,final_spin,0,final_K,final_K)
                             reduced_matrix_element = math.sqrt(2.*initial_spin+1.) * intrinsic \
                               * coupling * normalization
                         elif final_K == 0:
@@ -8613,7 +8613,7 @@ class nucleus:
                             # This is the same case as above, with normalization sqrt(2), but
                             # B&M defines the matrix elements always going from a K=0 band.
                             # Calculate the matrix element from K=0 band to other band (initial_K),
-                            # apply the correct normalization, and then time-reverse the 
+                            # apply the correct normalization, and then time-reverse the
                             # matrix element before saving it.
                             normalization = math.sqrt(2.)
                             temporary_initial_K = final_K
@@ -8621,7 +8621,7 @@ class nucleus:
                             temporary_initial_spin = final_spin
                             temporary_final_spin = initial_spin
                             coupling = ned(temporary_initial_spin,l,temporary_final_spin,\
-                              0,temporary_final_K,temporary_final_K) 
+                              0,temporary_final_K,temporary_final_K)
                             backward_reduced_matrix_element = math.sqrt(2.*temporary_initial_spin+1.) * intrinsic \
                               * coupling * normalization
                             # Now time-reverse the matrix element into the proper direction
@@ -8668,7 +8668,7 @@ class nucleus:
                             # Print the matrix element added.
                             formatted_text = self.format_one_matrix_element(initial_band_name = initial_band_name,initial_spin = initial_spin,\
                               final_band_name = final_band_name, initial_K = initial_K, final_K = final_K, final_spin = final_spin, \
-                              multipole_text = multipole_text, value = reduced_matrix_element, comment = comment) 
+                              multipole_text = multipole_text, value = reduced_matrix_element, comment = comment)
                             print formatted_text
                             matrix_element_counter += 1
 
@@ -8699,7 +8699,7 @@ class nucleus:
         all_band_names      = self.get_all_band_names_in_order(include_inactive_bands = True)
         donor_band_name     = all_band_names[internal_donor_band_number]
         recipient_band_name = all_band_names[internal_recipient_band_number]
-        
+
         # Safety checks for merging bands:
         # Check that all spins are unique, and that parities are all equal for
         # the two bands.  If not, then refuse to merge, because this would
@@ -8732,7 +8732,7 @@ class nucleus:
             this_level_object_pointer = self.levels[one_level_key]
             if this_band_name == donor_band_name:
                 # Add an alias to this level with the new recipient band name.
-                self.levels[(recipient_band_name,this_spin)] = this_level_object_pointer 
+                self.levels[(recipient_band_name,this_spin)] = this_level_object_pointer
 
         # Remove the donor band entry from the band settings list.
         del self.band_settings_list[internal_donor_band_number]
@@ -8775,7 +8775,7 @@ class nucleus:
         internal_band_number_to_delete = external_band_number_to_delete - 1
         primary_band_name_to_delete = all_band_names_in_order[internal_band_number_to_delete]
 
-        # Get a list of the level objects, 
+        # Get a list of the level objects,
         for one_level_key in self.levels.keys():
             this_band_name = one_level_key[0]
             if this_band_name == primary_band_name_to_delete:
@@ -8984,7 +8984,7 @@ class nucleus:
                 original_matrix_element = matrix_element_object.get_current_value()
                 # Get the value of the matrix element time-reversed.
                 time_reversed_matrix_element = time_reversal(initial_spin,final_spin,multipole_text,original_matrix_element)
-                
+
                 # Set the new value of the matrix element, if it changed.
                 if not math.copysign(1.,time_reversed_matrix_element) == math.copysign(1.,original_matrix_element):
                     matrix_element_object.set_current_value(time_reversed_matrix_element)
@@ -9048,7 +9048,7 @@ class nucleus:
         # A list for the final sorted level keys to return.
         ordered_level_keys_list = []
 
-        # Get the band names in order.  We will exclude the 
+        # Get the band names in order.  We will exclude the
         ordered_band_names = self.get_all_band_names_in_order(include_inactive_bands = include_inactive_bands)
 
         for one_level_key in self.levels.keys():
@@ -9169,7 +9169,7 @@ class nucleus:
 
         # rules_list = ["bf == 2","if > ii",...]
         # is a list of strings translated into tests.  If all conditions are met for
-        # a matrix element in the level scheme, then the matrix element is coupled to 
+        # a matrix element in the level scheme, then the matrix element is coupled to
         # the master.
 
         # Extract the parameters describing the master matrix element.
@@ -9179,8 +9179,8 @@ class nucleus:
         master_multipole_text = REVERSE_MULTIPOLE[master_multipole_code]
 
 
-        # Step through all matrix elements.  For matrix elements that meet all 
-        # of the selection criteria in rules_list, set their coupling to the 
+        # Step through all matrix elements.  For matrix elements that meet all
+        # of the selection criteria in rules_list, set their coupling to the
         # indices of the master, using the appropriate gosia code.
         for matrix_key in self.matrix_data.keys():
             # Extract all of the variables that might be referenced in the rules_list.
@@ -9280,7 +9280,7 @@ class nucleus:
 
         # rules_list = ["bf == 2","if > ii",...]
         # is a list of strings translated into tests.  If all conditions are met for
-        # a matrix element in the level scheme, then the matrix element is coupled to 
+        # a matrix element in the level scheme, then the matrix element is coupled to
         # the master.
         # Get the rules list:
         print "Select the matrix elements to couple to this master."
@@ -9304,8 +9304,8 @@ class nucleus:
 
         print "The following matrix elements are now coupled to the requested master."
 
-        # Step through all matrix elements.  For matrix elements that meet all 
-        # of the selection criteria in rules_list, set their coupling to the 
+        # Step through all matrix elements.  For matrix elements that meet all
+        # of the selection criteria in rules_list, set their coupling to the
         # indices of the master, using the appropriate gosia code.
         for matrix_key in self.matrix_data.keys():
             # Extract all of the variables that might be referenced in the rules_list.
@@ -9402,7 +9402,7 @@ class nucleus:
         matrix_element_number = 0  # The index in the bst file lines.
         for matrix_key in matrix_keys_in_gosia_order:
             best_value = float(bst_lines[matrix_element_number])
-            # The following line replaces the matrix element without changing 
+            # The following line replaces the matrix element without changing
             # the limits, couplings, etc.
             self.matrix_data[matrix_key].set_current_value(best_value)
             # See if this matrix element has hit one of the limits.  If so, print a warning.
@@ -9575,7 +9575,7 @@ class nucleus:
         """
 
         # Round the spin to the nearest tenth, which will effectively make it
-        # rounded to the nearest half-integer.  
+        # rounded to the nearest half-integer.
         try:
             spin = round(float(spin),1)
         except:
@@ -9600,7 +9600,7 @@ class nucleus:
             # The energy is not understood.  return an error.
             return -1
 
-        # See if band_names is a list of strings or a string.  
+        # See if band_names is a list of strings or a string.
         type_strings = str(type(band_names)).split("'")
         if type_strings[1] == "str":
             # This appears to be a string.  Convert it to a list of one item,
@@ -9741,7 +9741,7 @@ class gosia_shell:
             # No process has been defined yet.
             return -1
 
-        # See if Gosia is running.  
+        # See if Gosia is running.
         poll_value = self.current_gosia_process.poll()
         if poll_value == None:
             # The process is still running.
@@ -9772,7 +9772,7 @@ class gosia_shell:
             except:
                 total_errors += 1
                 return_text.extend(textwrap.wrap("Could not update the nuclear data weighting."))
-            
+
             # Examples of syntactically correct error codes are below.
             #total_errors += 1
             #return_text.extend(textwrap.wrap("ipsum lorem blah blah blah",TEXTVIEW_COLUMNS))
@@ -9794,10 +9794,10 @@ class gosia_shell:
             current_lifetime_weight  = self.get_lifetime_weight()
             print "Current weights:"
             print "---------------------------------------------"
-            print "Measured branching ratio data      ",current_branching_weight 
-            print "Measured mixing ratio data         ",current_mixing_weight    
-            print "Measured matrix element data       ",current_matrix_weight    
-            print "Measured lifetime data             ",current_lifetime_weight  
+            print "Measured branching ratio data      ",current_branching_weight
+            print "Measured mixing ratio data         ",current_mixing_weight
+            print "Measured matrix element data       ",current_matrix_weight
+            print "Measured lifetime data             ",current_lifetime_weight
             print ""
             print "Enter 'q' to quit."
             try:
@@ -9850,7 +9850,7 @@ class gosia_shell:
                 finished = True
             else:
                 if new_number_of_substates <= 8 and new_number_of_substates >= 1:
-                    self.number_of_magnetic_substates = new_number_of_substates 
+                    self.number_of_magnetic_substates = new_number_of_substates
                     print "Now using ",self.number_of_magnetic_substates, " for all experiments."
                     finished = True
                 else:
@@ -9867,17 +9867,17 @@ class gosia_shell:
     def get_mixing_ratio_weight(self):
         """Returns a float: the weight to be given to mixing ratio data
 
-        in the chi-squared fit.  
+        in the chi-squared fit.
 
         """
 
         return self.mixing_ratio_weight
 
     def get_matrix_element_weight(self):
-        """Returns a float: 
-        
+        """Returns a float:
+
         the weight to be given to previously-measured matrix element data in
-        the chi-squared fit.  
+        the chi-squared fit.
 
         """
 
@@ -9886,7 +9886,7 @@ class gosia_shell:
     def get_lifetime_weight(self):
         """Returns a float: the weight to be given to lifetime data
 
-        in the chi-squared fit.  
+        in the chi-squared fit.
 
         """
 
@@ -9895,7 +9895,7 @@ class gosia_shell:
     def get_branching_weight(self):
         """Returns a float: the weight to be given to branching data
 
-        in the chi-squared fit.  
+        in the chi-squared fit.
 
         """
 
@@ -9976,7 +9976,7 @@ class gosia_shell:
 
 
     def set_minimization_parameters(self,parameter_name,new_value):
-        """This method does not check values. 
+        """This method does not check values.
 
         See the set...interactive method.
 
@@ -10066,7 +10066,7 @@ class gosia_shell:
             return 0
 
         else:
-            
+
             band_number = prompt_number("Band NUMBER of new kinematics state: ","i")
             if band_number == "quit":
                 return 0
@@ -10171,12 +10171,12 @@ class gosia_shell:
 
         # Set the flag to use the user's vac parameters.
         self.add_vac_controls     = True
-        
+
         # Save the parameter dict for generating the VAC, entries.
         self.vac_control_dict = parameter_dict
 
         return 0
-        
+
 
     def generate(self,function,action,tf=False,silent=False,release_for_correlated_errors=True,output_options = {},evaluation_only=False,amplitudes=False,file_extension_substitution_dict = {},make_dummy_cor_file=True):
         """Generates a gosia input for the requested function and runs it if requested.
@@ -10625,7 +10625,7 @@ class gosia_shell:
             # Get the nucleus information
             level_scheme_lines = investigated_nucleus.generate_gosia_input()
 
-            # Get the EXPT section 
+            # Get the EXPT section
             expt_lines = the_experiment_manager.generate_expt()
 
             # Get the CONT block
@@ -10638,7 +10638,7 @@ class gosia_shell:
                     print_option_string = "9," + str(multipole_flag)
                     extra_options = [print_option_string]  # output of Q(omega)
 
-            # Get the EXPT section 
+            # Get the EXPT section
             expt_lines = the_experiment_manager.generate_expt()
 
             # Control block
@@ -11018,7 +11018,7 @@ class gosia_shell:
         # Get the nucleus information
         level_scheme_lines = investigated_nucleus.generate_gosia_input(fix_all = True)
 
-        # Get the EXPT section 
+        # Get the EXPT section
         expt_lines = the_experiment_manager.generate_expt()
 
         # Get the CONT block
@@ -11191,7 +11191,7 @@ class gosia_shell:
         # Get the gosia output file name from the gosia shell.
         gosia_output_file_name = self.get_base_file_name() + "." + FILE_DEF_DICT[22]["extension"]
 
-        # Read the gosia output file from disk.  
+        # Read the gosia output file from disk.
         with open(gosia_output_file_name,'r') as gosia_output_file:
             gosia_output_lines = gosia_output_file.readlines()
 
@@ -11216,7 +11216,7 @@ class gosia_shell:
             self.reason_reported = gosia_output_lines[final_chisq_line - 1]
         except:
             self.reason_reported = "(no reason returned from gosia.)"
-            
+
         # Zero the CALCULATED spectroscopic data.  If none are in the output,
         # then we don't want to include them in chi-squared anyway.  This is
         # for temporary storage.  If the user wants to keep the fit results,
@@ -11352,7 +11352,7 @@ class gosia_shell:
         try:
             chisq = self.final_chi_squared
         except:
-            chisq = None 
+            chisq = None
 
         try:
             reason_string = self.reason_reported
@@ -11361,7 +11361,7 @@ class gosia_shell:
 
 
         return [chisq,reason_string]
-            
+
 
 class experimentmanager:
     """Manages all instances of class experiment
@@ -11386,7 +11386,7 @@ class experimentmanager:
         self.excited_states = []
 
         # Set the default efficiency parameters.  The local self.efficiency_parameters variable holds the changeable values.
-        self.efficiency_parameters = DEFAULT_EFFICIENCY_PARAMETERS 
+        self.efficiency_parameters = DEFAULT_EFFICIENCY_PARAMETERS
 
     def for_upgrade(self,restored_version):
         """Sets new variables as appropriate for an upgrade from
@@ -11416,7 +11416,7 @@ class experimentmanager:
             # Examples of syntactically correct error codes are below.
             #total_errors += 1
             #return_text.extend(textwrap.wrap("ipsum lorem blah blah blah",TEXTVIEW_COLUMNS))
-                
+
         return total_errors,return_text
 
     def experiment_name_is_unique(self,user_name):
@@ -11447,7 +11447,7 @@ class experimentmanager:
             requested_initial_spin = round(float(raw_input("requested_initial_spin: ")),1)
             requested_final_band_name = raw_input("requested_final_band_name: ")
             requested_final_spin = round(float(raw_input("requested_final_spin: ")),1)
-            
+
         # Get the number of experiments to read.
         number_of_experiments = self.getnumberofexperiments()
         # Get a list of the number of detectors for each experiment.
@@ -11470,7 +11470,7 @@ class experimentmanager:
 
         print "All data sets pruned to keep only the transition"
         print requested_initial_band_name, requested_initial_spin, " --> ", requested_final_band_name, requested_final_spin
-        print 
+        print
         return 0
 
 
@@ -11503,7 +11503,7 @@ class experimentmanager:
                         internal_experiment_numbers_set = set([])
                         experiment_numbers = all_experiments_set
                         for one_experiment_number in experiment_numbers:
-                            internal_experiment_number = int(one_experiment_number) 
+                            internal_experiment_number = int(one_experiment_number)
                             internal_experiment_numbers_set.add(internal_experiment_number)
                         print "Chosen experiment numbers are: ",
                         for i in internal_experiment_numbers_set:
@@ -11543,7 +11543,7 @@ class experimentmanager:
 
         """
 
-        
+
         #Prompt for the set of experiment numbers to add the detectors to.
         internal_experiment_numbers_set = self.get_experiment_numbers()
         if internal_experiment_numbers_set == -1:
@@ -11559,11 +11559,11 @@ class experimentmanager:
                 # See if this detector can auto-load.
                 if self.allexperiments[internal_experiment_number].get_detector_information(internal_detector_number,"can_auto_load"):
                     print "  can auto-load."
-                    # Ask the detector for the file name to load data.  
+                    # Ask the detector for the file name to load data.
                     auto_load_file_name = self.allexperiments[internal_experiment_number].get_detector_information(internal_detector_number,"yield_data_file_name")
                     # Ask which file type (ags or txt right now; gosia yield file will load all detectors)
                     auto_load_file_type = self.allexperiments[internal_experiment_number].get_detector_information(internal_detector_number,"yield_data_file_type")
-                    print "  File type: ",auto_load_file_type,", name: ", auto_load_file_name 
+                    print "  File type: ",auto_load_file_type,", name: ", auto_load_file_name
                     # Load the data into this detector.
                     if auto_load_file_type == "txt":
                         self.read_txt_file_yields(auto_load_file_name,internal_experiment_number,internal_detector_number)
@@ -11575,9 +11575,9 @@ class experimentmanager:
                     print "cannot auto-load.\n"
 
     def full_auto_load_yield_data(self):
-        """Auto-loads data into every Ge or cluster 
+        """Auto-loads data into every Ge or cluster
 
-        This is the "fully" automatic method where experiment names are used 
+        This is the "fully" automatic method where experiment names are used
         to specify systematic data file names.
 
         All files must be of the same type--ags or txt
@@ -11644,7 +11644,7 @@ class experimentmanager:
 
     def display_Ge_detectors_for_all_experiments(self):
         """Displays the Ge detectors for all experiments.
-        
+
         Calls a popup object that displays to the terminal if popups are off.
 
         """
@@ -11688,7 +11688,7 @@ class experimentmanager:
 
         while True:
             self.print_experiment_catalog()
-            gosia_experiment_number = prompt_number("Enter experiment number: ","i") 
+            gosia_experiment_number = prompt_number("Enter experiment number: ","i")
 
             if gosia_experiment_number == "quit":
                 print "Quitting."
@@ -11755,7 +11755,7 @@ class experimentmanager:
         and type of data are populated, and that the necessary matrix elements
         are defined for the decays referenced.
 
-        Reads nuclear data from the file NUCLEAR_DATA_FILE_NAME 
+        Reads nuclear data from the file NUCLEAR_DATA_FILE_NAME
 
         according to the formatting and notation below:
 
@@ -11955,7 +11955,7 @@ class experimentmanager:
                     # Append the mixing ratio to the list if the data point passes
                     # all of the following tests.  The initial and final states
                     # must exist, must be populated in at least detector (as
-                    # calculated by gosia), and the E2 and M1 matrix elements 
+                    # calculated by gosia), and the E2 and M1 matrix elements
                     # must both exist in the present matrix.
                     can_include = True
                     initial_level_exists = investigated_nucleus.get_level_information(initial_level_key,"exists")
@@ -12057,13 +12057,13 @@ class experimentmanager:
                 initial_gosia_level_number = investigated_nucleus.lookup_gosia_level_by_band_spin(initial_band_name,initial_spin)
                 final_gosia_level_number = investigated_nucleus.lookup_gosia_level_by_band_spin(final_band_name,final_spin)
                 this_line = str(multipole_code) + " " + str(initial_gosia_level_number) + " " +  \
-                  str(final_gosia_level_number) + " " + str(matrix_element) + " " + str(error) 
+                  str(final_gosia_level_number) + " " + str(matrix_element) + " " + str(error)
                 measured_matrix_element_lines.append(this_line)
         else:
             measured_matrix_element_lines = ["0,0"]
 
 
-        gosia_nuclear_data_lines = measured_branching_lines + measured_lifetime_lines + measured_mixing_lines + measured_matrix_element_lines 
+        gosia_nuclear_data_lines = measured_branching_lines + measured_lifetime_lines + measured_mixing_lines + measured_matrix_element_lines
 
         # Now return the data lines in gosia format.
         return gosia_nuclear_data_lines
@@ -12074,7 +12074,7 @@ class experimentmanager:
         I stored these in a list.  I should have used a dictionary for quick lookup.
         List format is
             [['gamma', 'gsb', 2.0, 2.0, 0.35, 0.05],...]
-        Key list should be 
+        Key list should be
             ['gamma', 'gsb', 2.0, 2.0]
 
         """
@@ -12083,7 +12083,7 @@ class experimentmanager:
             if list(key_list) == one[0:4]:
                 return key_list[4:6]
 
-        return None 
+        return None
 
 
     def generate_angular_meshpoints(self, theta_lab_min, theta_lab_max, number_of_meshpoints, annular=True):
@@ -12125,7 +12125,7 @@ class experimentmanager:
             Z_n = one_experiment.get_parameter("Z_n")
             A_n = one_experiment.get_parameter("A_n")
             excited_target = one_experiment.get_parameter("excited_target")
-            annular = one_experiment.get_parameter("annular")  
+            annular = one_experiment.get_parameter("annular")
             I_kin = one_experiment.get_parameter("I_kin")
             # Determine which are the beam and target particles.
             if excited_target:
@@ -12142,7 +12142,7 @@ class experimentmanager:
             theta_lab_max = one_experiment.get_parameter("theta_lab_max")
             theta_lab_min = one_experiment.get_parameter("theta_lab_min")
             detected_particle = one_experiment.get_parameter("detected_particle")
-            
+
             if not annular:
                 # Need a lot of meshpoints to define smoothly an arbitrary
                 # shaped detector.  This can be done with less memory in the
@@ -12190,13 +12190,13 @@ class experimentmanager:
 
         """
 
-        number_of_interpolation_points = 200 # in each line segment defining the detector boundaries. 
+        number_of_interpolation_points = 200 # in each line segment defining the detector boundaries.
 
 
         if not investigated_nucleus.is_ready():
             print "You must define the nucleus before beginning to define the detector shapes."
             return -1
-        
+
         user_satisfied = False # Will be set to true when the user is satisfied with the shape drawn.
         while not user_satisfied:
             block_print_with_line_breaks("Define the shape and size of the rectilinear detector in its plane, by entering x and y coordinates in centimeters with the origin (0,0) at the point of intersection of a normal line from the target.  You do NOT need to enter the initial point again as the final point.  This is handled by the GUI.  Enter only enough points to define linear edges.  Enter \"q\" to end the edge definition.")
@@ -12251,13 +12251,13 @@ class experimentmanager:
                     print "Invalid input. Ignoring last input."
 
             investigated_nucleus.draw_a_particle_detector(boundary_xy_points,"Shape of detector in its plane","x [cm]","y [cm]",theta_r,phi_r)
-                
+
             check_string = "Check that this is the correct shape and normal position, and that have you defined the coordinates such that the green line is the phi = " + str(round(phi_r,1)) + " degree line that you intended."
             block_print_with_line_breaks(check_string,60)
             user_satisfied = yes_no_prompt("Check the figure window.  Are you satisfied with this definition [Y/n]? ",True)
 
         # Once the user is satisfied, we can translate this shape and normal
-        # position to polar coordinates.  
+        # position to polar coordinates.
         x_tuple,y_tuple = zip(*boundary_xy_points)
         max_x = max(x_tuple)
         max_y = max(y_tuple)
@@ -12285,7 +12285,7 @@ class experimentmanager:
         p_z = distance_from_target
         for i in range(len(boundary_xy_points)):
             p_x,p_y = boundary_xy_points[i]
-            if not i == (len(boundary_xy_points) - 1):  
+            if not i == (len(boundary_xy_points) - 1):
                 # If it's not the last point
                 next_p_x,next_p_y = boundary_xy_points[i+1]
             else:
@@ -12310,37 +12310,37 @@ class experimentmanager:
                     # Start with some dummy point to be deleted later
                     theta_lab = 0.1
                 position_vector = [p_x,p_y,p_z]
-                # rotation matrix about the y axis 
+                # rotation matrix about the y axis
 
                 theta_transformed_vector = [0.,0.,0.]
                 for k in range(3):
                     for l in range(3):
-                        theta_transformed_vector[k] += theta_rotation_matrix[k][l] * position_vector[l] 
+                        theta_transformed_vector[k] += theta_rotation_matrix[k][l] * position_vector[l]
 
                 x_rotated,y_rotated,z_rotated = theta_transformed_vector
 
                 try:
-                    # Since the range of atan is restricted to the 0 to 90 deg and 0 to -90 degree quadrants, 
-                    # we have to manually correct for the actual quadrant in the x<0 quadrants to 
-                    # get phi values between 0 and 360 degrees.  This might fail for very large detectors or 
+                    # Since the range of atan is restricted to the 0 to 90 deg and 0 to -90 degree quadrants,
+                    # we have to manually correct for the actual quadrant in the x<0 quadrants to
+                    # get phi values between 0 and 360 degrees.  This might fail for very large detectors or
                     # detectors extremely close to the target.
                     phi_lab = math.atan(y_rotated/x_rotated)
                     if y_rotated >= 0. and x_rotated < 0.:
-                        phi_lab   -= math.pi 
+                        phi_lab   -= math.pi
                     elif y_rotated <= 0. and x_rotated < 0.:
-                        phi_lab   += math.pi 
+                        phi_lab   += math.pi
 
-                    
+
                     # Since we have defined the 0 x coordinate as the phi_r coordinate, all we have to do to phi is add phi_r
                     # to make the transformation.
                     if math.degrees(phi_r) >= 360.:
                         # Protection against problems defining across the 360 degree boundary
                         phi_r = 0. + phi_r - math.radians(360.)
-                    phi_lab += phi_r 
+                    phi_lab += phi_r
 
-                    # Make the values wrap around to zero, for smooth interpolation. 
+                    # Make the values wrap around to zero, for smooth interpolation.
                     if phi_lab > (2.*math.pi):
-                        phi_lab =  2.*math.pi -  phi_lab 
+                        phi_lab =  2.*math.pi -  phi_lab
 
                     skip = False
 
@@ -12388,7 +12388,7 @@ class experimentmanager:
         NFI_list = []
 
         # Move just off of the edges to get a finite range for each interpolation point.
-        theta_sample_list = list(numpy.linspace(theta_lab_min + 0.01,theta_lab_max - 0.01,number_of_theta_meshpoints))  
+        theta_sample_list = list(numpy.linspace(theta_lab_min + 0.01,theta_lab_max - 0.01,number_of_theta_meshpoints))
 
         for meshpoint_counter in range(number_of_theta_meshpoints):
             theta_sample = theta_sample_list[meshpoint_counter]
@@ -12428,7 +12428,7 @@ class experimentmanager:
             if len(phi_list) >= 2:  # Don't add unless there is a line defined.
                 NFI_list[i] = [this_theta]
                 NFI_list[i].extend(phi_list)
-                    
+
         return theta_lab_min,theta_lab_max,theta_sample_list,NFI_list
 
     def plot_sampled_detector_shape(self,phi_theta_points,NFI_list):
@@ -12466,7 +12466,7 @@ class experimentmanager:
         sample_lines = []   # The downsampled shape given to gosia as a list of lines to plot:
         #[[theta,phi_1,phi_2,],[theta,phi_1,phi_2,phi_3,phi_4],...]
         for i in range(len(NFI_list)):
-            theta = NFI_list[i][0]   
+            theta = NFI_list[i][0]
             phi_list = NFI_list[i][1:]
             number_of_segments = len(phi_list)/2
             samples_for_this_theta = []
@@ -12593,7 +12593,7 @@ class experimentmanager:
         else:
             print "No experiments were temporarily saved."
             return -1
-            
+
 
 
     def test_integration_convergence(self):
@@ -12721,8 +12721,8 @@ class experimentmanager:
                     parameter_dict["theta_subdivisions"] = 100 - (10 * subdivision_iteration_counter)
                     parameter_dict["energy_subdivisions"] = 100 - (10 * subdivision_iteration_counter)
                 else:
-                    parameter_dict["theta_subdivisions"] = 100 
-                    parameter_dict["energy_subdivisions"] = 100 
+                    parameter_dict["theta_subdivisions"] = 100
+                    parameter_dict["energy_subdivisions"] = 100
 
                 if parameter_dict["theta_subdivisions"] <= 0 or parameter_dict["energy_subdivisions"] <=0 or\
                   parameter_dict["number_of_energy_meshpoints"] <=0 or parameter_dict["number_of_theta_meshpoints"] <=0:
@@ -12759,7 +12759,7 @@ class experimentmanager:
         self.parse_gosia_integrated_yields(True) # True usually means for the tf function, but it really just sets a lower limit for accepting yields.
         yield_set = []
         for i in range(pieces-1):
-            yield_set.append(self.allexperiments[i].get_calculated_yields(0))  
+            yield_set.append(self.allexperiments[i].get_calculated_yields(0))
         # Sort yields by initial, final state number
         yield_set[i].sort()
 
@@ -13003,7 +13003,7 @@ class experimentmanager:
 
         for table_number in range(2 * number_of_experiments):
             print "Table",table_number
-            if (table_number % 2) == 0:  
+            if (table_number % 2) == 0:
                 # Skip every other table.
                 collision_functions_dictionary = {}
                 while True:
@@ -13075,7 +13075,7 @@ class experimentmanager:
         gosia_amplitude_file_name = the_gosia_shell.get_base_file_name() + "." + FILE_DEF_DICT[99]["extension"]
 
         print "  Reading Gosia output..."
-        # Read the gosia output file from disk.  
+        # Read the gosia output file from disk.
         with open(gosia_output_file_name,'r') as gosia_output_file:
             gosia_output_lines = gosia_output_file.readlines()
 
@@ -13088,12 +13088,12 @@ class experimentmanager:
         number_of_experiments = self.getnumberofexperiments()
 
         # Lookup by I,Mf returns gosia substate number.
-        substate_dictionary = {}  
+        substate_dictionary = {}
         # Reverse substate_dictionary: key (gosia_substate_number) will point to
         # internal level number and M substate
         reverse_substate_dictionary = {}
 
-        gosia_substate_number = 1  
+        gosia_substate_number = 1
 
         print "  Collecting magnetic substate catalog data..."
 
@@ -13137,14 +13137,14 @@ class experimentmanager:
                 substate_dictionary[(internal_level_number,Mf)] = gosia_substate_number  # reverse lookup
                 r_s = str(reverse_substate_dictionary[gosia_substate_number]) + str(substate_dictionary[(internal_level_number,Mf)])
 
-                # Increment the gosia substate number. 
+                # Increment the gosia substate number.
                 gosia_substate_number += 1
 
                 level_line += 1
                 l_s = str(gosia_substate_number) + str(level_line)
 
             break  # For now, trusting that all experiments have (possibly zero) population data for all levels.
-            #del gosia_output_lines[:level_line]  # Delete the lines parsed from the list 
+            #del gosia_output_lines[:level_line]  # Delete the lines parsed from the list
             # Now the file lines can be searched for the next appearance of "EXCITATION AMPLITUDES".
 
         print "  Done."
@@ -13338,7 +13338,7 @@ class experimentmanager:
         while True:
             good_state = True
             print "Enter \"q\" to quit."
-            gosia_experiment_number = prompt_number("Experiment number: ","i") 
+            gosia_experiment_number = prompt_number("Experiment number: ","i")
             if gosia_experiment_number == "quit":
                 return 0
             internal_experiment_number = gosia_experiment_number - 1
@@ -13392,7 +13392,7 @@ class experimentmanager:
                         lines_to_write.append(this_text_line)
                     lines_to_write.append("\n\n")  # two blank lines to separate sets
 
-                with open(plot_data_file_name,"w") as plot_data_file: 
+                with open(plot_data_file_name,"w") as plot_data_file:
                     plot_data_file.writelines(lines_to_write)
                 print "Data for this plot were written to the file \"" + plot_data_file_name + "\"."
 
@@ -13438,7 +13438,7 @@ class experimentmanager:
             all_calculated_yields = all_calculated_yields_48
         else:
             all_calculated_yields = all_calculated_yields_2
-            
+
         # Find out if it's inverse or normal kinematics
         is_inverse = self.allexperiments[0].is_inverse_kinematics()
 
@@ -13505,7 +13505,7 @@ class experimentmanager:
                 if not slope_list[i] == slope_list[i+1]:
                     number_of_oscillations_backward += 1
 
-            
+
             if number_of_oscillations_backward > 4:
                 #Append this experiment and detector to the list of possible adiabaticity problems.
                 adiabaticity_problem_transitions.append(one_transition_to_test)
@@ -13513,7 +13513,7 @@ class experimentmanager:
             if number_of_oscillations_forward > 1:
                 #Append this transition to the list of possible eccentricity problems.
                 eccentricity_problem_transitions.append([one_transition_to_test,angle_of_first_forward_oscillation])
-            
+
 
         # Now print a list of transitions to check more carefully.
         print ""
@@ -13649,7 +13649,7 @@ class experimentmanager:
                 print "Quitting."
                 return 0
 
-                
+
 
 
     def examine_data_interactive(self):
@@ -13689,13 +13689,13 @@ class experimentmanager:
         data_type = raw_input("[Y]ields or [n]uclear data? ").lower()
 
         if data_type == "n":
-            # Similar to yield data, as below. 
+            # Similar to yield data, as below.
 
             # Clear the level scheme window.
             investigated_nucleus.draw_level_scheme()
 
             block_print_with_line_breaks("Enter 'q' to quit.  Note: only the nuclear data which can be included in a fit using the current set of matrix elements are shown.  Yield and nuclear data will be updated in the next fit or error calculation.",60)
-                        
+
             for index in range(len(self.branching_data)):
                 # Rewritten Aug. 22 2011.
                 one_datum = self.branching_data[index]
@@ -13712,7 +13712,7 @@ class experimentmanager:
 
                 # Add the r2 branch of this branching ratio.
                 label_text = "r_2 = 1"
-                color = 'k'  
+                color = 'k'
                 # Add to the plotting dictionary for plotting.
                 append_one_label(decay_data_plot_dict,  (initial_band_name,final_band_name_2,initial_spin,final_spin_2) , [color,label_text])
 
@@ -13722,7 +13722,7 @@ class experimentmanager:
                 initial_band_name, final_band_name, initial_spin, final_spin, mixing_ratio, error = one_datum
                 print "delta(",initial_band_name,",",initial_spin,"-->",final_band_name,",",final_spin,") = ",mixing_ratio," +/- ",error
                 label_text = "d = " + str(mixing_ratio) + " +/- " + str(error)
-                color = 'b'  
+                color = 'b'
                 # Add to the plotting dictionary for plotting.
                 append_one_label(decay_data_plot_dict,  (initial_band_name,final_band_name,initial_spin,final_spin), [color,label_text])
 
@@ -13743,7 +13743,7 @@ class experimentmanager:
                 initial_band_name, initial_spin, tau, delta_tau = one_datum
                 print "tau( " + initial_band_name + str(initial_spin) + ") = " + str(tau) + " +/- " + str(delta_tau) + " ps"
                 label_text = "tau = (" + str(tau) + " +/- " + str(delta_tau) + ") ps"
-                color = 'g'  
+                color = 'g'
                 # Add to the plotting dictionary for plotting.
                 append_one_label(level_data_plot_dict,  (initial_band_name,initial_spin), [color,label_text])
 
@@ -13768,11 +13768,11 @@ class experimentmanager:
 
                 block_print_with_line_breaks("Enter 'q' to quit.  Note: data which can be included in a fit using the current set of matrix elements are shown in black.  Yield and nuclear data will be updated in the next fit or error calculation.",60)
 
-                experiment_number = prompt_number("Which experiment number? ","i") 
+                experiment_number = prompt_number("Which experiment number? ","i")
                 if experiment_number == "quit":
                     break # out of yield while loop
                 self.allexperiments[experiment_number - 1].print_detector_catalog()
-                detector_number = prompt_number("Which detector number? ","i") 
+                detector_number = prompt_number("Which detector number? ","i")
                 if detector_number == "quit":
                     break # out of yield while loop
 
@@ -13781,18 +13781,18 @@ class experimentmanager:
 
                 # Clear the level scheme window.
                 investigated_nucleus.draw_level_scheme()
-                        
+
                 one_data_set_yields = self.allexperiments[internal_experiment_number].get_experimental_yields_with_requested_normalization(internal_detector_number)
                 number_of_yields = len(one_data_set_yields)  # for this data set in this experiment
                 for yield_number in range(number_of_yields):
-                    
+
                     initial_band_name, initial_spin, final_band_name, final_spin, intensity, intensity_error = one_data_set_yields[yield_number]
-                    
+
                     # Is the initial state populated, and is there at least
                     # one matrix element coupling the initial and final states
                     # for this data point?  If so, then draw in black.
                     # Otherwise, draw in red.
-                    
+
                     initial_level_key = (initial_band_name, initial_spin)
                     final_level_key   = (final_band_name, final_spin)
                     if not investigated_nucleus.get_level_information(initial_level_key,"calculated lifetime") == None and \
@@ -13862,7 +13862,7 @@ class experimentmanager:
                 new_gosia_normalizing_experiment = int(string_new_gosia_normalizing_experiment)
                 # Check the normalizing experiment exists and that the user is
                 # not trying to chain normalizations, e.g. 3-->2-->1.
-                try: 
+                try:
                     self.allexperiments[new_gosia_normalizing_experiment - 1]
                     # If this did not raise an exception, then the normalizing experiment exists.
                     good_normalization = True
@@ -13874,13 +13874,13 @@ class experimentmanager:
                         print "You cannot chain experiment normalizations"
                         print " e.g. 3 normalized to 2 and 2 normalized to 1."
                         print " Instead, try normalizing this experiment to "
-                        print " experiment #",self.allexperiments[new_gosia_normalizing_experiment - 1].get_parameter("LN") 
+                        print " experiment #",self.allexperiments[new_gosia_normalizing_experiment - 1].get_parameter("LN")
                 except:
                     # The normalizing experiment does not exist.
                     good_normalization = False
                     print "The experiment you have chosen to normalize to does not exist!"
 
-            
+
         # Set the normalization.
         self.allexperiments[internal_experiment_number].parameter_dict["LN"] = new_gosia_normalizing_experiment
 
@@ -14035,7 +14035,7 @@ class experimentmanager:
             self.allexperiments[internal_experiment_number].print_detector_catalog(internal_experiment_number)  # For now, just passing the experiment number in to reprint.
             print ""
 
-        
+
     def delete_experiment(self,allexpts=False,internal_experiment_number=None):
         """Deletes a selected experiment from memory.
 
@@ -14166,7 +14166,7 @@ class experimentmanager:
                 print "  saved session."
                 print "Finished."
                 return -1
-            try:  
+            try:
                 # Ask for experimental parameters
                 beam_or_target_excitation = raw_input("Is beam or target excited [b/t]?").lower()  # convert to lower case
                 if beam_or_target_excitation[0] == "t":
@@ -14297,7 +14297,7 @@ class experimentmanager:
                                     new_gosia_normalizing_experiment = int(string_new_gosia_normalizing_experiment)
                                     # Check the normalizing experiment exists and that the user is
                                     # not trying to chain normalizations, e.g. 3-->2-->1.
-                                    try: 
+                                    try:
                                         self.allexperiments[new_gosia_normalizing_experiment - 1]
                                         # If this did not raise an exception, then the normalizing experiment exists.
                                         good_normalization = True
@@ -14309,7 +14309,7 @@ class experimentmanager:
                                             print "You cannot chain experiment normalizations"
                                             print " e.g. 3 normalized to 2 and 2 normalized to 1."
                                             print " Instead, try normalizing this experiment to "
-                                            print " experiment #",self.allexperiments[new_gosia_normalizing_experiment - 1].get_parameter("LN") 
+                                            print " experiment #",self.allexperiments[new_gosia_normalizing_experiment - 1].get_parameter("LN")
                                         else:
                                             LN = new_gosia_normalizing_experiment
                                             good_normalization = True
@@ -14342,7 +14342,7 @@ class experimentmanager:
                 theta_lab_max,theta_lab_min,phi_2,phi_1,phi_theta_points,theta_normal,phi_normal = self.define_rectilinear_detector_interactive()
                 parameter_dict["theta_normal"] = math.degrees(theta_normal)
                 parameter_dict["phi_normal"] = math.degrees(phi_normal)
-                parameter_dict["theta_lab_max"] = theta_lab_max  # temporary, inaccurate.  
+                parameter_dict["theta_lab_max"] = theta_lab_max  # temporary, inaccurate.
                 parameter_dict["theta_lab_min"] = theta_lab_min
                 parameter_dict["phi_1"] = phi_1
                 parameter_dict["phi_2"] = phi_2
@@ -14477,7 +14477,7 @@ class experimentmanager:
 
         def print_format_error(line_number):
             print "Incorrect file format on line ", line_number + 1, "."  # Add one to give line number base 1.
-            return 
+            return
 
         file_name = prompt_for_file_name(prompt_string = "Enter Rachel detector file name: ")
 
@@ -14704,7 +14704,7 @@ class experimentmanager:
             # Just one experiment number
             # Don't use the gosia number; use the internal (base 0) number as stored in the allexperiments list.
             internal_experiment_numbers = [int(experiment_number_answer)-1]
-            
+
         # Ask first if this is a single detector or a cluster to attach.  The
         # latter will create a cluster object, which requires different data
         # and not just one type number.
@@ -14742,7 +14742,7 @@ class experimentmanager:
                 return -1  # return -1 so that the undo information is not saved.
 
             # Attach the detector by calling the experiment object
-            for experiment_number in internal_experiment_numbers:  
+            for experiment_number in internal_experiment_numbers:
                 ge_detector_parameters = {"identity":identity,"detector_type_number":internal_detector_type,"theta":theta,"phi":phi}
                 if want_to_auto_load:
                     # If the auto-load file name was specified, ask for the type of file
@@ -14767,7 +14767,7 @@ class experimentmanager:
             # Show users what detectors there are to choose from.
             the_detector_manager.display_all_physical_detectors()
 
-            # Prompt for the ge detectors in the cluster.  
+            # Prompt for the ge detectors in the cluster.
             number_of_detectors = prompt_number("Enter the number of detectors in the cluster: ","i")
             if number_of_detectors == "q":
                 print "Attach detector cancelled."
@@ -14860,7 +14860,7 @@ class experimentmanager:
             # cluster object init method.
             ge_cluster_parameters = {"identity":identity,"detector_type_numbers":detector_type_numbers,"thetas":detector_polar_angles,"phis":detector_azimuthal_angles}
 
-            for experiment_number in internal_experiment_numbers:  
+            for experiment_number in internal_experiment_numbers:
                 if want_to_auto_load:
                     # If the auto-load file name was specified, ask for the type of file
                     # and set up the detector to know that it can "auto-load."
@@ -14900,7 +14900,7 @@ class experimentmanager:
             # Just one experiment number
             # Don't use the gosia number; use the internal (base 0) number as stored in the allexperiments list.
             internal_experiment_numbers = [int(experiment_number_answer)-1]  # Be consistent in type by making this a list.
-            
+
         # Show users what detectors there are to choose from.
         print "Experiment number ",internal_experiment_numbers[0] + 1,"has the following detectors:"
         self.allexperiments[internal_experiment_numbers[0]].print_detector_catalog()
@@ -14914,13 +14914,13 @@ class experimentmanager:
         internal_detector_number_to_detach = detector_number_to_detach - 1
 
         # Detach the detector by calling the experiment object
-        for experiment_number in internal_experiment_numbers:  
+        for experiment_number in internal_experiment_numbers:
             self.allexperiments[experiment_number].delete_detector(internal_detector_number_to_detach )
 
         print "Done."
 
         return 0
-            
+
     def get_all_mean_particle_angles(self):
         """Returns the mean scattering angle for each experiment.
 
@@ -15009,19 +15009,19 @@ class experimentmanager:
                                 # This calculated transition matches the
                                 # experimental transition.  Add the weighted
                                 # normalization constant to the sum.
-                        
-                                unweighted_normalization_constant = experimental_yield / calculated_yield 
+
+                                unweighted_normalization_constant = experimental_yield / calculated_yield
                                 # weight_factor = 1.0 / (experimental_yield_error / experimental_yield)**2  # Bad idea if weak transitions are not reproduced well.  Can be very misleading in chisq and plots.
                                 # weight_factor = experimental_yield**2  # Heavier than Gosia
                                 # Weighting by yield only.
                                 weight_factor = experimental_yield  # Gosia does this.
                                 weighted_normalization_constant = unweighted_normalization_constant * weight_factor
-                                normalization_constant += weighted_normalization_constant 
-                                sum_of_weight_factors  += weight_factor 
+                                normalization_constant += weighted_normalization_constant
+                                sum_of_weight_factors  += weight_factor
 
                                 break # out of the search for the matching calculated yield.
 
-                
+
 
         try:
             weighted_mean_normalization = normalization_constant / sum_of_weight_factors
@@ -15032,7 +15032,7 @@ class experimentmanager:
         # applies (so it doesn't need to be calculated extra times) and the
         # weighted mean normalization constant.
 
-        return internal_experiment_numbers_with_common_normalization, weighted_mean_normalization 
+        return internal_experiment_numbers_with_common_normalization, weighted_mean_normalization
 
 
 
@@ -15184,7 +15184,7 @@ class experimentmanager:
         # give a flat efficiency of 1 down to <1.0e-10 keV.
 
         default_raw_efficiency_parameters = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -50.0, 1.0]
-        
+
         # The first line is to turn on or off the gamma-angle correction for
         # decay in flight.  This is now turned on for the first time in version
         # -38.  The next two lines are to run OP,BRIC, which will be the
@@ -15194,7 +15194,7 @@ class experimentmanager:
                       "-1,0",\
                       "1.0"]
 
-        # The NANG line for number of detectors.  
+        # The NANG line for number of detectors.
         # Poll the experiments to see how many detectors are in each one.  Here
         # we need the individual germanium crystals, so clusters have to be
         # handled differently than individual crystals.
@@ -15202,7 +15202,7 @@ class experimentmanager:
         for one_experiment in self.allexperiments:
             # number_of_germaniums will be incremented as each crystal or cluster attached to
             # this experiment is evaluated until the full count is obtained.
-            number_of_germaniums = 0  
+            number_of_germaniums = 0
             number_of_clusters_and_crystals = one_experiment.get_number_of_detectors()
             for internal_detector_number in range(number_of_clusters_and_crystals):
                 if one_experiment.get_detector_information(internal_detector_number,"is_crystal"):
@@ -15212,8 +15212,8 @@ class experimentmanager:
                     # This is a cluster.  Get the number of Ge detectors in the
                     # cluster and add this to the number_of_germaniums count.
                     number_of_crystals_in_this_cluster = one_experiment.get_detector_information(internal_detector_number,"number_of_crystals")
-                    number_of_germaniums += number_of_crystals_in_this_cluster 
-                    
+                    number_of_germaniums += number_of_crystals_in_this_cluster
+
             nang_list.append(number_of_germaniums)
 
         # Make line into one string
@@ -15239,9 +15239,9 @@ class experimentmanager:
                     gosia_type_number    = internal_type_number + 1
                     theta                = one_experiment.get_detector_information(internal_detector_number,"theta")
                     phi                  = one_experiment.get_detector_information(internal_detector_number,"phi")
-                    detector_line = detector_line + str(gosia_type_number) + "  " 
-                    theta_line    = theta_line    + str(theta)             + "  " 
-                    phi_line      = phi_line      + str(phi)               + "  " 
+                    detector_line = detector_line + str(gosia_type_number) + "  "
+                    theta_line    = theta_line    + str(theta)             + "  "
+                    phi_line      = phi_line      + str(phi)               + "  "
                 else:
                     # This is a cluster detector.  Get the lists of type numbers, theta and phi values
                     internal_type_numbers = one_experiment.get_detector_information(internal_detector_number,"types")
@@ -15580,10 +15580,10 @@ class experimentmanager:
         """
         self.print_experiment_catalog()
         try:
-            experiment_number = int(raw_input("Experiment number or return to quit: ")) 
+            experiment_number = int(raw_input("Experiment number or return to quit: "))
             internal_experiment_number = experiment_number - 1
             self.allexperiments[internal_experiment_number].print_detector_catalog()
-            detector_number = int(raw_input("Detector number to export experimental yields or return to quit: ")) 
+            detector_number = int(raw_input("Detector number to export experimental yields or return to quit: "))
             internal_detector_number = detector_number - 1
         except:
             print "Invalid experiment number.  Quitting."
@@ -15832,7 +15832,7 @@ class experimentmanager:
 
         Ask the user which experiment and detector, then put the yields into the appropriate experiment objects.
 
-        In order for this to work with certainty, the band names and spins in the ags file must be the same as those read into the nucleus object.  
+        In order for this to work with certainty, the band names and spins in the ags file must be the same as those read into the nucleus object.
 
         The procedure will be something like this:
         Create the final level scheme in Radware.
@@ -17467,7 +17467,7 @@ class experimentmanager:
             first_line = findinlist(gosia_output_lines,search_strings) + 3  # 3 lines below the section header in the gosia output
             for experiment_number in range(number_of_experiments):
                 experiment_number_string = str(experiment_number + 1)   # as a string in gosia's numbering system (beginning with 1)
-                line_fields = gosia_output_lines[first_line + experiment_number].split() 
+                line_fields = gosia_output_lines[first_line + experiment_number].split()
                 new_factors_on_normalizations = []  # a new list to store them temporarily
                 for efficiency_string in line_fields[1:]:
                     new_factors_on_normalizations.append(float(efficiency_string))
@@ -17788,7 +17788,7 @@ class experimentmanager:
         # Get the gosia output file name from the gosia shell.
         gosia_output_file_name = the_gosia_shell.get_base_file_name() + "." + FILE_DEF_DICT[22]["extension"]
 
-        # Read the gosia output file from disk.  
+        # Read the gosia output file from disk.
         with open(gosia_output_file_name,'r') as gosia_output_file:
             gosia_output_lines = gosia_output_file.readlines()
         # Save a copy of the last lines of the output, which might contain an error message.
@@ -18049,7 +18049,7 @@ class experimentmanager:
                         chisq_contribution = (measured - current_value)**2 / error**2
                         if DEBUGGING_MODE:
                             print matrix_key, current_value, measured, error, chisq_contribution
-                        chi_squared_spectroscopic += chisq_contribution 
+                        chi_squared_spectroscopic += chisq_contribution
                         number_of_spectroscopic_data_points += 1
                         formatted_matrix_element = investigated_nucleus.format_one_matrix_element(initial_band_name=matrix_key[3],\
                           initial_spin=matrix_key[4],final_band_name=matrix_key[1],final_spin=matrix_key[2],\
@@ -18191,13 +18191,13 @@ class experimentmanager:
 
                                         # This experimental yield entry matches the transition for the calculated entry.
                                         # Apply the normalization constant.
-                                        experimental_yield = absolute_experimental_yield / experimental_normalization_constant 
-                                        error              = absolute_error / experimental_normalization_constant 
+                                        experimental_yield = absolute_experimental_yield / experimental_normalization_constant
+                                        error              = absolute_error / experimental_normalization_constant
                                         # Calculated the chi-squared contribution etc.
                                         chisquared_contribution = (experimental_yield - calculated_yield)**2 / error**2
                                         sigma_discrepancy       = (calculated_yield - experimental_yield) / error
                                         percent_discrepancy     = 100.0 * (calculated_yield - experimental_yield) / experimental_yield
-                                        chi_squared_for_experiment[-1] += chisquared_contribution 
+                                        chi_squared_for_experiment[-1] += chisquared_contribution
                                         data_points_for_experiment[-1] += 1
 
                                         # Record this chisq value with a
@@ -18694,7 +18694,7 @@ class experimentmanager:
                                     scattered_efficiency_corrected_count = random.gauss(efficiency_corrected_count, estimated_error)
                                     # Update the estimated error to scale with the scattered yield.
                                     estimated_error = (scattered_efficiency_corrected_count / efficiency_corrected_count) * estimated_error
-                                    efficiency_corrected_count = scattered_efficiency_corrected_count 
+                                    efficiency_corrected_count = scattered_efficiency_corrected_count
 
                                 # In case different Ge detectors have different solid
                                 # angles, the simulated measured yields need to be
@@ -18772,7 +18772,7 @@ class experimentmanager:
                 # Construct the data set header for the gosia yld file.
                 data_set_header = str(gosia_experiment_number) + "  " + str(gosia_data_set_number) \
                   + "  " + str(ZP) + "  " + str(AP) + "  " + str(EP) + "  " + str(number_of_observable_yields) \
-                  + "  " + str(WT) 
+                  + "  " + str(WT)
                 yld_file_lines.append(data_set_header)
                 yld_file_lines.extend(temporary_yld_file_lines)
 
@@ -18797,7 +18797,7 @@ class experimentmanager:
         # Define the file name to be written.
         gosia_file_number = 3
         gosia_yld_file_name = the_gosia_shell.get_base_file_name() + "." + FILE_DEF_DICT[3]["extension"]
-        
+
         # Write the yields to the file
         write_lines_to_file(gosia_yld_file_name,yld_file_lines,force_write)
 
@@ -18809,7 +18809,7 @@ class logical_detector:
 
     It contains the position information, the physical detector type and the
     calculated and measured yields for this detector in the experiment that
-    contains it.  
+    contains it.
 
     When a data file is read, a flag is set to indicate that it contains "real"
     data.  In this case, the entire set of lines read from the file is stored,
@@ -18858,13 +18858,13 @@ class logical_detector:
         else:
             self.yield_data_file_name = None  # This will serve as a flag that data cannot be auto-loaded.
             self.yield_data_file_type = None  # This will serve as a flag that data cannot be auto-loaded.
-            
+
 
         # Create empty dictionaries for all calculated and measured yield data.
         # This new dictionary format will allow quick lookup of individual
         # yields, as well as sorting by the transition tuple keys.
 
-        # Yields will fill the dictionary in this format.  
+        # Yields will fill the dictionary in this format.
         # {("gsb",2.0,"gsb",0.0):{"calculated yield":###,"measured yield":###,"error":###},...}
         #  tuple describing transition : {dictionary of calculated and/or measured yield}
 
@@ -18908,7 +18908,7 @@ class logical_detector:
         theta = "theta, phi = " + format(self.get_detector_information("theta"),".1f") + ", " + format(self.get_detector_information("phi"),".1f") + " deg. "
         solid_angle = "Solid angle = " + format(self.get_detector_information("solid_angle"),".2f") + " sr."
 
-        description = crystal + theta + solid_angle 
+        description = crystal + theta + solid_angle
 
         return description
 
@@ -18982,8 +18982,8 @@ class logical_detector:
         """Returns the quantity specified by 'what'.
 
         what can be a string:
-            "theta"                 - polar angle position in degrees 
-            "phi"                   - azimuthal angle position in degrees 
+            "theta"                 - polar angle position in degrees
+            "phi"                   - azimuthal angle position in degrees
             "type"                  - the physical detector type
             "identity"              - "crystal"  (really the string in self.identity)
             "is_cluster"            - False
@@ -18992,7 +18992,7 @@ class logical_detector:
             "can_auto_load"         - returns True if the file name for yield data is known.
             "yield_data_file_name"  - Returns the yield data file name if it exists
             "yield_data_file_type"  - Currently returns either "ags" or "txt" (latter is Rachel format)
-        
+
         Checks that the desired information is appropriate for a crystal and if so returns it.
 
         """
@@ -19013,7 +19013,7 @@ class logical_detector:
             return self.detector_type
 
         elif what == "is_crystal":
-            return True 
+            return True
 
         elif what == "solid_angle":
             solid_angle = self.return_solid_angle()
@@ -19024,11 +19024,11 @@ class logical_detector:
 
         elif what == "yield_data_file_name":
             try:
-                self.yield_data_file_name 
+                self.yield_data_file_name
             except:
                 return None
 
-            return self.yield_data_file_name 
+            return self.yield_data_file_name
 
         elif what == "yield_data_file_type":
             try:
@@ -19084,8 +19084,8 @@ class logical_detector:
         self.zero_experimental_yields()
 
         # Loop over the yields in the list passed in, copying them to the
-        # internal dictionary format.  
-        
+        # internal dictionary format.
+
         # We can keep all yields, whether they apply to the levels in memory
         # or not.  This means that we can keep all data and use only what
         # applies to the current levels and matrix.  Deleting bands does not
@@ -19181,7 +19181,7 @@ class logical_detector:
                 del self.yield_data[transition_key]["calculated yield"]
 
         return 0
-                
+
 
 
     def set_calculated_yields(self,yield_list):
@@ -19189,7 +19189,7 @@ class logical_detector:
 
         The format is [[initial_band_name, initial_spin, final_band_number, final_spin, calculated_yield],["],...]
 
-        NOTE: The self-normalized yield has fallen out of use, and is now deprecated.  
+        NOTE: The self-normalized yield has fallen out of use, and is now deprecated.
 
         """
 
@@ -19198,8 +19198,8 @@ class logical_detector:
         self.zero_calculated_yields()
 
         # Loop over the yields in the list passed in, copying them to the
-        # internal dictionary format.  
-        
+        # internal dictionary format.
+
         # We can keep all yields, whether they apply to the levels in memory
         # or not.  This means that we can keep all data and use only what
         # applies to the current levels and matrix.  Deleting bands does not
@@ -19318,13 +19318,13 @@ class cluster_detector(logical_detector):
         else:
             self.yield_data_file_name = None  # This will serve as a flag that data cannot be auto-loaded.
             self.yield_data_file_type = None  # This will serve as a flag that data cannot be auto-loaded.
-            
+
 
         # Create empty dictionaries for all calculated and measured yield data.
         # This new dictionary format will allow quick lookup of individual
         # yields, as well as sorting by the transition tuple keys.
 
-        # Yields will fill the dictionary in this format.  
+        # Yields will fill the dictionary in this format.
         # {("gsb",2.0,"gsb",0.0):{"calculated yield":###,"measured yield":###,"error":###},...}
         #  tuple describing transition : {dictionary of calculated and/or measured yield}
 
@@ -19551,7 +19551,7 @@ class cluster_detector(logical_detector):
             "number_of_crystals"    - number of individual logical detectors in this cluster
             "thetas"                - the complete list of theta values for the individual crystals in the cluster
             "phis"                  - the complete list of phi values for the individual crystals in the cluster
-            "types"                 - the complete list of *physical* Ge type numbers 
+            "types"                 - the complete list of *physical* Ge type numbers
             "identity"              - "cluster"  (really the string in self.identity)
             "is_cluster"            - True
             "is_crystal"            - False
@@ -19559,7 +19559,7 @@ class cluster_detector(logical_detector):
             "can_auto_load"         - Returns True if the experimental yield data file was stored for auto-loading.
             "yield_data_file_name"  - Returns the yield data file name if it exists
             "yield_data_file_type"  - Currently returns either "ags" or "txt" (latter is Rachel format)
-        
+
         Checks that the desired information is appropriate for a cluster and if so returns it.
 
         """
@@ -19580,7 +19580,7 @@ class cluster_detector(logical_detector):
             return self.phis
 
         elif what == "types":
-            return self.detector_type_numbers 
+            return self.detector_type_numbers
 
         elif what == "identity":
             return self.identity
@@ -19600,11 +19600,11 @@ class cluster_detector(logical_detector):
 
         elif what == "yield_data_file_name":
             try:
-                self.yield_data_file_name 
+                self.yield_data_file_name
             except:
                 return None
 
-            return self.yield_data_file_name 
+            return self.yield_data_file_name
 
         elif what == "yield_data_file_type":
             try:
@@ -19746,7 +19746,7 @@ class experiment:
         projectile_mass = self.A_projectile()
         target_mass = float(self.A_target())
         maximum_possible_Q_value = maximum_excitation_energy(projectile_mass,target_mass,this_exit_energy_MeV)
-        return maximum_possible_Q_value 
+        return maximum_possible_Q_value
 
 
     def short_description(self):
@@ -19754,7 +19754,7 @@ class experiment:
 
         """
 
-        
+
         if self.get_parameter("excited_target"):
             A_projectile = str(self.A_projectile())
             Z_projectile = str(self.Z_projectile())
@@ -19783,13 +19783,13 @@ class experiment:
         n_det_string = str(n_det) + " Ge detector"
         if not n_det == 1:
             n_det_string += "s"
-            
+
         n_det_string += " (A cluster of crystals is counted as one detector.)"
         experiment_name_line = "Experiment \"" + self.get_name() + "\" with " + n_det_string
         lines.append(experiment_name_line)
 
         # Beam and target data
-        thickness_string = str(self.parameter_dict["target_thickness"]) 
+        thickness_string = str(self.parameter_dict["target_thickness"])
 
         investigated_string = "Z,A = " + str(investigated_nucleus.Z) + "," + str(investigated_nucleus.A)
         if self.get_parameter("excited_target"):
@@ -19801,8 +19801,8 @@ class experiment:
             Z_target = str(self.Z_target())
             kinematics_string = "The " + investigated_string + " BEAM is excited by a " + thickness_string + " mg/cm^2 Z,A = " + Z_target + "," + A_target + " TARGET."
 
-        E_beam = self.get_parameter("E_beam") 
-        E_exit = self.get_parameter("E_exit") 
+        E_beam = self.get_parameter("E_beam")
+        E_exit = self.get_parameter("E_exit")
         E_loss = E_beam - E_exit
         energy_string = " at an initial beam energy of " + str(int(round(E_beam))) + " MeV.  The energy loss in the target is " + str(round(E_loss,1)) + " MeV."
         lines.append(kinematics_string)
@@ -19901,7 +19901,7 @@ class experiment:
         """Returns the projectile Z.
 
         """
-        
+
         # Determine which is the target and which is the beam.
         if self.get_parameter("excited_target"):
             Z_projectile = self.get_parameter("Z_n")
@@ -19914,7 +19914,7 @@ class experiment:
         """Returns the target Z.
 
         """
-        
+
         # Determine which is the target and which is the beam.
         if self.get_parameter("excited_target"):
             Z_target     = self.get_parameter("Z_1")
@@ -19927,7 +19927,7 @@ class experiment:
         """Returns the target A.
 
         """
-        
+
         # Determine which is the target and which is the beam.
         if self.get_parameter("excited_target"):
             A_target     = self.get_parameter("A_1")
@@ -19940,7 +19940,7 @@ class experiment:
         """Returns the projectile A.
 
         """
-        
+
         # Determine which is the target and which is the beam.
         if self.get_parameter("excited_target"):
             A_projectile = self.get_parameter("A_n")
@@ -20390,7 +20390,7 @@ class experiment:
                 ge_type_numbers_found.append(internal_type_number)
             else:
                 # This detector is a cluster, so it does not in general have a
-                # single type number.  
+                # single type number.
                 # If all detectors in this cluster are of the same type, give the type in the output.
 
                 internal_type_numbers = this_ge_detector.return_type_numbers()
@@ -20681,7 +20681,7 @@ class experiment:
         """Prompts the user to enter stopping power data.
 
         """
-        current_stopping_power_data = self.stopping_power_data 
+        current_stopping_power_data = self.stopping_power_data
         beam_energies = current_stopping_power_data[0]
         current_beam_energy = self.parameter_dict["E_beam"]
         current_exit_energy = self.parameter_dict["E_exit"]
@@ -20711,14 +20711,14 @@ class experiment:
             else:
                 return new_exit_energy
 
-        adjust_by_hand = yes_no_prompt("Do you want to enter values by hand [y/N]? ",False) 
+        adjust_by_hand = yes_no_prompt("Do you want to enter values by hand [y/N]? ",False)
         if adjust_by_hand:
 
             new_exit_energy = get_exit_energy()
             if new_exit_energy == None:
                 print "Cancelled."
                 return 0
-        
+
             new_beam_energies = numpy.linspace(new_exit_energy,current_beam_energy,DEFAULT_NUMBER_OF_STOPPING_POWERS)
             print "Enter a new stopping power \"P\" in MeV/(mg/cm^2) for each energy, or \"q\" to cancel."
             for i in range(DEFAULT_NUMBER_OF_STOPPING_POWERS):
@@ -20735,7 +20735,7 @@ class experiment:
                 print "Setting new stopping powers for this experiment."
                 # Now save the new exit energy and stopping data to this experiment.
                 self.stopping_power_data = copy.deepcopy([new_beam_energies,new_stopping_powers])
-                self.parameter_dict["E_exit"] = new_exit_energy 
+                self.parameter_dict["E_exit"] = new_exit_energy
                 print "Done."
                 return 0
             else:
@@ -20743,8 +20743,8 @@ class experiment:
                 return 0
 
         else:
-        
-            adjust_by_file = yes_no_prompt("Do you want to read values from a file (using your own energy points) [y/N]? ",False) 
+
+            adjust_by_file = yes_no_prompt("Do you want to read values from a file (using your own energy points) [y/N]? ",False)
             if adjust_by_file:
 
                 new_exit_energy = get_exit_energy()
@@ -20814,7 +20814,7 @@ class experiment:
                         return 0
                     # Now save the new exit energy and stopping data to this experiment.
                     print "Setting new stopping powers for this experiment."
-                    self.parameter_dict["E_exit"] = new_exit_energy 
+                    self.parameter_dict["E_exit"] = new_exit_energy
                     self.stopping_power_data = copy.deepcopy([new_energies,new_stopping_powers])
                     print "Done."
                     return 0
@@ -20899,11 +20899,11 @@ class experiment:
             return 0
 
         # Stopped beam looks like:
-        #{'error_strings': [], 
-        # 'energies': [0.001, 14.0283, 28.0565, 56.112000000000002, 84.167500000000004, 112.223, 140.27850000000001, 168.334, 196.3895, 224.44499999999999, 252.50049999999999, 280.55599999999998, 308.61149999999998, 336.66699999999997, 364.72250000000003, 392.77800000000002, 420.83350000000002, 448.88900000000001, 476.94450000000001, 505.0], 
-        # 'calculated_exit_energy': None, 
-        # 'stopping_powers': [0.50060000000000004, 5.5541999999999998, 8.6639999999999997, 13.8668, 17.532399999999999, 20.299800000000001, 22.495899999999999, 24.312100000000001, 25.8444, 27.160599999999999, 28.3096, 29.3505, 30.202999999999999, 30.8065, 31.370999999999999, 31.836200000000002, 32.221899999999998, 32.538200000000003, 32.794800000000002, 33.001800000000003], 
-        # 'calculated_target_thickness': None, 
+        #{'error_strings': [],
+        # 'energies': [0.001, 14.0283, 28.0565, 56.112000000000002, 84.167500000000004, 112.223, 140.27850000000001, 168.334, 196.3895, 224.44499999999999, 252.50049999999999, 280.55599999999998, 308.61149999999998, 336.66699999999997, 364.72250000000003, 392.77800000000002, 420.83350000000002, 448.88900000000001, 476.94450000000001, 505.0],
+        # 'calculated_exit_energy': None,
+        # 'stopping_powers': [0.50060000000000004, 5.5541999999999998, 8.6639999999999997, 13.8668, 17.532399999999999, 20.299800000000001, 22.495899999999999, 24.312100000000001, 25.8444, 27.160599999999999, 28.3096, 29.3505, 30.202999999999999, 30.8065, 31.370999999999999, 31.836200000000002, 32.221899999999998, 32.538200000000003, 32.794800000000002, 33.001800000000003],
+        # 'calculated_target_thickness': None,
         # 'calculated_range': 24.899999999999999}
 
         print "Setting new stopping powers for this experiment...  ",
@@ -21011,8 +21011,8 @@ class experiment:
         block_print_with_line_breaks("If the data are not smooth, you can select \"smooth\" from the prompts that follow.  Small steps should not cause problems with Gosia's interpolation.",60)
 
         lines_to_write.append("\n\n")  # two blank lines to separate sets
-        
-        with open(plot_data_file_name,"w") as plot_data_file: 
+
+        with open(plot_data_file_name,"w") as plot_data_file:
             plot_data_file.writelines(lines_to_write)
         print "Data for this plot were written to the file \"" + plot_data_file_name + "\"."
 
@@ -21046,7 +21046,7 @@ class experiment:
         self.parameter_dict[parameter_name] = parameter_value
 
         return 0
-        
+
 
 
     def get_full_parameter_dict(self):
@@ -21106,7 +21106,7 @@ class experiment:
             # scattering angles: just get the mean scattering angle.
             theta_lab_projectile_mean = self.get_parameter("theta_lab_mean")
 
-        return theta_lab_projectile_mean 
+        return theta_lab_projectile_mean
 
     def get_integrated_rutherford_cross_section(self):
         """Returns the value stored from the last integration.
@@ -21143,7 +21143,7 @@ class experiment:
         this_detector = self.Ge_detectors[internal_detector_number]
         this_detector.set_experimental_yields(yield_list)
         return 0
-                
+
     def set_all_experimental_yields(self,nested_yield_list):
         """Sets experimental yields for all detectors in a nested list.
 
@@ -21176,7 +21176,7 @@ class experiment:
         this_detector = self.Ge_detectors[internal_detector_number]
         this_detector.set_calculated_yields(yield_list)
         return 0
-                
+
     def set_all_calculated_yields(self,nested_yield_list):
         """Sets calculated yields for all detectors in a nested list.
 
@@ -21213,13 +21213,13 @@ class experiment:
         """Returns experimental yields in memory.
 
         Does not properly treat band pseudonyms, but it can be used safely with this in mind.
-        
+
         SOME FUNCTIONS STILL USE THIS CORRECTLY, BUT IT SHOULD EVENTUALLY BE REMOVED.
 
         """
         the_detector = self.Ge_detectors[internal_detector_number]
         experimental_yield_list = the_detector.return_experimental_yields()
-        return experimental_yield_list 
+        return experimental_yield_list
 
     def get_normalizing_experimental_yield(self):
         """Returns the experimental yield of the normalizing transition for this experiment.
@@ -21227,7 +21227,7 @@ class experiment:
         Yields are normalized to the first detector (internal number 0).
 
         This is handled by the experiment object because it has information
-        about all detectors.  
+        about all detectors.
 
         """
 
@@ -21256,7 +21256,7 @@ class experiment:
         Yields are normalized to the first detector (internal number 0).
 
         This is handled by the experiment object because it has information
-        about all detectors.  
+        about all detectors.
 
         """
 
@@ -21438,7 +21438,7 @@ class detectormanager:
                 total_errors += 1
                 angular_limit_set_error = "Error in setting angular limits for one or more experiments."
                 return_text.extend(textwrap.wrap(angular_limit_set_error,TEXTVIEW_COLUMNS))
-            
+
             # Examples of syntactically correct error codes are below.
             #total_errors += 1
             #return_text.extend(textwrap.wrap("ipsum lorem blah blah blah",TEXTVIEW_COLUMNS))
@@ -21477,7 +21477,7 @@ class detectormanager:
             except:
                 print "That detector number is not in memory."
                 good_detector = False
-            
+
             if good_detector:
                 # Get the efficiency parameters and curve type for this physical detector.
                 efficiency_curve_type = self.alldetectors[internal_physical_detector_number].get_efficiency_curve_type()
@@ -21520,7 +21520,7 @@ class detectormanager:
                         print "4pi array."
                     else:
                         print "7cm diameter X 7.5 cm long crystal."
-                    
+
                 to_change = yes_no_prompt("Change the absolute efficiency calibration [y/N]? ",False)
                 if to_change:
                     internal_detectors_changed.add(internal_physical_detector_number)
@@ -21601,7 +21601,7 @@ class detectormanager:
                     new_curve_parameters["absolute_calibration_energy_keV"]          = calibration_energy
                     new_curve_parameters["absolute_calibration_absolute_efficiency"] = absolute_efficiency
                     self.alldetectors[internal_physical_detector_number].detector_parameters_dict["efficiency_parameters"] = copy.deepcopy(new_curve_parameters)
-                        
+
         if not len(internal_detectors_changed) == 0:  # At least one detector's efficiency was modified.
             to_save = yes_no_prompt("Save the modified crystals to the library in the working directory [y/N]? ")
             if to_save:
@@ -21613,7 +21613,7 @@ class detectormanager:
                     read_standard_types = True
                 except:
                         # No library file in working directory.  Start with an empty one.
-                        current_ge_library = {}  
+                        current_ge_library = {}
 
                 # Add this modified type to the library, and write the modified library to the working directory.
                 for internal_physical_detector_number in internal_detectors_changed:
@@ -21649,7 +21649,7 @@ class detectormanager:
         return 0
 
     def is_ready(self):
-        
+
         if self.getnumberofdetectors() == 0:
             return False
         else:
@@ -21664,7 +21664,7 @@ class detectormanager:
     def define_physical_Ge_types_from_file(self):
         """Adds physical types from a human-readable file.
 
-        An arbitrary number may be created.  
+        An arbitrary number may be created.
 
         """
 
@@ -21896,7 +21896,7 @@ class detectormanager:
         # absorber information.  NOTE: THESE MUST NOT BE DEFINED IN THE
         # __init__ METHOD!  IF THEY ARE, THEN THE POINTERS ARE NOT HANDLED
         # CORRECTLY, AND THE LIST OF physical_detector OBJECTS DOES NOT ACCESS
-        # PARAMETERS CORRECTLY FOR OBJECTS WITH SIMILAR CONTENTS.  
+        # PARAMETERS CORRECTLY FOR OBJECTS WITH SIMILAR CONTENTS.
 
         # Read the detector types from the rv_rachel_detector_dict.txt files in
         # both the installation directory and in the working directory.
@@ -22216,7 +22216,7 @@ class detectormanager:
 
         return None
 
-            
+
     def get_type_name(self,internal_type_number):
         """Returns the detector name of an INTERNAL type number.
 
@@ -22235,9 +22235,9 @@ class detectormanager:
 
 
     def retouch_gdt_file(self):
-        """Reads the gdt file from disk.  
+        """Reads the gdt file from disk.
 
-        If any detectors need adjustments after the OP,GDET run, then the 
+        If any detectors need adjustments after the OP,GDET run, then the
         file is modified.
         """
 
@@ -22265,14 +22265,14 @@ class detectormanager:
         # Write the final file.
         with open(gdt_file_name,'w') as gdt_file:
             gdt_file.writelines(gdt_lines)
-            
+
 
 class physical_detector:
     """A data set to define a gosia-type germanium detector
 
     Variables
 
-    Parameters for detector definition are stored in self.detector_parameters_dict, 
+    Parameters for detector definition are stored in self.detector_parameters_dict,
     which must be passed in at definition.
         detector_parameter_dict = {"detector_name":detector_name,"r":r,"R":R,"L":L,"d":d,"l":absorber_thicknesses,"four_pi":True/False}
 
@@ -22314,7 +22314,7 @@ class physical_detector:
             else:
                 self.detector_parameters_dict["efficiency_parameters"] = copy.deepcopy(the_detector_manager.default_efficiency_parameters_single_crystal)
 
-                
+
 
     def radware_efficiency(self,energy_keV,ep):
         """Internal use.  Returns relative efficiency for Radware parameters ep.
@@ -22374,10 +22374,10 @@ class physical_detector:
         efficiency-corrected for the relative efficiency.
 
         There are two additional parameters added to every set of
-        "efficiency_parameters": 
-        
+        "efficiency_parameters":
+
         "absolute_calibration_energy_keV" and "absolute_calibration_absolute_efficiency"
-        
+
         These are used to scale the relative efficiency to give the absolute
         efficiency.
 
@@ -22394,7 +22394,7 @@ class physical_detector:
         if curve_type == "radware":
             try:
                 relative_efficiency = self.radware_efficiency(energy_keV,ep)
-                relative_efficiency_at_absolute_calibration_point = self.radware_efficiency(ep["absolute_calibration_energy_keV"],ep) 
+                relative_efficiency_at_absolute_calibration_point = self.radware_efficiency(ep["absolute_calibration_energy_keV"],ep)
                 can_calculate = True
             except:
                 can_calculate = False
@@ -22405,7 +22405,7 @@ class physical_detector:
         elif curve_type == "miniball":
             try:
                 relative_efficiency = self.miniball_efficiency(energy_keV,ep)
-                relative_efficiency_at_absolute_calibration_point = self.miniball_efficiency(ep["absolute_calibration_energy_keV"],ep) 
+                relative_efficiency_at_absolute_calibration_point = self.miniball_efficiency(ep["absolute_calibration_energy_keV"],ep)
                 can_calculate = True
             except:
                 can_calculate = False
@@ -22417,7 +22417,7 @@ class physical_detector:
             if relative_efficiency <= 0. or relative_efficiency_at_absolute_calibration_point <= 0.:
                 absolute_efficiency = None
             else:
-                absolute_efficiency = relative_efficiency * ep["absolute_calibration_absolute_efficiency"] / relative_efficiency_at_absolute_calibration_point 
+                absolute_efficiency = relative_efficiency * ep["absolute_calibration_absolute_efficiency"] / relative_efficiency_at_absolute_calibration_point
         else:
             absolute_efficiency = None  # Efficiency curve not well-defined at this energy.
 
@@ -22776,21 +22776,21 @@ def setup_globals(action=None,pickle_file_name=None,force=False,rotate=False):
 def read_dot_rachel_setup_file():
     try:
         # Look for the setup file in the current directory.
-        setup_file = open(".rachel_setup","r") 
+        setup_file = open(".rachel_setup","r")
         print "Rachel setup file found in current directory."
     except:
         try:
-            # If it was not in the current directory, look in the 
+            # If it was not in the current directory, look in the
             # user's home directory
             print "Rachel setup file not found in working directory.  \nLooking in home directory..."
             home_directory = os.path.expanduser("~")
             setup_file_name_with_full_path = home_directory + "/.rachel_setup"
-            print "Looking for ",setup_file_name_with_full_path 
-            setup_file = open(setup_file_name_with_full_path ,"r") 
+            print "Looking for ",setup_file_name_with_full_path
+            setup_file = open(setup_file_name_with_full_path ,"r")
             print "Found setup file in home folder."
         except:
             return -1
-        
+
     try:
         # The file should look like
         # ELAST_EXECUTABLE = "elast"
@@ -22815,15 +22815,15 @@ def read_dot_rachel_setup_file():
         else:
             # Change this dictionary entry to a real Boolean value, not a string "True"/"False".
             boolean_value = eval(GLOBAL_SETUP_DICT["POPUPS"])
-            GLOBAL_SETUP_DICT["POPUPS"] = boolean_value 
+            GLOBAL_SETUP_DICT["POPUPS"] = boolean_value
         if not "POPUP_TIPS" in GLOBAL_SETUP_DICT.keys():
             # Set default to no popups, if the user didn't specify in the setup file.
             GLOBAL_SETUP_DICT["POPUP_TIPS"] = True
         else:
             # Change this dictionary entry to a real Boolean value, not a string "True"/"False".
             boolean_value = eval(GLOBAL_SETUP_DICT["POPUP_TIPS"])
-            GLOBAL_SETUP_DICT["POPUP_TIPS"] = boolean_value 
-            
+            GLOBAL_SETUP_DICT["POPUP_TIPS"] = boolean_value
+
     except:
         return -1
 
@@ -22850,7 +22850,7 @@ def generate_dot_rachel_setup_file():
             # Strip the final / from the rachel directory, if there is one.
             if temp_string[-1] == "/":
                 temp_string = temp_string[:-1]
-            setup_values.append(temp_string) 
+            setup_values.append(temp_string)
             lines_to_write = []
             for n in range(len(setup_variables)):
                 lines_to_write.append(setup_variables[n] + setup_values[n] + "\n")
@@ -22999,7 +22999,7 @@ class main_gui:
     def activate_band_entries(self):
         self.initial_band_entry.set_sensitive(True)
         self.final_band_entry.set_sensitive(True)
-            
+
 
     # Callback for Undo button
     def undo(self,widget):
@@ -23038,7 +23038,7 @@ class main_gui:
                 self.set_activation(self)
                 undo.save("Estimate normalizations")
                 return 0
-        
+
         except:
             print "The Gosia function and action must be selected to the left of the Go button."
             self.set_activation(self)
@@ -23167,7 +23167,7 @@ class main_gui:
                         the_experiment_manager.properly_weighted_chi_squared_report()
 
                 # If the function was to fit, ask the user now whether the new fitted matrix elements
-                # should be read in to replace the originals.  
+                # should be read in to replace the originals.
                 if gosia_function == "Fit" and gosia_action == "Run gosia input":
                     block_print_with_line_breaks("If you intend to plot the calculated yields vs. the measured yields, or iterate the fit to try to find a better minimum, then you should replace your original matrix elements with the best-fit values.  You will still be able to modify them or change fit parameters and dependencies before iterating.  Before plotting yields with the new matrix elements, run \"Integrated yields\" again with the best-fit matrix.\nTo iterate the fit again, change any matrix elements or fit parameters if desired, then run \"Make corrected yields\" before fitting again.")
                     read_best_matrix_elements = yes_no_prompt("Replace original matrix elements with best-fit values [Y/n]? ",True)
@@ -23540,7 +23540,7 @@ class main_gui:
         print "       all experiments and detectors from a single file."
         print "       This replaces all yield data in memory."
         print " al    Auto-load yield data into detectors."
-        print " fl    FULLY automatic loading of all yield data (NEW)." 
+        print " fl    FULLY automatic loading of all yield data (NEW)."
         print "       This uses systematic file names.  Refer to the "
         print "       file naming system after selecting \"fl.\""
         try:
@@ -23959,8 +23959,8 @@ class main_gui:
             print "Show m.e. error.  Quitting."
             self.set_activation(self)
             return -1
-        
-        
+
+
     def filter_me(self,widget):
 
         print_separator()
@@ -24013,7 +24013,7 @@ class main_gui:
             self.set_activation(self)
             print "Done."
             return -1
-            
+
 
 
     def chisq(self,widget):
@@ -24036,9 +24036,9 @@ class main_gui:
             print "Could not generate the report."
             print "Done."
             return -1
-            
 
-        
+
+
     def define_fit_parameters(self,widget):
 
         print_separator()
@@ -24066,7 +24066,7 @@ class main_gui:
             undo.save("Define fit parameters (failed)")
             self.set_activation(self)
             return -1
-            
+
 
     def plot_bml(self,widget):
 
@@ -24084,12 +24084,12 @@ class main_gui:
             # Reactivate GUI buttons.
             self.set_activation(self)
             return 0
-            
+
         except:
             # Reactivate GUI buttons.
             self.set_activation(self)
             return -1
-        
+
 
     def read_level_scheme(self,widget):
 
@@ -24168,7 +24168,7 @@ class main_gui:
                             undo.save(undo_information)
                         else:
                             undo.save("Delete band (failed)")
-                            
+
                         investigated_nucleus.draw_level_scheme()
                     else:
                         print "Finished."
@@ -24182,7 +24182,7 @@ class main_gui:
             # Reactivate GUI buttons.
             self.set_activation(self)
             return -1
-        
+
     def swap_bands(self,widget):
 
         print_separator()
@@ -24193,7 +24193,7 @@ class main_gui:
             gtk.main_iteration(False)
 
         try:
-            try:  
+            try:
                 # Ask for both band numbers and convert to integer type
                 initial_band_number = int(self.initial_band_entry.get_text())
                 final_band_number = int(self.final_band_entry.get_text())
@@ -24218,7 +24218,7 @@ class main_gui:
             # Reactivate GUI buttons.
             self.set_activation(self)
             return -1
-        
+
     def define_ge_detector(self,widget):
 
         print_separator()
@@ -24336,7 +24336,7 @@ class main_gui:
             # Reactivate GUI buttons.
             self.set_activation(self)
             return -1
-        
+
     def add_delete_experiment(self,widget):
 
         print_separator()
@@ -24377,14 +24377,14 @@ class main_gui:
                     try:
                         return_code = the_experiment_manager.delete_experiment()
                         if return_code == 0:
-                            undo.save("Delete experiment(s)")  
+                            undo.save("Delete experiment(s)")
                         else:
-                            undo.save("Delete experiment(s) (failed)")  
+                            undo.save("Delete experiment(s) (failed)")
                         # Reactivate GUI buttons.
                         self.set_activation(self)
                     except:
                         print "Experiment manager error."
-                        undo.save("Delete experiment(s) (failed)")  
+                        undo.save("Delete experiment(s) (failed)")
                         # Reactivate GUI buttons.
                         self.set_activation(self)
                         return -1
@@ -24416,7 +24416,7 @@ class main_gui:
             # Reactivate GUI buttons.
             self.set_activation(self)
             return -1
-        
+
     def reactivate(self,widget):
         # Log this reactivation, since there was probably an exception.
         # Try to get part of the traceback info to log.
@@ -24536,7 +24536,7 @@ class main_gui:
         while gtk.events_pending():
             gtk.main_iteration(False)
         try:
-            try:  
+            try:
                 # Ask for band number and convert to integer type
                 band = int(raw_input("Band number? "))
             except:  # if error, then cancel the operation
@@ -24564,7 +24564,7 @@ class main_gui:
             # Reactivate GUI buttons.
             self.set_activation(self)
             return -1
-        
+
     def merge_bands(self,widget):
 
         print_separator()
@@ -24575,7 +24575,7 @@ class main_gui:
             gtk.main_iteration(False)
 
         try:
-            try:  
+            try:
                 # Get both band numbers and convert to integer type
                 initial_band_number = int(self.initial_band_entry.get_text())
                 final_band_number = int(self.final_band_entry.get_text())
@@ -24611,7 +24611,7 @@ class main_gui:
             # Reactivate GUI buttons.
             self.set_activation(self)
             return -1
-        
+
     def gosia_controls(self,widget):
         """Allows the user to set some of the switches in the Gosia CONT block.
 
@@ -24817,7 +24817,7 @@ class main_gui:
                             vac_parameter_dict["x"] = x
                         except:
                             print "x left at default value of 0.6."
-                            
+
                         return_code = the_gosia_shell.set_vac_parameters(vac_parameter_dict)
                         if return_code == 0:
                             undo.save("Set custom vacuum deorientation parameters")
@@ -24871,7 +24871,7 @@ class main_gui:
             # Reactivate GUI buttons.
             self.set_activation(self)
             return -1
-        
+
     def tools(self,widget):
         """Various advanced tools for the user.
 
@@ -24904,7 +24904,7 @@ class main_gui:
             print " ed    Export Ge detector arrays to a robust text format."
             print " id    Import Ge detector arrays from a robust text format."
             print " al    Auto-load yield data into detectors."
-            print " fl    FULLY automatic loading of all yield data (NEW)." 
+            print " fl    FULLY automatic loading of all yield data (NEW)."
             print "       This uses systematic file names.  Refer to the "
             print "       file naming system after selecting \"fl.\""
             print " pd    Plot detector arrays.  This also gives the Ge detector "
@@ -25065,7 +25065,7 @@ class main_gui:
                                     plot_description = "\nPlotting "+initial_band_name+" "+str(initial_spin)+" --> "+final_band_name+" "+str(final_spin)+" vs. theta_scat."
                                     print plot_description
                                     for error_string in error_strings:
-                                        print error_string 
+                                        print error_string
                                     print ""
                                     # Draw the problem transition
                                     investigated_nucleus.draw_level_scheme()
@@ -25076,10 +25076,10 @@ class main_gui:
                                     #saveout = sys.stdout
                                     #garbage_file = open('.rachel_garbage', 'w')
                                     #sys.stdout = garbage_file
-                                    the_experiment_manager.plot_yield_data(initial_band = initial_band_number,final_band = final_band_number,tf = True,initial_spin = initial_spin,final_spin = final_spin,ge_polar_angle = ge_polar_angle,ge_azimuthal_angle = ge_azimuthal_angle)  
+                                    the_experiment_manager.plot_yield_data(initial_band = initial_band_number,final_band = final_band_number,tf = True,initial_spin = initial_spin,final_spin = final_spin,ge_polar_angle = ge_polar_angle,ge_azimuthal_angle = ge_azimuthal_angle)
                                     # Restore stdout to the terminal.
                                     #sys.stdout = saveout
-                                    #garbage_file.close()  
+                                    #garbage_file.close()
                                     # END OF PLOTS
                                     if yes_no_prompt("Continue reports [Y/n]? ",True):
                                         pass  # continue to the next plot.
@@ -25130,7 +25130,7 @@ class main_gui:
                         print "Finished."
                         return 0
                 except:
-                    # Just recover with undo.  
+                    # Just recover with undo.
                     # Reactivate GUI buttons.
                     self.set_activation(self)
                     the_experiment_manager.restore_saved_experiments()
@@ -25154,7 +25154,7 @@ class main_gui:
                     if (lambda_number > 0) and (lambda_number < 7):
                         print "Running point calculations..."
                         try:
-                            error_code = the_gosia_shell.generate("Start","Run gosia input",True,False,False,{"collision function":lambda_number})  
+                            error_code = the_gosia_shell.generate("Start","Run gosia input",True,False,False,{"collision function":lambda_number})
                         except:
                             print "That collision function is not available at this time."
                         if error_code == -1:
@@ -25169,7 +25169,7 @@ class main_gui:
 
                     else:
                         print "lambda out of range."
-                
+
             elif what == "ka":
                 return_code = investigated_nucleus.add_complete_matrix()
                 if return_code == 0:
@@ -25207,7 +25207,7 @@ class main_gui:
                 recalculate = yes_no_prompt("Re-integrate amplitude data? [Y/n]: ",True)
                 if recalculate:
                     print "Running point calculations..."
-                    error_code = the_gosia_shell.generate("Start","Run gosia input",True,False,False,{"amplitudes":True},amplitudes=True) 
+                    error_code = the_gosia_shell.generate("Start","Run gosia input",True,False,False,{"amplitudes":True},amplitudes=True)
                     if error_code == -1:
                         print "Gosia killed by user or cannot run Gosia.  Check for errors above."
                         self.set_activation(self)
@@ -25256,7 +25256,7 @@ class main_gui:
                 # Reactivate GUI buttons.
                 self.set_activation(self)
 
-            
+
     def examine_stopping_power(self,widget):
         """Allows the user to examine and modify stopping power data.
 
@@ -25264,7 +25264,7 @@ class main_gui:
 
         print_separator()
 
-        
+
         #deactivate all button presses while this runs.
         self.set_deactivation(self,self.all_button_list)
         while gtk.events_pending():
@@ -25424,7 +25424,7 @@ class main_gui:
                     print "Returning to GUI."
                     # Reactivate GUI buttons.
                     self.set_activation(self)
-                    break 
+                    break
                 elif user_expression.strip() == "functions":
 
                     block_print_with_line_breaks("The following commands take prompted input for common calculations.  All functions below are accurate for elastic or inelastic scattering.  Quantities are symmetrized over the entrance and exit velocities as appropriate.\n")
@@ -26293,7 +26293,7 @@ def f_function(mlambda_text,xi):
 def symmetrized_adiabaticity(Z_proj_passed,A_proj_passed,Z_targ_passed,A_targ_passed,E_mean_passed,E_excited_state_passed):
     """Calculates the symmetrized adiabaticity for a two-state system.
 
-    Syntax: 
+    Syntax:
     symmetrized_adiabaticity(Z_proj,A_proj,Z_targ,A_targ,E_mean,E_excited_state),
     where E_mean [MeV] is the mean beam energy as the projectile traverses the target.
     and E_excited_state is the energy of the excited state in keV!!!
@@ -26764,7 +26764,7 @@ def inelastic_lab_recoil_angle_to_lab_recoil_energy(A_proj_passed,A_targ_passed,
         Q_value is in MeV also!
 
     If forward=False, then the the backward center-of-mass solution is returned
-    for inverse kinematics.  Angles are given and returned in degrees.  
+    for inverse kinematics.  Angles are given and returned in degrees.
 
     If the requested angle is invalid, then an exception will be raised.  This
     must be trapped by the calling method.
@@ -27003,7 +27003,7 @@ def inelastic_lab_scattering_angle_to_com_scattering_angle(A_proj_passed,A_targ_
     theta_lab is the laboratory-frame scattering angle in degrees.
 
     If forward=False, then the the backward center-of-mass solution is returned
-    for inverse kinematics.  Angles are given and returned in degrees.  
+    for inverse kinematics.  Angles are given and returned in degrees.
 
     If the requested angle is invalid, then an exception will be raised.  This
     must be trapped by the calling method.
@@ -27383,7 +27383,7 @@ def user_sd():
     """User accessor (prompts) for the stddev function
 
     """
-    
+
     list_string = raw_input("Enter a list of numbers, comma-delimited 1.1,2.2,3.3...: ")
     the_list = list(eval("[" + list_string + "]"))
     sd = stddev(the_list)
@@ -27492,7 +27492,7 @@ def user_recmax():
 
     print "Rachel> inelastic_maximum_recoil_angle(Ap,At,E_beam,E_exc) = ",recmax
 
-    return recmax 
+    return recmax
 
 
 def user_ruth():
@@ -27565,7 +27565,7 @@ def user_norm():
     print "Rachel> inelastic_differential_scattering_cross_section(Zp,Ap,Zt,At,theta_lab,forward[True/False],E_beam,E_exc) = ",cs
     print "Rachel> math.sin(math.radians(theta_lab) = ",sine_factor
 
-    return normalization_constant 
+    return normalization_constant
 
 
 
@@ -27640,9 +27640,9 @@ def user_rtos():
             forward = False
     theta_scat_lab = inelastic_lab_recoil_angle_to_lab_scattering_angle(Ap,At,theta_rec_lab,forward,E_beam,E_exc)
     print "Rachel> inelastic_lab_recoil_angle_to_lab_scattering_angle(Ap,At,theta_rec_lab,forward[True/False],E_beam,E_exc) = ",theta_scat_lab
-    return theta_scat_lab 
+    return theta_scat_lab
 
-    
+
 def user_stoc():
     """User accessor (prompts) for the function inelastic_lab_scattering_angle_to_com_scattering_angle
 
@@ -27659,14 +27659,14 @@ def user_stoc():
             forward_string = raw_input("Enter \"f\"/\"b\" for the forward or backward center-of-mass solution [b/f]: ").lower()[0]
         except:
             # User hit enter.  No default.
-            pass 
+            pass
     if forward_string == "f":
         forward = True
     else:
         forward = False
 
     com_angle = inelastic_lab_scattering_angle_to_com_scattering_angle(Ap,At,theta_scat_lab,forward,E_beam,E_exc)
-    print "Rachel> inelastic_lab_scattering_angle_to_com_scattering_angle(Ap,At,theta_scat_lab,forward[True/False],E_beam,E_exc) = ",   com_angle 
+    print "Rachel> inelastic_lab_scattering_angle_to_com_scattering_angle(Ap,At,theta_scat_lab,forward[True/False],E_beam,E_exc) = ",   com_angle
     return com_angle
 
 def user_svsr():
@@ -27687,7 +27687,7 @@ def user_svsr():
     max_scat = inelastic_maximum_scattering_angle(Ap,At,E_beam,E_exc)
 
     if E_exc != 0.:
-        block_print_with_line_breaks("For a non-zero Q-value there are TWO solutions (two lab scattering angles for any recoil angle).  See the Gosia manual section 5.1.") 
+        block_print_with_line_breaks("For a non-zero Q-value there are TWO solutions (two lab scattering angles for any recoil angle).  See the Gosia manual section 5.1.")
 
     # The lists of x,y will be filled in the order that will connect the
     # two solutions directly at the max. recoil angle.
@@ -27915,9 +27915,9 @@ def user_gs():
             if abs(delta_E - gamma_energy) <= dE:
                 # Gamma energy matches
                 # Is the delta-I within tolerance?
-                delta_I = lower_key[1] - higher_key[1] 
+                delta_I = lower_key[1] - higher_key[1]
                 if abs(delta_I) <= max_dI:
-                    # dI matches and dE matches.  
+                    # dI matches and dE matches.
                     # These should be added to the list of matches.  First get a complete description as a list.
                     # band,spin,band,spin,gamma energy
                     match_data = [higher_key[0],higher_key[1],lower_key[0],lower_key[1],delta_E]
@@ -27935,7 +27935,7 @@ def user_gs():
                     else:
                         uncoupled_descriptions.append(transition_description)
 
-    # All matches are found.  Print them 
+    # All matches are found.  Print them
     print "------------------------------------------------------------------------"
     print "Matches that are currently coupled by at least one matrix element"
     print "------------------------------------------------------------------------"
