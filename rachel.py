@@ -18557,7 +18557,7 @@ class experimentmanager:
             particle_count_rate = rutherford_particle_counts / time_in_seconds # Hertz
 
             dose_lines = [ "Beam intensity: " + str(beam_intensity) + " pnA = " + format(beam_intensity * 6.24e9,".2e") + " p/s" ,\
-                              "Run: " + format(days_of_beam,".2g") + " days.  Total dose: " + format(days_of_beam * beam_intensity * 6.24e9,".3g") + " particles"]
+                              "Run: " + format(days_of_beam,".2g") + " days.  Total dose: " + format(days_of_beam * 3600. * 24. * beam_intensity * 6.24e9,".3g") + " particles"]
             rutherford_lines = ["Integrated Rutherford cross section:       " + format(rutherford_cross_section,".3g") + " [mb*(mg/cm^2)] (See manual: OP,INTI)",\
                                "NOTE: The Rutherford cross section is energy dependent and is integrated over the beam energy range."]
             rutherford_counts_line = "Detected particle count (100% efficiency): " + format(rutherford_particle_counts,".3g") + "  Rate: " + format(particle_count_rate,".3g") + " Hz"
