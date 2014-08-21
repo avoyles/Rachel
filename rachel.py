@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-VERSION = "1.3.4"
-RECOVERY_MODE = False
+VERSION        = "1.3.4"
+RECOVERY_MODE  = False
 DEBUGGING_MODE = False
-SCRIPT_MODE = False
+SCRIPT_MODE    = False
 
 # The following if-block satisfies pyflakes for objects and variables that are
 # defined in places that pyflakes does not understand.  This will be removed at
@@ -8818,8 +8818,6 @@ class nucleus:
         themselves don't know about the aliases (or band names).
 
         """
-
-        # New: July 25th 2011.
 
         # The list of aliases (possibly empty) of this band.  The requested
         # name is not included in the list.
