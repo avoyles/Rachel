@@ -1,5 +1,11 @@
-Rachel, GUI for Gosia
+Rachel, Software for Coulomb Excitation Experiment Planning and Analysis
 ======
+
+Leverage Rachel to
+
+* Effectively plan experiments
+* Add realistic predictions to strengthen experimental proposals
+* Analyze simple or extremely complex data from Coulomb excitation experiments
 
 Rachel is currently being cleaned up and made PEP8 compliant in preparation to
 turn over maintenance to users.  Please fork if you are interested in doing
